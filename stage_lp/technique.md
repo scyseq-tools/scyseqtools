@@ -14,7 +14,7 @@ The encoder is a GUI that commands VLC player and favors the encoding of a video
   : the part of the interface which is dynamically built using an encoding definition read in a `.cod` file
 
 `ib.py`
-  : this is an old file and **I think this file should dissapear** 
+  : this is an old file and **I think this file should disappear** 
 
 `infoframe.py`
   : the frame which displays the informations about the code file (`.cod`), media file and data file (`ext?`).
