@@ -1,83 +1,41 @@
-# import ib
+#! == encoding:utf8 ==
+"""
+Some common utils
+"""
 import tkinter
 
-sticky_all = (tkinter.W, tkinter.N, tkinter.S, tkinter.E)
+def listbox(upper, title, choice_list, multiple):
+    """
+    Utils for listbox
+    """
+    selectmode = tkinter.BROWSE # default
+    if multiple:
+        selectmode = tkinter.MULTIPLE
+    master = tkinter.Frame(upper)
+    label = tkinter.Label(master, text=title)
+    label.grid(row=0, column=0, sticky=(tkinter.N, tkinter.W))
 
-# sec_abbrev = ('seconde', 'secondes', 'sec.', 'sec', 'second', 'seconds', 's', 's.')
+    yscroll = tkinter.Scrollbar(master, orient=tkinter.VERTICAL)
+    yscroll.grid(row=1, column=1, 
+                 sticky=(tkinter.N, tkinter.S, tkinter.W))
+    xscroll = tkinter.Scrollbar(master, orient=tkinter.HORIZONTAL)
+    xscroll.grid(row=2, column=0, 
+              sticky=(tkinter.E, tkinter.S, tkinter.W))
 
-def inverse_dict(d):
-    rd = {}
-    for k,v in d.items():
-        rd.update({v:k})
-    return rd
+# NB: exportselection=False means that you can select for each listbox
+# independently see:
+# http://stackoverflow.com/questions/756662/using-multiple-listboxes-in-python-tkinter
+# It took me some times to figure out what happened...
+    choice = tkinter.Listbox(master, listvariable=choice_list,
+                                    selectmode=selectmode,
+                                    height=5, # nb of lines
+                                    width=15, # default=20
+                                    yscrollcommand=yscroll.set,
+                                    xscrollcommand=xscroll.set,
+                                    exportselection=False)
+    choice.grid(row=1, column=0, sticky=(tkinter.N, tkinter.E)) 
+    yscroll['command'] = choice.yview
+    xscroll['command'] = choice.xview
 
-def is_valid_filename(fname, ext=None):
-    if fname in ['', ()]:
-        return False
-    elif ext is not None and type(ext) == str:
-        if not fname.endswith(ext):
-            return False
-    return True
-
-def convert_jod(jdict):
-    retval = {'specs':{}, 'codes': {}}
-
-    if jdict['interval'] is None:
-        retval['specs'].update({'period': None, 
-                                't_unit': None, 
-                                'regular': False})
-    else:
-        retval['specs'].update({'period': jdict['interval'], 
-                                't_unit': 'second', 
-                                'regular': True})
-
-    base_codes = {}
-    codes = jdict['codes']
-    for k, v in codes.items():
-        dcode = dict([(s,n) for n, s in enumerate(v)])
-        base_codes.update({k: dcode}) 
-
-    sites = jdict['sites']
-    for k, v in sites.items():
-        dsite = {}
-        for code in v:
-            dsite.update({code: base_codes[code]})
-        retval['codes'].update({k: dsite})
-    #print(retval)
-    return retval
-
-#def cod2jod(fname):
-#    """convert into (with list so that order is constant): 
-#
-#    code = {'codes': {'recording_site':
-#                       {'code': 
-#                       {'symbol0':0, 'symbol1':1}}, ...},
-#            'specs': {'period': 5, 't_unit': 'sec.', 'regular': True}}
-#
-#    CAUTION: dico for code is a reverse dico: 'symbol':int
-#    """
-#
-#    ib_reader = ib.ib(fname)
-#    specif, lseq = ib_reader.read()
-#    # check that t_unit = second
-#    assert(specif['t_unit'].lower() in sec_abbrev)
-#
-#    code =  {'specs': {'period': float(specif['period']),
-#                         't_unit': specif['t_unit'], 
-#                         'regular': specif['regular']}}
-#    codelist = {}
-#    for seq in lseq:
-#        codelist.update({seq['name']: {}})
-#        for cc in seq['seq']:
-#            codelist[seq['name']].update({cc['code_name']: inverse_dict(cc['dico'])})
-#
-#    code.update({'codes': codelist})
-#
-#    return code
-
-#if __name__ == '__main__':
-#
-#    fname = '../ib.cod'
-#
-#    print(cod2jod(fname))
+    return master, choice
 
