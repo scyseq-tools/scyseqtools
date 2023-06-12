@@ -40,4 +40,7 @@ course of each scenario (2 tables)
 
 # Tools
 
-- Write comments in [pandoc](https://pandoc.org/)
+- Write comments in markdown see: [pandoc](https://pandoc.org/)
+- [python](https://python.org) programming language and [tkinter](https://docs.python.org/3/library/tk.html) graphical user interface.
+- [github](https://github.com/lrtpzd/codix-suite) version control and collaboration
+- [pyinstaller](https://pyinstaller.org/en/stable/operating-mode.html) to make standalone distribution / release.
