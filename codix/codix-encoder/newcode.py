@@ -31,7 +31,7 @@ class NewCode(tkinter.LabelFrame):
         
         description_label = tkinter.Label(projectframe, text='Description: ')
         description_label.grid(row=1, column=0)
-        self.description_text = tkinter.Text(projectframe)
+        self.description_text = tkinter.Text(projectframe, height=5)
         self.description_text.grid(row=1, column=2)
 
         # specifications

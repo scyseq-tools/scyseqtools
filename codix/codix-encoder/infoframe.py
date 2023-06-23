@@ -14,10 +14,12 @@ class InfoFrame(tkinter.LabelFrame):
     def __init__(self, parent, states=[None, None, None]):
         tkinter.LabelFrame.__init__(self, parent)
         self.configure(background=info_bg, 
-                       borderwidth=bd, 
+                       borderwidth=bd,
                        padx=20, pady=20, 
                        relief=relief,
                        text='Information: ', font=(tkinter.font.BOLD,))
+        self.grid(column=1,
+                  row=0)
         # Code File
         self.code_label = tkinter.Label(self, text='Code file: ', 
                                          background=info_bg)

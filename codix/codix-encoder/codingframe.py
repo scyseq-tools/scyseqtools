@@ -20,13 +20,15 @@ class FrameworkFrame(tkinter.LabelFrame):
                        padx=20, pady=20, 
                        relief=relief,
                        text='Coding framework: ', font=('bold',))
+        self.grid(columnspan=2,
+                  row=1)
         self.application = application
 
         self.spec_frame = SpecificationFrame(self)  
         self.spec_frame.grid(sticky=U.sticky_all)
 
         self.coding_frame = CodingFrame(self, encoding=encoding)
-        self.coding_frame.grid(sticky=U.sticky_all)
+        self.coding_frame.grid(column=0, columnspan=3, sticky=U.sticky_all)
         self.disable_codes()
         self.bind('<Button-3>', self.change_color)
 
@@ -165,7 +167,7 @@ class SpecificationFrame(tkinter.LabelFrame):
                                       disabledbackground=disabled_bg,
                                       width=21)
         self.date_ent.grid(column=1, row=0, sticky=tkinter.W)
-
+        
         # observer name
         self.person = tkinter.StringVar()
         

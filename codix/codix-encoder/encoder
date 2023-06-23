@@ -4,6 +4,7 @@
 Main application module
 
 .. todo:: All the "print" should be moved to some logging process...
+We need doc
 """
 
 import os
@@ -80,7 +81,7 @@ class Application(tkinter.Tk):
         """Application for defining a new coding framework.
         """
         self.newcode = NewCode(parent=self)
-        self.newcode.grid(row=0, column=0, sticky=U.sticky_all)
+        self.newcode.grid(row=1, column=1, sticky=U.sticky_all)
         self.menu.disable_actions()
         # self.scenario = 'newcode'
 
@@ -89,7 +90,7 @@ class Application(tkinter.Tk):
                               states=(tkinter.NORMAL,    # load code
                                       tkinter.DISABLED,  # load media
                                       tkinter.DISABLED)) # load data
-        self.info.grid(row=0, column=0, sticky=U.sticky_all)
+        self.info.grid(row=1, column=1, sticky=U.sticky_all)
         self.menu.disable_actions()
         # self.scenario = 'newsession'
 
@@ -98,7 +99,7 @@ class Application(tkinter.Tk):
                               states=(tkinter.DISABLED, # load code
                                       tkinter.DISABLED, # load media
                                       tkinter.NORMAL))  # load data
-        self.info.grid(row=0, column=0, sticky=U.sticky_all)
+        self.info.grid(row=1, column=1, sticky=U.sticky_all)
         self.menu.disable_actions()
         # self.scenario = 'resumesession'
 
@@ -107,7 +108,7 @@ class Application(tkinter.Tk):
                               states=(tkinter.DISABLED, # load code
                                       tkinter.NORMAL, # load media
                                       tkinter.DISABLED))  # load data
-        self.info.grid(row=0, column=0, sticky=U.sticky_all)
+        self.info.grid(row=1, column=1, sticky=U.sticky_all)
         self.menu.disable_actions()
         # self.scenario = 'freeview'
 
@@ -317,27 +318,27 @@ class Application(tkinter.Tk):
             self.control.set_time(self.container['times'][0], msg='Start processing')
             self.current_step = 0
             self.max_step = len(self.container['times'])
-
+            
         else: # starts a new session
-                self.container['media'] = self.media_file.get()
+            self.container['media'] = self.media_file.get()
 
-                self.get_mode_and_period(self.container['code'])
-                self.framework.disable_specifications()
+            self.get_mode_and_period(self.container['code'])
+            self.framework.disable_specifications()
 
-                mode = self.player_mode.get()
-                if mode == 'regular': # regular sampling
-                    period = self.control.get_period()
-                    if period is not None:
-                        self.freeze()
-                    print('period: ', period)
-                    assert(len(self.container['times']) == 0)
-                    self.container['times'].append(self.current_time)
-                    self.max_step = len(self.container['times']) - 1
-                    self.current_step = 0
-                    self.data_loaded = True
-                    # self.framework.disable_codes()
-                    print(self.container)
-                    self.info.data_save.configure(state=tkinter.NORMAL)
+            mode = self.player_mode.get()
+            if mode == 'regular': # regular sampling
+                period = self.control.get_period()
+                if period is not None:
+                    self.freeze()
+                print('period: ', period)
+                assert(len(self.container['times']) == 0)
+                self.container['times'].append(self.current_time)
+                self.max_step = len(self.container['times']) - 1
+                self.current_step = 0
+                self.data_loaded = True
+                # self.framework.disable_codes()
+                print(self.container)
+                self.info.data_save.configure(state=tkinter.NORMAL)
 #                    if self.current_step == 0 or \
 #                       self.control.player.get_state() == 3: # playing
 #                    while self.control.player.get_state() != 5: # 5: Stopped
@@ -348,8 +349,8 @@ class Application(tkinter.Tk):
 #                        print("current step: ", self.current_step)
 #                        self.framework.enable_codes()
 #                        #    print(self.container)
-                else:
-                    raise NotImplementedError('Continuous coding is not implemented')
+            else:
+                raise NotImplementedError('Continuous coding is not implemented')
 #
 #                # self.current_step = 0
 #
