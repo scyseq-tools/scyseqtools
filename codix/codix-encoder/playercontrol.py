@@ -78,6 +78,9 @@ class PlayerControl(tkinter.LabelFrame):
         self.unit_lab.grid(row=1, column=8)
         
         self.bind('<Button-3>', self.change_color)
+
+        self._state = ""
+        
         
     def step_play(self, dt):
         self.player.set_pause(do_pause=0)
@@ -92,17 +95,18 @@ class PlayerControl(tkinter.LabelFrame):
         
 
     def playpause(self):
+        print("##### play/pause"+ self._state)
         mode = self._root().player_mode.get()
-        self.play_but.update()
-
         if mode =='regular':
-            self._state = "played"
             period = self.get_period()
             if period is not None :
                 itime = self.player.get_time()
+                self._state = "played"
+                self.config_button(self._state, mode)
                 self.step_play(period)         
                 self.after(int(period*1000))
-                self._state = "unplayed"
+                self._state = "notplayed"
+                self.config_button(self._state, mode)
                 self.play_but.update()
                 print('End time: ', self.player.get_time())
                 ftime = itime + int(period*1000)
@@ -110,18 +114,26 @@ class PlayerControl(tkinter.LabelFrame):
                 if self._root().current_step is not None:
                     self._root().current_step += 1
                 print('End PP current step: ', self._root().current_step)
+                print(" ##### fin play regular"+ self._state)
 
         if mode =='continuous':
+            pstate = self.player.get_state()
             if self._state == "played" :
                 self.player.set_pause(do_pause=1)
-                self._state = "unplayed"
+                self._state = "notplayed"
+                self.config_button(self._state, mode)
                 self.set_time(self.player.get_time())
 
-            elif self._state == "unplayed":
+            elif self._state == "notplayed" or self._state == None :
                 self.player.set_pause(do_pause=0)
-                self._state = "played"
+                self.state = "played" 
+                self.config_button(self._state, mode)
+            
+
             else:
                 raise ValueError(f'Unknown player state {pstate}')
+            print(" ##### fin play continuous"+ self._state)
+
             
          
     def backward(self):
@@ -276,41 +288,49 @@ class PlayerControl(tkinter.LabelFrame):
         if mode == 'continuous': # ie regular play...
             print('change mode: regular')
             self._state = "notplayed"
+            self.config_button(self._state, mode)
 
         else:
             print('change mode: continuous')
+            self.config_button(self._state, mode)
+
             
 
 
     @property
     def state(self):
         return self._state
-
+    
+    
     @state.setter
     def state(self, value):
-        mode = self._root().player.mode.get()
         if value == "played" :
+            self.player.set_pause(do_pause=0)
             self._state = "played"
+        elif value == "notplayed" :
+            self.player.set_pause(do_pause=1)
+            self._state = "notplayed"
+
+
+
+    def config_button(self, state, mode):
+        mode = self._root().player_mode.get()
+        if self._state == "played" :
             if mode == "continuous" :
                 self.play_but.config(state='normal')
                 self.back_but.config(state='disabled')
                 self.forward_but.config(state='disabled')
                 self.mode_check.config(state='disabled')
                 self.period_ent.config(state='disabled')
-                
-
+            
             elif mode == "regular" :
                 self.play_but.config(state='disabled')
                 self.back_but.config(state='disabled')
                 self.forward_but.config(state='disabled')
                 self.mode_check.config(state='disabled')
                 self.period_ent.config(state='disabled')
-
                 
-            
-        elif value == "notplayed" :
-            self.dopause()
-            self._state = "notplayed"
+        if self._state == "notplayed" :
             if mode == "continuous" :
                 self.play_but.config(state='normal')
                 self.back_but.config(state='disabled')
