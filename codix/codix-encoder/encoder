@@ -184,14 +184,17 @@ class Application(tkinter.Tk):
     def read_media(self, fname):
         # create a control frame
         # player mode and period not set before
+        # FIXME: is it useful?
         if self.player_mode.get() == '': # free viewing
             self.player_mode.set('continuous')
         if self.period_display.get() == '': # free viewing
             self.period_display.set('-')
+        # END FIXME
 
         self.control = PlayerControl(application=self)
         self.control.grid(row=1, column=0, sticky=U.sticky_all)
         
+        # FIXME: this should be done in playercontrol
         self.control.player.set_mrl(fname)
         self.media_file.set(fname)
 
@@ -206,6 +209,7 @@ class Application(tkinter.Tk):
             tkinter.messagebox.showinfo('Cannot get max time', 
                                   'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
+        # END FIXME
 
         self.media_loaded = True
         self.configure_interface()

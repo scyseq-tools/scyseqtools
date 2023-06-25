@@ -248,6 +248,7 @@ class NewCode(tkinter.LabelFrame):
 
 class RecordedCode(tkinter.Label):
 
+    # def __init__(self, application, name, items, index):
     def __init__(self, application, name, items, index):
 
         parent = application.recorded_codes
