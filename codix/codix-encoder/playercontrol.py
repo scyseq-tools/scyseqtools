@@ -26,7 +26,7 @@ DTIME = 10000 # ms forward and back time period for continuous play
 
 class PlayerControl(tkinter.LabelFrame):
     
-    def __init__(self, application):
+    def __init__(self, application, file_name):
         """
         Creates player control buttons
         """
@@ -42,7 +42,7 @@ class PlayerControl(tkinter.LabelFrame):
 
         # FIXME: insert the test of the media which is done in `encoder`?
         
-
+        
         # Control panel
         self.back_but = tkinter.Button(self, text='Back', command=self.backward) 
         self.back_but.grid(row=1, column=0, sticky=tkinter.W)
@@ -82,9 +82,25 @@ class PlayerControl(tkinter.LabelFrame):
         
         self.bind('<Button-3>', self.change_color)
 
-        self._state = "initial"
+        # FIXME: this should be done in playercontrol
+        self.player.set_mrl(file_name)
+        #self.media_file.set(fname)
 
-        #self.max_time = application.player.get_length()
+        # This is a hack for time initialization.
+        # reads 1s and then goes back to 0 
+        self.player.play()
+        time.sleep(1) # 0.1 is too short I loose sound!?
+        self.max_time = self.player.get_length() # a long in ms
+        self.player.set_pause(do_pause=1)
+        self.set_time(0, 'Initial time')
+        if self.max_time == -1:
+            tkinter.messagebox.showinfo('Cannot get max time', 
+                                  'Cannot get max time; this may cause problems')
+        print('Length of media file: ', self.max_time, ' ms.')
+        # END FIXME
+
+        self._state = "paused"
+
         
     def step_play(self, dt):
         self.play_but.update()
@@ -139,7 +155,7 @@ class PlayerControl(tkinter.LabelFrame):
                 self.set_time(self.player.get_time())
                 print(" ##### end play continuous state = "+ self._state)
 
-            elif self.state == "paused" or self.state == "initial":
+            elif self.state == "paused":
                 self.cont_play()           
             
             else:
@@ -239,7 +255,7 @@ class PlayerControl(tkinter.LabelFrame):
         """Sets time
         time is an int in ms
         """
-        max_time = self._root().max_time
+        max_time = self.max_time
         if time < 0:
             tkinter.messagebox.showinfo('Value Error', 
                               'cannot set time before beginning sets to zero')
@@ -296,7 +312,7 @@ class PlayerControl(tkinter.LabelFrame):
         mode = self._root().player_mode.get()
         if mode == 'continuous': # ie regular play...
             print('change mode: regular')
-            self._state = "paused"
+            #self._state = "paused"
             #self.config_button(self._state, mode)
 
         else:
@@ -352,6 +368,7 @@ class PlayerControl(tkinter.LabelFrame):
     def config_buttons(self, dico):
         for b, s in dico.items():
             # print(b, s)
+            b.update()
             b.config(state=s)
             b.update()
     

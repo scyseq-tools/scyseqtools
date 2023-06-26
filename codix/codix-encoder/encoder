@@ -134,7 +134,7 @@ class Application(tkinter.Tk):
         Now only supports the new .jod (json) files
         """
         
-        fname = "/home/leo/Bureau/leo_dev/github/codix-suite/codix/codix-encoder/test2.jod"
+        fname = "test2.jod"
         if os.path.exists(fname):
             self.read_code(fname)
         else :
@@ -201,25 +201,25 @@ class Application(tkinter.Tk):
             self.period_display.set('-')
         # END FIXME
 
-        self.control = PlayerControl(application=self)
+        self.control = PlayerControl(application=self, file_name = fname)
         self.control.grid(row=1, column=0, sticky=U.sticky_all)
         
-        # FIXME: this should be done in playercontrol
-        self.control.player.set_mrl(fname)
+        # # FIXME: this should be done in playercontrol
+        # self.control.player.set_mrl(fname)
         self.media_file.set(fname)
 
-        # This is a hack for time initialization.
-        # reads 1s and then goes back to 0 
-        self.control.player.play()
-        time.sleep(1) # 0.1 is too short I loose sound!?
-        self.max_time = self.control.player.get_length() # a long in ms
-        self.control.player.set_pause(do_pause=1)
-        self.control.set_time(0, 'Initial time')
-        if self.max_time == -1:
-            tkinter.messagebox.showinfo('Cannot get max time', 
-                                  'Cannot get max time; this may cause problems')
-        print('Length of media file: ', self.max_time, ' ms.')
-        # END FIXME
+        # # This is a hack for time initialization.
+        # # reads 1s and then goes back to 0 
+        # self.control.player.play()
+        # time.sleep(1) # 0.1 is too short I loose sound!?
+        # self.max_time = self.control.player.get_length() # a long in ms
+        # self.control.player.set_pause(do_pause=1)
+        # self.control.set_time(0, 'Initial time')
+        # if self.max_time == -1:
+        #     tkinter.messagebox.showinfo('Cannot get max time', 
+        #                           'Cannot get max time; this may cause problems')
+        # print('Length of media file: ', self.max_time, ' ms.')
+        # # END FIXME
 
         self.media_loaded = True
         self.configure_interface()
