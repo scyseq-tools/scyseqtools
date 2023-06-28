@@ -1,0 +1,48 @@
+input-files:
+- codix_paper.md
+
+from: markdown
+to: latex
+#output-file: manuscript.tex
+output-file: manuscript.pdf
+standalone: true
+# toc: true
+# number-sections: true
+pdf-engine: lualatex
+# template: apa7-template.tex
+
+# citation options
+citeproc: false
+cite-method: natbib
+
+# includes highlighting-macro
+highlight-style: kate
+
+## Variables pour les templates
+variables:
+#\documentclass[sn-apa]{sn-jnl}% APA Reference Style
+  documentclass: apa7
+  classoption: 
+   - doc
+#  - lineno
+  papersize: a4
+#  fontsize: 10pt
+#  biblio-style: apa
+#  biblatex-options: 
+#  - backend=biber
+  
+#  lang: fr
+#  papersize: a4
+
+## Metadata
+## metadata-file(s) also exists
+metadata:
+  author: "Laurent Pezard, Karyn Doba, Léo Pezard and Jean-Louis Nandrino" 
+  title: "Codix: a software suite for encoding and analysing behavioral sequences"
+  date: 2023-02-01
+  abstract: |
+    This is the abstract.
+
+    With a new paragraph (does not work...)
+
+  bibliography: biblio.bib
