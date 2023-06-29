@@ -1,5 +1,5 @@
 - redimensionnement des fenêtres (low)
-- Fichier de config (low)
+- Fichier de config (low) see [ConfigParser](https://docs.python.org/3/library/configparser.html)
 
 - Dans certains modules il y a la variable `application` or on peut utiliser à
   la place `_root()`. Voir ce qui est le plus cohérent et ne pas utiliser les
