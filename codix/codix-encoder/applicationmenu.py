@@ -19,8 +19,8 @@ class ApplicationMenu(tkinter.Menu):
         self.retrieve_session = self.actionMenu.add_command(label='Retrieve a session', 
                                                           command=master.retrieve_session)
 
-        self.retrieve_session = self.actionMenu.add_command(label='Free viewing', 
-                                                          command=master.free_view)
+#        self.retrieve_session = self.actionMenu.add_command(label='Free viewing', 
+#                                                          command=master.free_view)
 
         self.actionMenu.add_separator()
 
@@ -45,5 +45,6 @@ class ApplicationMenu(tkinter.Menu):
         helpMenu.add_command(label='About', command=master.aboutHandler)
 
     def disable_actions(self):
-        for idx in [0,1,2,3,5]:
+        # for idx in [0,1,2,3,5]:
+        for idx in [0,1,2,4]:
             self.actionMenu.entryconfigure(idx, state=tkinter.DISABLED)

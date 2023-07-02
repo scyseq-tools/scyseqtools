@@ -64,6 +64,7 @@ class Application(tkinter.Tk):
         self.max_step = None
         self.max_time = None # in ms. will be overwritten when media is read
         self.time_display = tkinter.StringVar(value='')
+
 # FIXME: what is the difference between: is_recording and is_set_start_time?
 #        self.is_recording = False
 #        self.is_set_start_time = False
@@ -106,22 +107,23 @@ class Application(tkinter.Tk):
         self.menu.disable_actions()
         # self.scenario = 'resumesession'
 
-    def free_view(self):
-        self.info = InfoFrame(parent=self, 
-                              states=(tkinter.DISABLED, # load code
-                                      tkinter.NORMAL, # load media
-                                      tkinter.DISABLED))  # load data
-        self.info.grid(row=1, column=1, sticky=U.sticky_all)
-        self.menu.disable_actions()
-        # self.scenario = 'freeview'
+#    def free_view(self):
+#        self.info = InfoFrame(parent=self, 
+#                              states=(tkinter.DISABLED, # load code
+#                                      tkinter.NORMAL, # load media
+#                                      tkinter.DISABLED))  # load data
+#        self.info.grid(row=1, column=1, sticky=U.sticky_all)
+#        self.menu.disable_actions()
+#        # self.scenario = 'freeview'
 
     def reset(self):
         """Reset the file menu and all the current variables.
         """
-        self.info.destroy()
-        self.framework.destroy()
-        self.control.destroy()
-        self.init_variables()
+        raise NotImplementedError
+#        self.info.destroy()
+#        self.framework.destroy()
+#        self.control.destroy()
+#        self.init_variables()
 
     def help_browser(self):
         self.notimplemented()
