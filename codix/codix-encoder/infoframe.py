@@ -1,11 +1,14 @@
 import os
 import tkinter
+import tkinter.filedialog
+import tkinter.messagebox
 
 import utils as U
 
 from pathlib import Path
 import tkinter.font
 from tkinter.colorchooser import askcolor
+from pymediainfo import MediaInfo
 
 bd = 2 # borderwidth
 info_bg = 'yellow' # information background
@@ -53,7 +56,7 @@ class InfoFrame(tkinter.LabelFrame):
         code_msg.grid(row=2, column=1, sticky=tkinter.W)
         self.code_load = tkinter.Button(self, text='Load',
                                         state=states[1],
-                                        command=parent.ask_code)
+                                        command=self.ask_code)
         self.code_load.grid(row=2, column=2, sticky=tkinter.W)
 
         # Data File
@@ -67,7 +70,7 @@ class InfoFrame(tkinter.LabelFrame):
         data_msg.grid(row=3, column=1, sticky=tkinter.W)
         self.data_load = tkinter.Button(self, text='Load',
                                         state=states[2],
-                                        command=parent.ask_data)
+                                        command=self.ask_data)
         self.data_load.grid(row=3, column=2, sticky=tkinter.W)
         self.data_save = tkinter.Button(self, text='Save',
                                         command=parent.save_data,
@@ -79,23 +82,60 @@ class InfoFrame(tkinter.LabelFrame):
     def ask_media(self):
         """Load media file
         """
+        self.media_load.config(state='disabled')
         fname = "/home/leo/Bureau/leo_dev/video/164360 (720p).mp4"
         if os.path.exists(fname):
-            self.loaded_media = True 
-            self.application.read_media(fname)
+            fileInfo = MediaInfo.parse(fname)
+            for track in fileInfo.tracks:
+                if track.track_type == "Video" or track.track_type == "Audio":
+                    self.loaded_media = True 
+                    self.application.read_media(fname)
         else :
             fname = tkinter.filedialog.askopenfilename(
                                     initialdir=os.path.expanduser('~'))
+            self.loaded_media=False
             if U.is_valid_filename(fname):
-                self.loaded_media = True 
-                self.application.read_media(fname)
+                fileInfo = MediaInfo.parse(fname)
+                for track in fileInfo.tracks:
+                    if track.track_type == "Video" or track.track_type == "Audio":
+                        self.loaded_media = True 
+                        self.application.read_media(fname)
+                if not self.media_loaded:
+                    tkinter.messagebox.showinfo('Cannot load', "Cannot load %s file" % fname)
+                    self.ask_media()
+            else :
+                tkinter.messagebox.showinfo('Cannot load', "File doesn't exist %s file" % fname)
+                self.ask_media()
+
+        self.code_load.config(state='normal')
+        
+        # FIXME: make this more systematic...
+        self.application.period_display.set(self.application.control.default_period)
+        
+    def ask_code(self):
+            """Loading files defining a coding framework.
+            Now only supports the new .jod (json) files
+            """
+            fname = "test2.jod"
+            if os.path.exists(fname):
+                self.application.read_code(fname)
+            else :
+                fname = tkinter.filedialog.askopenfilename(filetypes=[('New code', '*.jod')],
+                                                    initialdir=os.path.expanduser('~'))
+                if U.is_valid_filename(fname, ext='.jod'):
+                    self.application.read_code(fname)
+                else:
+                    tkinter.messagebox.showinfo('Cannot load', 'Cannot load %s file' % fname)
+            self.code_load.config(state='disabled')
+
+    def ask_data(self):
+            # raise NotImplementedError()
+            fname = tkinter.filedialog.askopenfilename(filetypes=[('Codix data file', '*.cdx')],
+                                                    initialdir=os.path.expanduser('~'))
+            if U.is_valid_filename(fname): 
+                self.application.read_data(fname)
             else:
                 tkinter.messagebox.showinfo('Cannot load', 'Cannot load %s file' % fname)
-        self.info.code_load.config(state='normal')
-        ## Pour pas lancer vlc sans periode ? // default_period sinon ?
-        #self.control.mode_check.config(state='disabled')
-        # FIXME: make this more systematic...
-        #self.period_display.set(self.control.default_period)
 
 
     def change_color(self, event):

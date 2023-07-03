@@ -135,31 +135,17 @@ class Application(tkinter.Tk):
 # Information frame related functions
 #------------------------------------
 
-    def ask_code(self):
-        """Loading files defining a coding framework.
-        Now only supports the new .jod (json) files
-        """
-        fname = "test2.jod"
-        if os.path.exists(fname):
-            self.read_code(fname)
-        else :
-            fname = tkinter.filedialog.askopenfilename(filetypes=[('New code', '*.jod')],
-                                                   initialdir=os.path.expanduser('~'))
-            if U.is_valid_filename(fname, ext='.jod'):
-                self.read_code(fname)
-            else:
-                tkinter.messagebox.showinfo('Cannot load', 'Cannot load %s file' % fname)
 
     def read_code(self, fname):
-
         with open(fname, 'r') as ff:
             encoding = json.load(ff)
 
         self.container['code'] = encoding
         self.parse_code(encoding)
         self.code_file.set(fname)
-        self.code_loaded = True
-        self.configure_interface()
+        #### leocomment self.code_loaded forcément à True car ask_code verifie 
+        """ self.code_loaded = True
+        self.configure_interface() """
 
     def parse_code(self, encoding):
 
@@ -180,39 +166,6 @@ class Application(tkinter.Tk):
         self.framework = FrameworkFrame(application=self, encoding=codeframe)
         self.framework.grid(row=2, column=0, sticky=U.sticky_all)
 
-
-    def ask_media(self):
-        """Load media file
-        """
-        fname = "/home/leo/Bureau/leo_dev/video/164360 (720p).mp4"
-         
-        if os.path.exists(fname):
-            fileInfo = MediaInfo.parse(fname)
-            for track in fileInfo.tracks:
-                if track.track_type == "Video" or track.track_type == "Audio":
-                    self.loaded_media = True 
-                    self.read_media(fname)
-        else :
-            fname = tkinter.filedialog.askopenfilename(
-                                    initialdir=os.path.expanduser('~'))
-            self.loaded_media=False
-            if U.is_valid_filename(fname):
-                fileInfo = MediaInfo.parse(fname)
-                for track in fileInfo.tracks:
-                    if track.track_type == "Video" or track.track_type == "Audio":
-                        self.loaded_media = True 
-                        self.read_media(fname)
-                if not self.media_loaded:
-                    tkinter.messagebox.showinfo('Cannot load', "Cannot load %s file" % fname)
-                    self.ask_media()
-            else :
-                tkinter.messagebox.showinfo('Cannot load', "File doesn't exist %s file" % fname)
-                self.ask_media()
-
-        self.info.code_load.config(state='normal')
-        self.period_display.set(self.control.default_period)
-
-
     def read_media(self, fname):
         # create a control frame
         # player mode and period not set before
@@ -227,18 +180,11 @@ class Application(tkinter.Tk):
         self.control.grid(row=1, column=0, sticky=U.sticky_all)
         
         self.media_file.set(fname)
+        #### leocomment self.media_loaded forcément à True car ask_media verifie 
 
-        self.media_loaded = True
-        self.configure_interface()
+        """ self.media_loaded = True
+        self.configure_interface() """
     
-    def ask_data(self):
-        # raise NotImplementedError()
-        fname = tkinter.filedialog.askopenfilename(filetypes=[('Codix data file', '*.cdx')],
-                                                   initialdir=os.path.expanduser('~'))
-        if U.is_valid_filename(fname): 
-            self.read_data(fname)
-        else:
-            tkinter.messagebox.showinfo('Cannot load', 'Cannot load %s file' % fname)
 
     def read_data(self, fname):
         with open(fname, 'r') as ff:
@@ -259,7 +205,6 @@ class Application(tkinter.Tk):
             tkinter.messagebox.showinfo('Problem with media file', 
                                         'Cannot find media file')
         self.data_loaded = True
-        self.configure_interface()
         self.start_processing()
 
     def save(self):
@@ -289,30 +234,7 @@ class Application(tkinter.Tk):
         else:
             self.save()
     
-    def configure_interface(self):
-
-        if self.code_loaded:
-            self.info.code_load.config(state=tkinter.DISABLED)
-            print('media: ', self.media_loaded)
-            if not self.media_loaded:
-                self.info.media_load.config(state=tkinter.NORMAL)
-            else:
-                self.info.data_load.config(state=tkinter.DISABLED)
-
-                self.control.play_but.config(state=tkinter.NORMAL)
-                self.control.back_but.config(state=tkinter.NORMAL)
-                self.control.forward_but.config(state=tkinter.NORMAL)
-                self.control.period_ent.config(state=tkinter.DISABLED)
-
-        if self.media_loaded:
-            self.info.media_load.config(state=tkinter.DISABLED)
-            self.info.code_load.config(state=tkinter.DISABLED)
-            self.info.data_load.config(state=tkinter.DISABLED)
-
-        if self.data_loaded:
-            self.info.data_load.config(state=tkinter.DISABLED)
-            self.info.code_load.config(state=tkinter.DISABLED)
-            self.info.media_load.config(state=tkinter.DISABLED)
+    
 
 # Coding framework related functions
 #-----------------------------------
@@ -326,8 +248,6 @@ class Application(tkinter.Tk):
         """
         observer = self.framework.spec_frame.person.get()
         while observer == '' or observer is None :
-            #tkinter.messagebox.showinfo('Please identify', 
-                                  #'Please identify yourself')
             name = tkinter.simpledialog.askstring('Please identify', 'Please identify yourself')
             observer = name
             self.framework.spec_frame.person.set(name)
