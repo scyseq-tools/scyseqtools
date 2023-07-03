@@ -8,7 +8,6 @@ import utils as U
 from pathlib import Path
 import tkinter.font
 from tkinter.colorchooser import askcolor
-from pymediainfo import MediaInfo
 
 bd = 2 # borderwidth
 info_bg = 'yellow' # information background
@@ -84,28 +83,36 @@ class InfoFrame(tkinter.LabelFrame):
         """
         self.media_load.config(state='disabled')
         fname = "/home/leo/Bureau/leo_dev/video/164360 (720p).mp4"
-        if os.path.exists(fname):
-            fileInfo = MediaInfo.parse(fname)
-            for track in fileInfo.tracks:
-                if track.track_type == "Video" or track.track_type == "Audio":
+#        if os.path.exists(fname):
+#            fileInfo = MediaInfo.parse(fname)
+#            for track in fileInfo.tracks:
+#                if track.track_type == "Video" or track.track_type == "Audio":
+#                    self.loaded_media = True 
+#                    self.application.read_media(fname)
+        if os.path.exists(fname) and U.is_media_file(fname):
+            self.loaded_media = True 
+            self.application.read_media(fname)
+        else:
+            is_valid = False
+            while not is_valid:
+                fname = tkinter.filedialog.askopenfilename(
+                                    initialdir=os.path.expanduser('~'))
+                self.loaded_media=False
+                if U.is_valid_filename(fname) and U.is_media_file(fname):
+#                    fileInfo = MediaInfo.parse(fname)
+#                    for track in fileInfo.tracks:
+#                        if track.track_type == "Video" or track.track_type == "Audio":
+                    is_valid = True
                     self.loaded_media = True 
                     self.application.read_media(fname)
-        else :
-            fname = tkinter.filedialog.askopenfilename(
-                                    initialdir=os.path.expanduser('~'))
-            self.loaded_media=False
-            if U.is_valid_filename(fname):
-                fileInfo = MediaInfo.parse(fname)
-                for track in fileInfo.tracks:
-                    if track.track_type == "Video" or track.track_type == "Audio":
-                        self.loaded_media = True 
-                        self.application.read_media(fname)
-                if not self.media_loaded:
+                else:
+
+#                    if not self.media_loaded:
                     tkinter.messagebox.showinfo('Cannot load', "Cannot load %s file" % fname)
                     self.ask_media()
-            else :
-                tkinter.messagebox.showinfo('Cannot load', "File doesn't exist %s file" % fname)
-                self.ask_media()
+#                else :
+#                    tkinter.messagebox.showinfo('Cannot load', "File doesn't exist %s file" % fname)
+#                    self.ask_media()
 
         self.code_load.config(state='normal')
         

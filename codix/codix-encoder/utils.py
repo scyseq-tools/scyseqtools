@@ -1,9 +1,21 @@
 # import ib
 import tkinter
+from pymediainfo import MediaInfo
 
 sticky_all = (tkinter.W, tkinter.N, tkinter.S, tkinter.E)
 
 # sec_abbrev = ('seconde', 'secondes', 'sec.', 'sec', 'second', 'seconds', 's', 's.')
+
+def is_media_file(fname):
+    fileInfo = MediaInfo.parse(fname)
+    track_types = [track.track_type for track in fileInfo.tracks]
+    if "Video" in track_types or "Audio" in track_types:
+        return True
+    else:
+        return False
+#    for track in fileInfo.tracks:
+#        if track.track_type == "Video" or track.track_type == "Audio":
+
 
 def inverse_dict(d):
     rd = {}
