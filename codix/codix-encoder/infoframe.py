@@ -1,4 +1,5 @@
 import os
+import json
 import tkinter
 import tkinter.filedialog
 import tkinter.messagebox
@@ -8,6 +9,7 @@ import utils as U
 from pathlib import Path
 import tkinter.font
 from tkinter.colorchooser import askcolor
+from playercontrol import PlayerControl
 
 bd = 2 # borderwidth
 info_bg = 'yellow' # information background
@@ -20,7 +22,7 @@ class InfoFrame(tkinter.LabelFrame):
 
     def __init__(self, parent, states=[None, None, None]):
         tkinter.LabelFrame.__init__(self, parent)
-        self. application = parent
+        self.application = parent
 
         self.configure(background=info_bg, 
                        borderwidth=bd,
@@ -117,32 +119,66 @@ class InfoFrame(tkinter.LabelFrame):
         
         # FIXME: make this more systematic...
         self.application.period_display.set(self.application.control.default_period)
-        
+         
     def ask_code(self):
             """Loading files defining a coding framework.
             Now only supports the new .jod (json) files
             """
+            if self.application.control.state == 'c_playing' or self.application.control.state == 's_playing':
+                self.application.control.dopause()
+            
             fname = "test2.jod"
             if os.path.exists(fname):
-                self.application.read_code(fname)
+                self.read_code(fname)
             else :
                 fname = tkinter.filedialog.askopenfilename(filetypes=[('New code', '*.jod')],
                                                     initialdir=os.path.expanduser('~'))
                 if U.is_valid_filename(fname, ext='.jod'):
-                    self.application.read_code(fname)
+                    self.read_code(fname)
                 else:
                     tkinter.messagebox.showinfo('Cannot load', 'Cannot load %s file' % fname)
             self.code_load.config(state='disabled')
+
+    def read_code(self, fname):
+            with open(fname, 'r') as ff:
+                encoding = json.load(ff)
+
+            self.application.container['code'] = encoding
+            self.application.parse_code(encoding)
+            self.application.code_file.set(fname)
+            #### leocomment self.code_loaded forcément à True car ask_code verifie 
+            """ self.code_loaded = True
+            self.configure_interface() """
 
     def ask_data(self):
             # raise NotImplementedError()
             fname = tkinter.filedialog.askopenfilename(filetypes=[('Codix data file', '*.cdx')],
                                                     initialdir=os.path.expanduser('~'))
             if U.is_valid_filename(fname): 
-                self.application.read_data(fname)
+                self.read_data(fname)
             else:
                 tkinter.messagebox.showinfo('Cannot load', 'Cannot load %s file' % fname)
 
+    def read_data(self, fname):
+            with open(fname, 'r') as ff:
+                data = json.load(ff)
+            self.application.data_file.set(fname)
+            self.application.code_file.set('Retrieved from data file')
+            self.application.container.update(data)
+            self.application.parse_code(self.container['code'])
+            self.code_loaded = True
+            print(self.application.container)
+
+            # Quickly deals with non existent file
+            # First: load media
+            mfile = Path(self.application.container['media'])
+            if mfile.is_file():
+                self.application.read_media(self.application.container['media'])
+            else:
+                tkinter.messagebox.showinfo('Problem with media file', 
+                                            'Cannot find media file')
+            self.data_loaded = True
+            self.application.start_processing()
 
     def change_color(self, event):
         colortuple = askcolor()

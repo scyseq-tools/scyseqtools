@@ -1,6 +1,8 @@
 import tkinter
+import tkinter.simpledialog
 from datetime import datetime
 from tkinter.colorchooser import askcolor
+
 
 import utils as U
 
@@ -29,7 +31,7 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         self.coding_frame = CodingFrame(self, encoding=encoding)
         self.coding_frame.grid(column=0, columnspan=3, sticky=U.sticky_all)
-        self.disable_codes()
+        self.config_processing_buttons('disabled')
         self.bind('<Button-3>', self.change_color)
 
     def change_color(self, event):
@@ -37,18 +39,14 @@ class FrameworkFrame(tkinter.LabelFrame):
         # print colortuple
         self.configure(background=colortuple[1]) 
 
-    def disable_codes(self):
-        self.coding_frame.record_but.configure(state=tkinter.DISABLED)
-        self.coding_frame.comment_ent.configure(state=tkinter.DISABLED)
+
+    def config_processing_buttons(self,st):
+        self.coding_frame.record_but.configure(state=st)
+        self.coding_frame.comment_ent.configure(state=st)
         for panel in self.coding_frame.panels:
             for k, v in panel.coding.items():
                 for button in v['buttons']:
-                    #### leocomment
-                    button.configure(state=tkinter.DISABLED)
-
-    def enable_codes(self):
-        self.coding_frame.record_but.configure(state=tkinter.NORMAL)
-        self.coding_frame.comment_ent.configure(state=tkinter.NORMAL)
+                    button.configure(state=st)
 
 ## FIXME: what is this try/except for?
 #        try:
@@ -61,15 +59,11 @@ class FrameworkFrame(tkinter.LabelFrame):
                 for button in v['buttons']:
                     button.configure(state=tkinter.NORMAL)
 
-    def disable_specifications(self):
-        self.spec_frame.person_ent.configure(state=tkinter.DISABLED)
-        self.spec_frame.comment_ent.configure(state=tkinter.DISABLED)
-        self.spec_frame.start_but.configure(state=tkinter.DISABLED)
+    def config_specifications(self,st):
+        self.spec_frame.person_ent.configure(state=st)
+        self.spec_frame.comment_ent.configure(state=st)
+        self.spec_frame.start_but.configure(state=st)
 
-    def enable_specifications(self):
-        self.spec_frame.person_ent.configure(state=tkinter.NORMAL)
-        self.spec_frame.comment_ent.configure(state=tkinter.NORMAL)
-        self.spec_frame.start_but.configure(state=tkinter.NORMAL)
 
 class CodingFrame(tkinter.LabelFrame):
 
@@ -223,9 +217,16 @@ class SpecificationFrame(tkinter.LabelFrame):
         self.start_but.grid(row=0, column=5, rowspan=4, sticky=U.sticky_all)
 
     
+
+
+
+
 # FIXME: is it useful to pause / stop recording?
 #        stop_but = Tkinter.Button(self, text='Stop\nrecording',
 #                                                  command=application.stop_record)
 #        stop_but.grid(row=0, column=6, rowspan=1, sticky=U.sticky_all)
+
+
+    
 
 

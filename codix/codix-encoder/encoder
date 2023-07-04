@@ -29,6 +29,9 @@ from infoframe import InfoFrame
 from playercontrol import PlayerControl
 from applicationmenu import ApplicationMenu
 from codingframe import FrameworkFrame
+from codingframe import CodingFrame
+from codingframe import SpecificationFrame
+from codingframe import Panel
 from newcode import NewCode
 
 __version__ = '0.3.0'
@@ -135,16 +138,7 @@ class Application(tkinter.Tk):
 # Information frame related functions
 #------------------------------------
 
-    def read_code(self, fname):
-        with open(fname, 'r') as ff:
-            encoding = json.load(ff)
-
-        self.container['code'] = encoding
-        self.parse_code(encoding)
-        self.code_file.set(fname)
-        #### leocomment self.code_loaded forcément à True car ask_code verifie 
-        """ self.code_loaded = True
-        self.configure_interface() """
+    
 
     def parse_code(self, encoding):
 
@@ -162,17 +156,17 @@ class Application(tkinter.Tk):
             self.container['data'].update({site: data_site})
             codeframe[site] = code_site
 
-        self.framework = FrameworkFrame(application=self, encoding=codeframe)
+        self.framework = FrameworkFrame(parent=self, encoding=codeframe)
         self.framework.grid(row=2, column=0, sticky=U.sticky_all)
 
     def read_media(self, fname):
         # create a control frame
         # player mode and period not set before
         # FIXME: is it useful?
-        if self.player_mode.get() == '': # free viewing
-            self.player_mode.set('continuous')
-        if self.period_display.get() == '': # free viewing
-            self.period_display.set('-')
+        #if self.player_mode.get() == '': # free viewing
+        #   self.player_mode.set('continuous')
+        #if self.period_display.get() == '': # free viewing
+        #    self.period_display.set('-')
         # END FIXME
 
         self.control = PlayerControl(application=self, file_name = fname)
@@ -182,28 +176,10 @@ class Application(tkinter.Tk):
         #### leocomment self.media_loaded forcément à True car ask_media verifie 
 
         """ self.media_loaded = True
-        self.configure_interface() """
+        self.configure_interface() """    
     
-    def read_data(self, fname):
-        with open(fname, 'r') as ff:
-            data = json.load(ff)
-        self.data_file.set(fname)
-        self.code_file.set('Retrieved from data file')
-        self.container.update(data)
-        self.parse_code(self.container['code'])
-        self.code_loaded = True
-        print(self.container)
-
-        # Quickly deals with non existent file
-        # First: load media
-        mfile = Path(self.container['media'])
-        if mfile.is_file():
-            self.read_media(self.container['media'])
-        else:
-            tkinter.messagebox.showinfo('Problem with media file', 
-                                        'Cannot find media file')
-        self.data_loaded = True
-        self.start_processing()
+    
+    
 
     def save(self):
         filename = self.data_file.get()
@@ -266,7 +242,7 @@ class Application(tkinter.Tk):
             self.container['media'] = self.media_file.get()
 
             self.get_mode_and_period(self.container['code'])
-            self.framework.disable_specifications()
+            self.framework.config_specifications('disabled')
 
             mode = self.player_mode.get()
             if mode == 'regular': # regular sampling
@@ -290,12 +266,12 @@ class Application(tkinter.Tk):
     #                    if self.control.player.get_state() == 4: # 4: Paused
     #                        self.current_step += 1
     #                        print("current step: ", self.current_step)
-    #                        self.framework.enable_codes()
+    #                        self.config_processing_buttons('normal')
     #                        #    print(self.container)
             else:
                 raise NotImplementedError('Continuous coding is not implemented')
             
-            self.config_processing_buttons('normal')
+            self.framework.config_processing_buttons('normal')
 
 #
 #                # self.current_step = 0
@@ -312,7 +288,7 @@ class Application(tkinter.Tk):
 ##            self.control.forward_but.configure(state=tkinter.NORMAL)
 ##            self.control.back_but.configure(state=tkinter.NORMAL)
 ##
-##            self.framework.disable_specifications()
+##            FrameworkFrame.config_specifications('disabled')
 ##            self.info.code_load.configure(state=tkinter.DISABLED)
 ##            self.info.media_load.configure(state=tkinter.DISABLED)
 ##   #         self.menu.fileMenu.entryconfig(8, state=Tkinter.NORMAL) # Save
@@ -352,7 +328,7 @@ class Application(tkinter.Tk):
 ##            self.control.forward_but.configure(state=tkinter.NORMAL)
 ##            self.control.back_but.configure(state=tkinter.NORMAL)
 ##
-##            self.framework.disable_specifications()
+##            FrameworkFrame.config_specifications('disabled')
 ##            self.info.code_load.configure(state=tkinter.DISABLED)
 ##            self.info.media_load.configure(state=tkinter.DISABLED)
 ##   #         self.menu.fileMenu.entryconfig(8, state=Tkinter.NORMAL) # Save
@@ -360,11 +336,11 @@ class Application(tkinter.Tk):
 ##            self.info.data_save.configure(state=tkinter.NORMAL)
 #            while self.control.player.get_state() != 5: # 5: Stopped
 #               if self.control.player.get_state() == 4: # 4: Paused
-#                   self.framework.enable_codes()
+#                   self.framework.config_processing_buttons('normal')
 #                   print(self.container)
 
     def display_codes(self, step):
-        # self.framework.enable_codes()
+        # self.framework.config_processing_buttons('normal')
         panellist = self.framework.coding_frame.panels
         for pan in panellist:
             # pan.name = recording site
@@ -500,11 +476,7 @@ class Application(tkinter.Tk):
     def notimplemented(self):
         tkinter.messagebox.showinfo('Not implemented', 'Not implemented')
 
-    def config_processing_buttons(self,st):
-            for panel in self.framework.coding_frame.panels:
-                for k, v in panel.coding.items():
-                    for button in v['buttons']:
-                        button.configure(state=st)
+    
 
 if __name__ == "__main__":
     app = Application()
