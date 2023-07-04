@@ -135,7 +135,6 @@ class Application(tkinter.Tk):
 # Information frame related functions
 #------------------------------------
 
-
     def read_code(self, fname):
         with open(fname, 'r') as ff:
             encoding = json.load(ff)
@@ -262,6 +261,8 @@ class Application(tkinter.Tk):
             self.max_step = len(self.container['times'])
             
         else: # starts a new session
+# lpcomment: les boutons doivent être désactivés au début. Ils ne sont activés
+# qu'à la pause après la première période de "play".
             self.container['media'] = self.media_file.get()
 
             self.get_mode_and_period(self.container['code'])
@@ -504,11 +505,6 @@ class Application(tkinter.Tk):
                 for k, v in panel.coding.items():
                     for button in v['buttons']:
                         button.configure(state=st)
-            
-
-
-
-
 
 if __name__ == "__main__":
     app = Application()

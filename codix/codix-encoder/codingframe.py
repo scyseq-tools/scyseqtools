@@ -13,8 +13,8 @@ panel_max = 5
 
 class FrameworkFrame(tkinter.LabelFrame):
 
-    def __init__(self, application, encoding):
-        tkinter.LabelFrame.__init__(self, application)
+    def __init__(self, parent, encoding):
+        tkinter.LabelFrame.__init__(self, parent)
         self.configure(background=coding_bg, 
                        borderwidth=bd, 
                        padx=20, pady=20, 
@@ -22,7 +22,7 @@ class FrameworkFrame(tkinter.LabelFrame):
                        text='Coding framework: ', font=('bold',))
         self.grid(columnspan=2,
                   row=1)
-        self.application = application
+        self.application = parent
 
         self.spec_frame = SpecificationFrame(self)  
         self.spec_frame.grid(sticky=U.sticky_all)
