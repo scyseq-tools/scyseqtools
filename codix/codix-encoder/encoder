@@ -185,7 +185,6 @@ class Application(tkinter.Tk):
         """ self.media_loaded = True
         self.configure_interface() """
     
-
     def read_data(self, fname):
         with open(fname, 'r') as ff:
             data = json.load(ff)
