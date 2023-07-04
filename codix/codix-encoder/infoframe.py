@@ -89,7 +89,7 @@ class InfoFrame(tkinter.LabelFrame):
 #                if track.track_type == "Video" or track.track_type == "Audio":
 #                    self.loaded_media = True 
 #                    self.application.read_media(fname)
-        if os.path.exists(fname) and U.is_media_file(fname):
+        if os.path.exists(fname) and U.is_valid_media(fname):
             self.loaded_media = True 
             self.application.read_media(fname)
         else:
@@ -98,7 +98,7 @@ class InfoFrame(tkinter.LabelFrame):
                 fname = tkinter.filedialog.askopenfilename(
                                     initialdir=os.path.expanduser('~'))
                 self.loaded_media=False
-                if U.is_valid_filename(fname) and U.is_media_file(fname):
+                if U.is_valid_media(fname):
 #                    fileInfo = MediaInfo.parse(fname)
 #                    for track in fileInfo.tracks:
 #                        if track.track_type == "Video" or track.track_type == "Audio":
@@ -106,7 +106,6 @@ class InfoFrame(tkinter.LabelFrame):
                     self.loaded_media = True 
                     self.application.read_media(fname)
                 else:
-
 #                    if not self.media_loaded:
                     tkinter.messagebox.showinfo('Cannot load', "Cannot load %s file" % fname)
                     self.ask_media()
