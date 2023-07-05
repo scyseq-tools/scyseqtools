@@ -65,11 +65,11 @@ class Application(tkinter.Tk):
 # They are not needed for player_control which have its own properties
 #        self.player_mode = tkinter.StringVar(value='')
 #        self.period_display = tkinter.StringVar(value='')
+#        self.time_display = tkinter.StringVar(value='')
         self.current_time = None # in ms
         self.current_step = None
         self.max_step = None
         self.max_time = None # in ms. will be overwritten when media is read
-        self.time_display = tkinter.StringVar(value='')
 
 # FIXME: what is the difference between: is_recording and is_set_start_time?
 #        self.is_recording = False
