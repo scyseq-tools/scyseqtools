@@ -26,11 +26,13 @@ DTIME = 10000 # ms forward and back time period for continuous play
 
 class PlayerControl(tkinter.LabelFrame):
     
-    def __init__(self, application, file_name):
+    def __init__(self, parent, file_name):
         """
         Creates player control buttons
         """
-        tkinter.LabelFrame.__init__(self, application)
+        self.application = parent
+
+        tkinter.LabelFrame.__init__(self, parent)
         self.configure(background=ctrl_bg, borderwidth=bd, padx=20, pady=20,
                        relief=relief, text='Control: ', font=('bold',))
         self.grid(column=1, row=0)
@@ -54,13 +56,14 @@ class PlayerControl(tkinter.LabelFrame):
                                               onvalue='regular', offvalue='continuous',
                                               background=ctrl_bg)
         self.mode_check.grid(column=0, row=2, sticky=tkinter.W)
+        # FIXME: is it useful?
         # self.mode_check.bind('<Button>', self.change_mode)
 
         self.period_ent = tkinter.Entry(self, width=4,
                                       # textvariable=application.period_display)
                                       textvariable=self._period)
         self.period_ent.grid(column=1, row=2, sticky=tkinter.W)
-        # FIXME: 
+        # FIXME:  is it useful?
         # self.period_ent.bind('<Return>', self.kb_set_period)
         
         self.period_lab = tkinter.Label(self, text=' sec.', background=ctrl_bg)
@@ -73,47 +76,47 @@ class PlayerControl(tkinter.LabelFrame):
                                       textvariable=self._time)
         self.time_ent.grid(row=1, column=7)
         # FIXME
-        # self.time_ent.bind('<Return>', self.kb_set_time)
+        self.time_ent.bind('<Return>', self.kb_set_time)
 
         self.unit_lab = tkinter.Label(self, text='sec.', background=ctrl_bg)
         self.unit_lab.grid(row=1, column=8)
         
         self.bind('<Button-3>', self.change_color)
 
-        # FIXME: insert the test of the media which is done in `encoder`?
+        # FIXME: insert the test of the media which is done in `encoder` = DONE
         # player instance 
         args = ['--no-xlib']
         instance = vlc.Instance(args)
         self.player = instance.media_player_new()
 
         self.player.set_mrl(file_name)
-        # This is a hack for time initialization.
-        # reads 1s and then goes back to 0 
-        print(self.player.play())
+        # This is a hack for time initialization: reads 1s and then goes back to 0 
+        self.player.play()
         time.sleep(1) # 0.1 is too short I loose sound!?
-        self.max_time = self.player.get_length() # a long in ms
         self.player.set_pause(do_pause=1)
+        self._state = "paused"
+        self.max_time = self.player.get_length() # a long in ms
         # self.set_time(0, 'Initial time')
         self.time = 0 # 'Initial time')
         if self.max_time == -1:
             tkinter.messagebox.showinfo('Cannot get max time', 
                                   'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
-        self._state = "paused"
-        self.default_period = 5
         
+        # self.default_period = 5
         
     def step_play(self, dt):
         self.play_but.update()
-        print('Start step play: ', self._root().current_time)
+        # print('Start step play: ', self._root().current_time)
+        print('Start step play at: ', self.time)
         self.state = "s_playing"
         tt = Timer(dt, self.dopause)
         self.player.play()
         tt.start()
-
     
     def cont_play(self):
-        print('Start play: ', self._root().current_time)
+        # print('Start play: ', self._root().current_time)
+        print('Start play: ', self.time)
         self.state = "c_playing"
         self.player.play()
 
@@ -135,11 +138,13 @@ class PlayerControl(tkinter.LabelFrame):
                 
                 while self.state != 'paused':
                     pass # wait for state == 'paused'
-                print('End time: ', self.player.get_time())
+                print('End time: ', self.time)
                 ftime = itime + int(self.period*1000)
                 # self.set_time(ftime, 'Synchronized time')
                 self.time = ftime #, 'Synchronized time')
+
                 # FIXME: check how we deal with `step`...
+                # FIXME: do not use _root()...
                 if self._root().current_step is not None:
                     self._root().current_step += 1
                 print('End PP current step: ', self._root().current_step)
@@ -163,8 +168,8 @@ class PlayerControl(tkinter.LabelFrame):
         # mode = self._root().player_mode.get()
         # itime = self.player.get_time()
         itime = self.time 
-        # print('Start backward current step: ', self._root().current_step)
-        print('Start backward current step: ', self.period)
+        # FIXME: do not use _root()...
+        print('Start backward current step: ', self._root().current_step)
         if self.mode == "continuous":
             # self.set_time(itime - DTIME)
             self.time = itime - DTIME
@@ -173,6 +178,7 @@ class PlayerControl(tkinter.LabelFrame):
         #     period = self.get_period()
             if self.period is not None:
 # FIXME: context is not processing
+                # FIXME: do not use _root()...
                 if not self._root().data_loaded:
                     # self.set_time(itime - int(self.period*1000))
                     self.time = itime - int(self.period*1000)
@@ -183,9 +189,9 @@ class PlayerControl(tkinter.LabelFrame):
                     assert(cstep is not None)
                     if cstep >= 1:
                         self.set_time(itime - int(self.period*1000))
+                        # FIXME: do not use _root()...
                         self._root().current_step -= 1
-                        # print('End backward current step: ', self._root().current_step)
-                        print('End backward current step: ', self.period)
+                        print('End backward current step: ', self._root().current_step)
                     else:
                         tkinter.messagebox.showinfo('Value Error', 
                               'Beginning of recording reached.')
@@ -206,6 +212,7 @@ class PlayerControl(tkinter.LabelFrame):
     def forward(self):
         # mode = self._root().player_mode.get()
         itime = self.player.get_time()
+        # FIXME: do not use _root()...
         print('Start forward current step: ', self._root().current_step)
         if self.mode == "continuous":
             # self.set_time(itime + DTIME)
@@ -215,11 +222,13 @@ class PlayerControl(tkinter.LabelFrame):
             # period = self.get_period()
             if self.period is not None:
 # See backward...
+                # FIXME: do not use _root()...
                 if not self._root().data_loaded:
                     # self.set_time(itime + int(self.period*1000))
                     self.time = itime + int(self.period*1000)
                 else:
 # See backward...
+                    # FIXME: do not use _root()...
                     cstep = self._root().current_step
                     mstep = self._root().max_step
                     # if cstep is not None and cstep > 1:
@@ -251,12 +260,19 @@ class PlayerControl(tkinter.LabelFrame):
     #            else:
     #                self.free_step(1, 'Free forward')
 
-#    def kb_set_time(self, tkevent):
-#        """
-#        Keyboard set time i.e. when the time is changed in the time entry
-#        """
-#        t = int(float(self._root().time_display.get())*1000) # in ms
-#        self.set_time(t, msg='keyboard set time')
+    def kb_set_time(self, tkevent):
+        """
+        Keyboard set time i.e. when the time is changed in the time entry
+        """
+        t = self._time.get()
+        try:
+            self.time = int(float(t)*1000) # in ms
+        except ValueError:
+            tkinter.messagebox.showinfo('Value Error', 
+                              'Time cannot be converted to float')
+            return None
+        # t = int(float(self._root().time_display.get())*1000) # in ms
+        # self.set_time(t, msg='keyboard set time')
 
     @property
     def time(self):
@@ -264,27 +280,23 @@ class PlayerControl(tkinter.LabelFrame):
 
     @time.setter
     def time(self, value):
-        max_time = self.max_time
+
         if value < 0:
             tkinter.messagebox.showinfo('Value Error', 
                               'cannot set time before beginning sets to zero')
-            # display 
-            self._time.set(0)
-            # Player 
-            self.player.set_time(0)
+            tval = 0
         
-        elif value > max_time:
+        elif value > self.max_time:
             tkinter.messagebox.showinfo('Value Error', 
                               'cannot set time after end sets to max time')
-            self._time.set(max_time)
-            self.player.set_time(max_time)
+            tval = self.max_time
         else:
-            self.player.set_time(value)
-#            self._root().current_time = time # time in ms
-            time_sec = '%10.3f' % (value/1000.)
-            self._time.set(time_sec)
-        print('Player time: set at %s' % \
-                  (self.player.get_time()))
+            tval = value
+
+        self.player.set_time(tval)
+        time_sec = '%10.3f' % (tval/1000.)
+        self._time.set(time_sec)
+        print('Player time setter: %s' % self.time)
 
 #    def set_time(self, time, msg=None):
 #        """Sets time

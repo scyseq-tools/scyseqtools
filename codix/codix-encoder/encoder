@@ -177,7 +177,7 @@ class Application(tkinter.Tk):
         #    self.period_display.set('-')
         # END FIXME
 
-        self.control = PlayerControl(application=self, file_name = fname)
+        self.control = PlayerControl(parent=self, file_name = fname)
         self.control.grid(row=1, column=0, sticky=U.sticky_all)
         
         self.media_file.set(fname)
