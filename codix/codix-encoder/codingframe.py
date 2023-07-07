@@ -1,6 +1,7 @@
 import json
 import tkinter
 import tkinter.simpledialog
+import tkinter.messagebox
 from datetime import datetime
 from tkinter.colorchooser import askcolor
 
@@ -98,8 +99,10 @@ class FrameworkFrame(tkinter.LabelFrame):
         - code and media file names
         - encoding specifications 
         """
+        #self.application.current_step = 0
         self.application.context = "processing"
-
+        self.spec_frame.start_but.config(state='disabled')
+        #self.config_processing_buttons('normal')
 #        self.control.config_buttons({self.control.play_but : 'disabled', 
 #                                    self.control.back_but : 'disabled',
 #                                    self.control.forward_but : 'disabled', 
@@ -261,33 +264,33 @@ class FrameworkFrame(tkinter.LabelFrame):
 #                v['var'].set('')
 #        self.framework.coding_frame.comment.set('')
 #
+
+
+                    
+
     def record_state(self):
         """
         Record a step
         """
         # local "pointers"
-
-        ##  leocomment a mettre a la fin 
-        """ self.control.config_buttons({self.control.play_but : 'normal', 
-                                        self.control.back_but : 'normal',
-                                        self.control.forward_but : 'normal', 
-                                        self.control.mode_check : 'normal',
-                                        self.control.period_ent : 'normal'})
-        self.framework.config_processing_buttons('disabled') """
+       
         
-        
-        panellist = self.framework.coding_frame.panels
-        times = self.container['times']
-        comments = self.container['comments']
+        panellist = self.coding_frame.panels
+        times = self.application.container['times']
+        comments = self.application.container['comments']
+        self.application.control.play_but.config(state='normal')
+        self.config_processing_buttons('disabled')
 
         #mode = self.player_mode.get()
-        print(" Current step " , self.current_step)
-        mode = self.control.mode
+        print(" Current step " , self.application.current_step)
+        mode = self.application.control.mode
         if mode == 'regular': # regular sampling
-            if self.current_step < 0: # Should not happen...
+            print('times', times)
+            if self.application.current_step < 0: # Should not happen...
                 tkinter.messagebox.showinfo('Before beginning', 'Before beginning')
                 return
-            elif self.current_step > len(times):
+            
+            elif self.application.current_step > len(times):
                 tkinter.messagebox.showinfo('Discontinuous coding', 
                                       'Discontinuous coding')
                 return
@@ -308,43 +311,45 @@ class FrameworkFrame(tkinter.LabelFrame):
                             # sequence.append(self.str2int[pan.name][cname][symbol])
                             tmp_symbol[pan.name][cname] = symbol
                 
-                local_comment = self.framework.coding_frame.comment.get()
-
+                local_comment = self.coding_frame.comment.get()
+                
+                # self.config_processing_buttons('disabled')
                 # Seconde passage to record the symbol
-                print('ct_step', self.current_step, 'ct_time', self.current_time, 'time', times)
+                print('ct_step', self.application.current_step, 'ct_time', self.application.current_time, 'time', times)
 
-                if self.current_step == len(times):
+                if self.application.current_step == len(times):
                     print('==')
-                    times.append(self.current_time)
+                    times.append(self.application.current_time)
                     comments.append(local_comment)
                     
                     for pan in panellist:
                         # print pan.name # rec_site
                         for cname,v in pan.coding.items():
-                            sequence = self.container['data'][pan.name][cname]['seq']
+                            sequence = self.application.container['data'][pan.name][cname]['seq']
                             tsymbol = tmp_symbol[pan.name][cname]
                             print(sequence, tsymbol)
-                            sequence.append(self.str2int[pan.name][cname][tsymbol])
+                            #sequence.append(self.str2int[pan.name][cname][tsymbol])
+                            sequence.append([pan.name][cname][tsymbol])
                         print(str(sequence))
                 else:
                     print('else')
-                    times[self.current_step] = self.current_time
-                    comments[self.current_step ] = local_comment
+                    times[self.application.current_step] = self.application.current_time
+                    comments[self.application.current_step ] = local_comment
                     for pan in panellist:
                         # print pan.name # rec_site
                         for cname,v in pan.coding.items():
-                            sequence = self.container['data'][pan.name][cname]['seq']
+                            sequence = self.application.container['data'][pan.name][cname]['seq']
                             tsymbol = tmp_symbol[pan.name][cname]
                             print(sequence, tsymbol)
-                            sequence[self.current_step ] = self.str2int[pan.name][cname][tsymbol]
-                      
+                            #sequence[self.application.current_step ] = self.str2int[pan.name][cname][tsymbol]
+                            sequence[self.application.current_step ] = [pan.name][cname][tsymbol]
             try:
-                self.display_codes(self.current_step)
+                self.application.display_codes(self.current_step)
             except IndexError:
-                self.erase_codes()
-            self.framework.disable_codes()
-            print(self.container)
-            self.save_data()
+                self.application.erase_codes()
+            self.spec_frame.disable_codes()
+            print(self.application.container)
+            self.application.save_data()
 
         else: # continuous coding
             raise NotImplementedError

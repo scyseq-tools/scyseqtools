@@ -107,6 +107,8 @@ class PlayerControl(tkinter.LabelFrame):
         tt = Timer(dt, self.dopause)
         self.player.play()
         tt.start()
+        if self.application._context == 'processing' :
+            self.application.framework.config_processing_buttons('normal')
     
     def cont_play(self):
         print('Start continuous play at: ', self.time)
@@ -118,15 +120,20 @@ class PlayerControl(tkinter.LabelFrame):
         self.state = "paused"
 
         # if self.application.is_code():
-        if self.application.state['code_loaded']:
+        if self.application.state['code_loaded'] and self.application._context != 'processing':
             self._root().framework.spec_frame.start_but.config(state='normal')
+            
+        if self.application.state['code_loaded'] and self.application._context == 'processing':
+            self.config_buttons({self.play_but :'disabled',
+                                 self.back_but : 'disabled',
+                                 self.forward_but : 'disabled'})
 
     def playpause(self):
-
         # if self.application.is_code() :
-        if self.application.state['code_loaded']:
+        if self.application.state['code_loaded'] :
             self._root().framework.spec_frame.start_but.config(state='disabled')
-        
+        #if self.application._context == 'processing' :
+        #    self.application.framework.config_processing_buttons('normal')
         if self.mode == 'regular':
             if self.period is not None :
                 itime = self.player.get_time()

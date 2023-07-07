@@ -168,6 +168,7 @@ class Application(tkinter.Tk):
     def get_mode(self):
         # return self.control._mode
         return self.control.mode
+    
 
 
     @property
