@@ -29,9 +29,6 @@ from infoframe import InfoFrame
 from playercontrol import PlayerControl
 from applicationmenu import ApplicationMenu
 from codingframe import FrameworkFrame
-#from codingframe import CodingFrame
-#from codingframe import SpecificationFrame
-#from codingframe import Panel
 from newcode import NewCode
 
 __version__ = '0.3.0'
@@ -47,25 +44,24 @@ class Application(tkinter.Tk):
         self.resizable(tkinter.TRUE, tkinter.TRUE)
         # Menu
         self.menu = ApplicationMenu(master=self)
-        self['menu'] = self.menu # why is this mandatory?
-        self.init_variables()
+        self['menu'] = self.menu
 
-    def init_variables(self):
+        # Variables
+        self.state = {'media_loaded': False,
+                       'code_loaded': False,
+                       'data_loaded': False}
 
-        # variables related to files
-        self.media_loaded = False
-        self.code_loaded = False
-        self.data_loaded = False
-        self.code_file = tkinter.StringVar()
-        self.media_file = tkinter.StringVar()
-        self.data_file = tkinter.StringVar()
-
+# lpcomment: variables attribuées au CodingFrame
+#        self.code_file = tkinter.StringVar()
+#        self.media_file = tkinter.StringVar()
+#        self.data_file = tkinter.StringVar()
         # variables related to player
 #FIXME: keep player_mode and period_display temporarily for encodingframe
 # They are not needed for player_control which have its own properties
 #        self.player_mode = tkinter.StringVar(value='')
 #        self.period_display = tkinter.StringVar(value='')
 #        self.time_display = tkinter.StringVar(value='')
+
         self.current_time = None # in ms
         self.current_step = None
         self.max_step = None
@@ -82,7 +78,6 @@ class Application(tkinter.Tk):
                           'comments': [], # sample comments
                           'data': {}} # data
         
-        # self.scenario = None
         self._context = "standard" # lpcomment: intialize to None?
 
 # Menu related functions
@@ -94,7 +89,6 @@ class Application(tkinter.Tk):
         self.newcode = NewCode(parent=self)
         self.newcode.grid(row=1, column=1, sticky=U.sticky_all)
         self.menu.disable_actions()
-        # self.scenario = 'newcode'
 
     def start_session(self):
         self.info = InfoFrame(parent=self, 
@@ -103,7 +97,6 @@ class Application(tkinter.Tk):
                                       tkinter.DISABLED)) # load data
         self.info.grid(row=1, column=1, sticky=U.sticky_all)
         self.menu.disable_actions()
-        # self.scenario = 'newsession'
 
     def retrieve_session(self):
         self.info = InfoFrame(parent=self, 
@@ -112,16 +105,6 @@ class Application(tkinter.Tk):
                                       tkinter.NORMAL))  # load data
         self.info.grid(row=1, column=1, sticky=U.sticky_all)
         self.menu.disable_actions()
-        # self.scenario = 'resumesession'
-
-#    def free_view(self):
-#        self.info = InfoFrame(parent=self, 
-#                              states=(tkinter.DISABLED, # load code
-#                                      tkinter.NORMAL, # load media
-#                                      tkinter.DISABLED))  # load data
-#        self.info.grid(row=1, column=1, sticky=U.sticky_all)
-#        self.menu.disable_actions()
-#        # self.scenario = 'freeview'
 
     def reset(self):
         """Reset the file menu and all the current variables.
@@ -138,58 +121,19 @@ class Application(tkinter.Tk):
     def aboutHandler(self):
         self.notimplemented()
 
-# Information frame related functions
-#------------------------------------
-
-    def parse_code(self, encoding):
-
-#        self.get_mode_and_period(encoding)
-        period = encoding['period']
-        if period is None:
-            mode = "continuous"
-        else:
-            mode = "regular"
-
-        sites = encoding['sites']
-        codes = encoding['codes']
-        codeframe = {}
-        for site, scodes in encoding['sites'].items():
-            data_site = {}
-            code_site = {}
-            for lcode in scodes:
-                data_site.update({lcode: {'alphabet': codes[lcode], 'seq': []}})
-                code_site.update({lcode: codes[lcode]})
-            self.container['data'].update({site: data_site})
-            codeframe[site] = code_site
-       
-        outcode = {'code': codeframe, 'player': ({'mode': mode, 'period': period})}
-
-        # self.framework = FrameworkFrame(parent=self, encoding=codeframe)
-        self.framework = FrameworkFrame(parent=self, incode=outcode)
-        self.framework.grid(row=2, column=0, sticky=U.sticky_all)
-
-    def read_media(self, fname):
-        # create a control frame
-        # player mode and period not set before
-        # FIXME: is it useful?
-        #if self.player_mode.get() == '': # free viewing
-        #   self.player_mode.set('continuous')
-        #if self.period_display.get() == '': # free viewing
-        #    self.period_display.set('-')
-        # END FIXME
-
+    def make_media_player(self, fname):
+        """
+        create a player control frame
+        """
         self.control = PlayerControl(parent=self, file_name = fname)
         self.control.grid(row=1, column=0, sticky=U.sticky_all)
-        
-        self.media_file.set(fname)
-        return True
-        #### leocomment self.media_loaded forcément à True car ask_media verifie 
 
-        """ self.media_loaded = True
-        self.configure_interface() """    
-    
-    
-    
+    def make_coding_frame(self, fname):
+        """
+        creates the coding frame
+        """
+        self.framework = FrameworkFrame(parent=self, filename=fname)
+        self.framework.grid(row=2, column=0, sticky=U.sticky_all)
 
     def save(self):
         filename = self.data_file.get()
@@ -224,8 +168,7 @@ class Application(tkinter.Tk):
     def get_mode(self):
         # return self.control._mode
         return self.control.mode
-    def is_code(self):
-        return self.info.code_loaded
+
 
     @property
     def context(self):
@@ -235,7 +178,7 @@ class Application(tkinter.Tk):
     def context(self, value):
         if value == "processing":
             self._context = "processing"
-            self.control.config_buttons({self.control.play_but : 'disabled', 
+            self.control.config_buttons({self.control.play_but : 'normal', 
                                     self.control.back_but : 'disabled',
                                     self.control.forward_but : 'disabled', 
                                     self.control.mode_check : 'disabled',

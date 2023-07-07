@@ -97,6 +97,8 @@ class PlayerControl(tkinter.LabelFrame):
             tkinter.messagebox.showinfo('Cannot get max time', 
                                   'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
+
+        self.application.state['media_loaded'] = True
         
     def step_play(self, dt):
         self.play_but.update()
@@ -114,14 +116,15 @@ class PlayerControl(tkinter.LabelFrame):
     def dopause(self):
         self.player.set_pause(do_pause=1)
         self.state = "paused"
-# lpcomment: est-ce que ce ne serait pas plutôt le codingframe qui envoie les
-        # messsages de modification des états?
-        if self.application.is_code():
+
+        # if self.application.is_code():
+        if self.application.state['code_loaded']:
             self._root().framework.spec_frame.start_but.config(state='normal')
 
     def playpause(self):
 
-        if self.application.is_code() :
+        # if self.application.is_code() :
+        if self.application.state['code_loaded']:
             self._root().framework.spec_frame.start_but.config(state='disabled')
         
         if self.mode == 'regular':
@@ -319,24 +322,24 @@ class PlayerControl(tkinter.LabelFrame):
                                  self.mode_check : 'disabled',
                                  self.period_ent : 'disabled'})
 
-        elif value == "paused" : # and context != "processing" 
+        elif value == "paused":
             self._state = "paused"
             print('State: paused')
-            self.config_buttons({self.play_but : 'normal', 
-                                 self.back_but : 'normal',
-                                 self.forward_but : 'normal', 
-                                 self.mode_check : 'normal',
-                                 self.period_ent : 'normal'})
 
-# lpcomment: when "processing" then we cannot change mode and period...
-#        elif value == "paused" and context =="is_processing" :
-#            self._state = "paused"
-#            print('State: paused')
-#            self.config_buttons({self.play_but : 'normal', 
-#                                 self.back_but : 'normal',
-#                                 self.forward_but : 'normal', 
-#                                 self.mode_check : 'disabled',
-#                                 self.period_ent : 'disabled'})
+            if self.application.context == "processing":
+# FIXME: deal with back and forward according to steps...
+                self.config_buttons({self.play_but : 'normal', 
+                                     self.back_but : 'normal',
+                                     self.forward_but : 'normal', 
+                                     self.mode_check : 'disabled',
+                                     self.period_ent : 'disabled'})
+            else:
+                self.config_buttons({self.play_but : 'normal', 
+                                     self.back_but : 'normal',
+                                     self.forward_but : 'normal', 
+                                     self.mode_check : 'normal',
+                                     self.period_ent : 'normal'})
+
     @property
     def mode(self):
         return self._mode.get()

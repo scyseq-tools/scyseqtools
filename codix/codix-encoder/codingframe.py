@@ -1,3 +1,4 @@
+import json
 import tkinter
 import tkinter.simpledialog
 from datetime import datetime
@@ -15,7 +16,12 @@ panel_max = 5
 
 class FrameworkFrame(tkinter.LabelFrame):
 
-    def __init__(self, parent, incode):
+    def __init__(self, parent, filename):
+
+        incode = self.load_code(filename)
+        encoding = incode['code']
+        player = incode['player']
+
         tkinter.LabelFrame.__init__(self, parent)
         self.configure(background=coding_bg, 
                        borderwidth=bd, 
@@ -26,10 +32,8 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         self.application = parent
 
-        encoding = incode['code']
-        player = incode['player']
         
-        # variables related to player
+        # variables related to player ***from coding file***
         self.player_mode = tkinter.StringVar(value=player['mode'])
         self.period_display = tkinter.StringVar(value=str(player['period']))
 
@@ -40,6 +44,51 @@ class FrameworkFrame(tkinter.LabelFrame):
         self.coding_frame.grid(column=0, columnspan=3, sticky=U.sticky_all)
         self.config_processing_buttons('disabled')
         self.bind('<Button-3>', self.change_color)
+
+        self.application.state['code_loaded'] = True
+
+    def load_code(self, fname):
+
+        with open(fname, 'r') as ff:
+            encoding = json.load(ff)
+
+#        self.application.container['code'] = encoding
+#        self.application.parse_code(encoding)
+#        self.application.code_file.set(fname)
+#        #### leocomment self.code_loaded forcément à True car ask_code verifie 
+#        """ self.code_loaded = True
+#        self.configure_interface() """
+
+#    def parse_code(self, encoding):
+
+#        self.get_mode_and_period(encoding)
+        period = encoding['period']
+        if period is None:
+            mode = "continuous"
+        else:
+            mode = "regular"
+
+        sites = encoding['sites']
+        codes = encoding['codes']
+        codeframe = {}
+        for site, scodes in encoding['sites'].items():
+            data_site = {}
+            code_site = {}
+            for lcode in scodes:
+                data_site.update({lcode: {'alphabet': codes[lcode], 'seq': []}})
+                code_site.update({lcode: codes[lcode]})
+            # lpcomment application related 
+            # self.container['data'].update({site: data_site})
+            codeframe[site] = code_site
+       
+        outcode = {'code': codeframe, 'player': ({'mode': mode, 'period': period})}
+
+        return outcode
+
+#        # self.framework = FrameworkFrame(parent=self, encoding=codeframe)
+#        self.framework = FrameworkFrame(parent=self, incode=outcode)
+#        self.framework.grid(row=2, column=0, sticky=U.sticky_all)
+
 
     def start_processing(self):
         """
@@ -69,7 +118,8 @@ class FrameworkFrame(tkinter.LabelFrame):
         comment = self.spec_frame.comment.get()
         self.application.container['history'].append((date, observer, comment))
 
-        if self.application.data_loaded: # resume session
+        # if self.application.data_loaded: # resume session
+        if self.application.state['data_loaded']: # resume session
             raise NotImplementedError # FIXME: resume session not implemented yet
 
 #            self.control.set_time(self.container['times'][0], msg='Start processing')
@@ -80,14 +130,15 @@ class FrameworkFrame(tkinter.LabelFrame):
 
 ## lpcomment: les boutons doivent être désactivés au début. Ils ne sont activés
 ## qu'à la pause après la première période de "play".
-            self.application.container['media'] = self.media_file.get()
+
+            # self.application.container['media'] = self.media_file.get()
 
 # Le coding frame doit imposer ses valeurs au player au moment du "start
 # processing"
 
-#            #self.get_mode_and_period(self.container['code'])
-#            self.control.mode = self.framework.player_mode.get()
-#            self.control.period = self.framework.period_display.get()
+            self.application.control.mode = self.player_mode.get()
+            self.application.control.period = self.period_display.get()
+
 #            self.framework.config_specifications('disabled')
 
 # FIXME: mode appartient au player mais pas à l'application
@@ -453,7 +504,6 @@ class SpecificationFrame(tkinter.LabelFrame):
         mode_lab.grid(column=0, row=1, sticky=tkinter.W)
 
         self.mode_ent = tkinter.Entry(self, 
-# FIXME: application.player_mode shoul be related to playercontrol
                                       textvariable=parent.player_mode, 
                                       disabledbackground=disabled_bg,
                                       state=tkinter.DISABLED,
