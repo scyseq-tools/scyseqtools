@@ -126,7 +126,6 @@ class InfoFrame(tkinter.LabelFrame):
 
         self.code_load.config(state='disabled')
 
-
     def ask_data(self):
         raise NotImplementedError()
 #            fname = tkinter.filedialog.askopenfilename(filetypes=[('Codix data file', '*.cdx')],

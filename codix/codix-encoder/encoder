@@ -51,7 +51,7 @@ class Application(tkinter.Tk):
                        'code_loaded': False,
                        'data_loaded': False}
 
-# lpcomment: variables attribuées au CodingFrame
+# lpcomment: variables attribuées a InfoFrame
 #        self.code_file = tkinter.StringVar()
 #        self.media_file = tkinter.StringVar()
 #        self.data_file = tkinter.StringVar()
