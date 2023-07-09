@@ -47,21 +47,13 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         # self.application.state['code_loaded'] = True
 
+        self.data = {}
+
     def load_code(self, fname):
 
         with open(fname, 'r') as ff:
             encoding = json.load(ff)
 
-#        self.application.container['code'] = encoding
-#        self.application.parse_code(encoding)
-#        self.application.code_file.set(fname)
-#        #### leocomment self.code_loaded forcément à True car ask_code verifie 
-#        """ self.code_loaded = True
-#        self.configure_interface() """
-
-#    def parse_code(self, encoding):
-
-#        self.get_mode_and_period(encoding)
         period = encoding['period']
         if period is None:
             mode = "continuous"
@@ -90,18 +82,11 @@ class FrameworkFrame(tkinter.LabelFrame):
         Start processing and fill the container with:
         - observer, date, comments
         - start time
-        - code and media file names
+        - code and media file names => INFOFRAME!!!
         - encoding specifications 
         """
-        self.application.context = "processing"
         self.spec_frame.start_but.config(state='disabled')
-
-        #self.config_processing_buttons('normal')
-#        self.control.config_buttons({self.control.play_but : 'disabled', 
-#                                    self.control.back_but : 'disabled',
-#                                    self.control.forward_but : 'disabled', 
-#                                    self.control.mode_check : 'disabled',
-#                                    self.control.period_ent : 'disabled'})
+        self.application.context = "processing"
         
         # ----
         # Get and set specifications before disabling entries
@@ -122,7 +107,6 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         if self.application.state['data_loaded']: # resume session
             # get times and steps lists for data
-            
             raise NotImplementedError # FIXME: resume session not implemented yet
 
 #            self.control.set_time(self.container['times'][0], msg='Start processing')
@@ -130,115 +114,20 @@ class FrameworkFrame(tkinter.LabelFrame):
 #            self.max_step = len(self.container['times'])
 #            
         else: # starts a new session
-
-## lpcomment: les boutons doivent être désactivés au début. Ils ne sont activés
-## qu'à la pause après la première période de "play".
-
-            # self.application.container['media'] = self.media_file.get()
-
             # Coding frame imposes the mode and period of player Control
             self.application.control.mode = self.player_mode.get()
             self.application.control.period = self.period_display.get()
             # Set initial time
             self.application.time_step = 0
 
-          #  self.config_specifications('disabled')
+    def init_data(self):
+        panellist = self.coding_frame.panels
+        for pan in panellist:
+            self.data[pan.name] = {}
+            for cname, v in pan.coding.items():
+                self.data[pan.name][cname] = []
 
-# FIXME: mode appartient au player mais pas à l'application
-#            mode = self.player_mode.get()
-# FIXME: change control for player?
-#            mode = self.control.mode
-#            if mode == 'regular': # regular sampling
-#                #period = self.control.get_period()
-#                period = self.control.period
-#                if period is not None:
-#                    self.freeze()
-#                print('period: ', period)
-#                assert(len(self.container['times']) == 0)
-#                self.container['times'].append(self.current_time)
-#                self.max_step = len(self.container['times']) - 1
-#                self.current_step = 0
-#                self.data_loaded = True
-#                print(self.container)
-#                self.info.data_save.configure(state=tkinter.NORMAL)
-#    #                    if self.current_step == 0 or \
-#    #                       self.control.player.get_state() == 3: # playing
-#    #                    while self.control.player.get_state() != 5: # 5: Stopped
-#    #                        print(self.control.player.get_state())
-#    #                        # time.sleep(5)
-#                if self.control._state == 'paused': 
-#                    self.current_step += 1
-#                    print("current step: ", self.current_step)
-#    #                        self.config_processing_buttons('normal')
-#            else:
-#                raise NotImplementedError('Continuous coding is not implemented')
-#            
-#            self.framework.config_processing_buttons('normal')
-#
-#                # self.current_step = 0
-#
-##            if not self.data_loaded:
-##                self.container['times'][0] = self.current_time
-##                self.is_set_start_time = True
-##                self.control.set_time(self.current_time, msg='Start processing')
-##            else:
-##                self.control.set_time(self.container['times'][0], msg='Start processing')
-##            self.set_step(0)
-##            self.is_recording = True
-##
-##            self.control.forward_but.configure(state=tkinter.NORMAL)
-##            self.control.back_but.configure(state=tkinter.NORMAL)
-##
-##            FrameworkFrame.config_specifications('disabled')
-##            self.info.code_load.configure(state=tkinter.DISABLED)
-##            self.info.media_load.configure(state=tkinter.DISABLED)
-##   #         self.menu.fileMenu.entryconfig(8, state=Tkinter.NORMAL) # Save
-##            self.menu.fileMenu.entryconfig(9, state=tkinter.NORMAL) # Save as
-##            self.info.data_save.configure(state=tkinter.NORMAL)
-##                self.period_display.set(str(period))
-##                self.dt = int(float(period) * 1000)
-##                print('dt: ', self.dt)
-##                self.control.step_check.select()
-##                self.control.pause_but.configure(state=tkinter.DISABLED)
-##                # can't go back 
-##                self.control.back_but.configure(state=tkinter.DISABLED)
-#                else:
-#                    raise NotImplementedError('Continuous coding is not implemented')
-##                self.player_mode.set('continuous')
-##                self.control.step_check.deselect()
-##                self.control.back_but.configure(state=Tkinter.DISABLED)
-##            step = self.framework.spec_frame.step.get()
-##            self.period_display.set(step)
-##           #  self.freeze_step()
-#
-#                print('period: ', period)
-#                self.data_loaded = True
-#                assert(len(self.container['times']) == 0)
-#                self.container['times'].append(self.current_time)
-#                # self.current_step = 0
-#
-##            if not self.data_loaded:
-##                self.container['times'][0] = self.current_time
-##                self.is_set_start_time = True
-##                self.control.set_time(self.current_time, msg='Start processing')
-##            else:
-##                self.control.set_time(self.container['times'][0], msg='Start processing')
-##            self.set_step(0)
-##            self.is_recording = True
-##
-##            self.control.forward_but.configure(state=tkinter.NORMAL)
-##            self.control.back_but.configure(state=tkinter.NORMAL)
-##
-##            FrameworkFrame.config_specifications('disabled')
-##            self.info.code_load.configure(state=tkinter.DISABLED)
-##            self.info.media_load.configure(state=tkinter.DISABLED)
-##   #         self.menu.fileMenu.entryconfig(8, state=Tkinter.NORMAL) # Save
-##            self.menu.fileMenu.entryconfig(9, state=tkinter.NORMAL) # Save as
-##            self.info.data_save.configure(state=tkinter.NORMAL)
-#            while self.control.player.get_state() != 5: # 5: Stopped
-#               if self.control.player.get_state() == 4: # 4: Paused
-#                   self.framework.config_processing_buttons('normal')
-#                   print(self.container)
+        print(self.data)
 
 #    def display_codes(self, step):
 #        # self.framework.config_processing_buttons('normal')
@@ -268,67 +157,60 @@ class FrameworkFrame(tkinter.LabelFrame):
         Record a step
         """
         panellist = self.coding_frame.panels
-
         comments = self.application.container['comments']
-
-        # print(" Current step ", self.application.current_step)
-        print(" Current coding step ", len(self.coding_steps))
-
         mode = self.application.control.mode
 
         if mode == 'regular': # regular sampling
-            print('Times', self.application.control.times)
-#            print('Current time index', self.application.control.current_time_idx)
-            print('Coding steps', self.coding_steps)
-
-#             # This case should be taken into account in player control
-##            if self.application.current_step < 0: # Should not happen...
-##                tkinter.messagebox.showinfo('Before beginning', 'Before beginning')
-##                return
-#            
-##            elif self.application.current_step > len(times):
-##                tkinter.messagebox.showinfo('Discontinuous coding', 
-##                                      'Discontinuous coding')
-##                return
-##            else:
-
-            # First passage for checking presence of all symbols
-            # tmp_symbol = {}
+            # First passage for checking presence of all symbols
             tmp_symbols = []
             for pan in panellist:
-                # tmp_symbol[pan.name] = {}
                 # print pan.name # rec_site
                 for cname, v in pan.coding.items():
-                # k: code_name
-                    # symbol = v['var'].get()
                     tmp_symbols.append(v['var'].get())
 
             if not all([s != '' for s in tmp_symbols]): 
                 tkinter.messagebox.showinfo('Code missing', 'A code is missing')
                 return
-#                    # sequence = self.container['data'][pan.name][cname]['seq']
-#                    if symbol == '':
-#                        tkinter.messagebox.showinfo('Code missing', 'A code is missing')
-#                        return
-#                    else:
-#                        # sequence.append(self.str2int[pan.name][cname][symbol])
-#                        tmp_symbol[pan.name][cname] = symbol
             
-            
-            # self.config_processing_buttons('disabled')
+            self.config_processing_buttons('disabled')
 
             # Second passage to record the symbols
+#            panellist = self.coding_frame.panels
+#            for pan in panellist:
+#                self.data[pan.name] = {}
+#                for cname, v in pan.coding.items():
+#                    self.data[pan.name][cname] = []
 
-            # print('ct_step', self.application.current_step, 'ct_time', self.application.current_time, 'time', times)
-            # if self.application.current_step == len(times):
-            #    print('==')
-            # times.append(self.application.current_time)
+            lseq = [self.data[site.name][code] for site in panellist 
+                                               for code in site.coding.keys()]
+            assert (all([len(s) == len(lseq[0]) for s in lseq]))
+
+            coding_length = len(lseq[0])
+            time_step = self.application.time_step
+
+            print('coding_length: ', coding_length)
+            print('Time length: ', self.application.max_step)
+            print('Time step: ', time_step)
+
+            if coding_length == self.application.max_step - 2:
+                # Append new symbol
+                for pan in panellist:
+                    for cname in pan.coding.keys():
+                        self.data[pan.name][cname].append(coding_length) # FIXME
+            else:
+                # Replace previous symbols
+                for pan in panellist:
+                    for cname in pan.coding.keys():
+                        self.data[pan.name][cname][time_step-1] = "m" # FIXME
+            print(self.data)
+
             local_comment = self.coding_frame.comment.get()
             comments.append(local_comment)
-            sequence = []
-
-            print('RECORD THE DATA...')
-            self.application.time_step = 1
+            self.application.context = 'processing'
+#            sequence = []
+#
+#            print('RECORD THE DATA...')
+#            self.application.time_step = 1
             
 #            for pan in panellist:
 #                # print pan.name # rec_site

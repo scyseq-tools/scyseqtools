@@ -98,7 +98,6 @@ class PlayerControl(tkinter.LabelFrame):
                                   'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
 
-#        self.application.state['media_loaded'] = True
 
         self.times = []
         
@@ -119,14 +118,16 @@ class PlayerControl(tkinter.LabelFrame):
         self.player.set_pause(do_pause=1)
         self.state = "paused"
 
+# FIXME: maybe should be in state.setter ^^^
         # if self.application.is_code():
-        if self.application.state['code_loaded'] and self.application._context != 'processing':
+        if self.application.state['code_loaded'] and self.application.context != 'processing':
             self._root().framework.spec_frame.start_but.config(state='normal')
             
-        if self.application.state['code_loaded'] and self.application._context == 'processing':
+        if self.application.state['code_loaded'] and self.application.context == 'processing':
             self.config_buttons({self.play_but :'disabled',
                                  self.back_but : 'disabled',
                                  self.forward_but : 'disabled'})
+# ^^^ Check with context and so on...
 
     def playpause(self):
 
@@ -143,7 +144,7 @@ class PlayerControl(tkinter.LabelFrame):
                 self.time = ftime #, 'Synchronized time')
 
                 if self.application.context == "processing":
-                    self.application.time_step = 1
+                    self.application.time_step = '1p'
 
                     print('End PP time step: ', self.application.time_step)
             else:
@@ -156,7 +157,6 @@ class PlayerControl(tkinter.LabelFrame):
 
             elif self.state == "paused":
                 self.cont_play()           
-            
             else:
                 raise ValueError(f'Unknown player state ' + self.state)
         else:
@@ -179,15 +179,13 @@ class PlayerControl(tkinter.LabelFrame):
             # FIXME: no processing context taken into account.
 
         elif self.mode == 'regular':
-
             if self.period is not None:
-                if self.application.context != "processing":
-                    self.time = itime + ds * int(self.period * 1000)
-                else:
+                if self.application.context == "processing":
                     self.application.time_step = ds
+                else:
+                    self.time = itime + ds * int(self.period * 1000)
         else:
             raise ValueError(f'Unknown player mode {self.mode}') 
-
 
     def kb_set_time(self, tkevent):
         """
@@ -311,7 +309,6 @@ class PlayerControl(tkinter.LabelFrame):
     @period.setter
     def period(self, value):
         self._period.set(value)
-
 
     def config_buttons(self, dico):
         for b, s in dico.items():
