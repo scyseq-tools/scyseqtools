@@ -118,7 +118,6 @@ class PlayerControl(tkinter.LabelFrame):
         self.state = "paused"
 
 # FIXME: maybe should be in state.setter ^^^
-        # if self.application.is_code():
         if self.application.state['code_loaded'] and self.application.context != 'processing':
             self._root().framework.spec_frame.start_but.config(state='normal')
             

@@ -81,8 +81,8 @@ class InfoFrame(tkinter.LabelFrame):
     def ask_media(self):
         """Load media file
         """
-        # fname = "/home/leo/Bureau/leo_dev/video/164360 (720p).mp4"
-        fname = "/home/zarpe/Documents/videos_synchrony/vidéosynchrony/208_S2.MPG"  
+        fname = "/home/leo/Bureau/leo_dev/video/164360 (720p).mp4"
+        #fname = "/home/zarpe/Documents/videos_synchrony/vidéosynchrony/208_S2.MPG"  
         if os.path.exists(fname) and U.is_valid_media(fname):
             self.media_file.set(fname)
             self.application.make_media_player(fname)

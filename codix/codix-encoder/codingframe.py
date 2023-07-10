@@ -83,9 +83,9 @@ class FrameworkFrame(tkinter.LabelFrame):
         - code and media file names => INFOFRAME!!!
         - encoding specifications 
         """
+        
         self.spec_frame.start_but.config(state='disabled')
         self.application.context = "initial"
-        
         # ----
         # Get and set specifications before disabling entries
         observer = self.spec_frame.person.get()
