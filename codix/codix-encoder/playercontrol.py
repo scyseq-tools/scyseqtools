@@ -98,11 +98,10 @@ class PlayerControl(tkinter.LabelFrame):
                                   'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
 
-
         self.times = []
         
     def step_play(self, dt):
-        self.play_but.update()
+        self.play_but.update() # useful?
         print('Start step play at: ', self.time)
         self.state = "s_playing"
         tt = Timer(dt, self.dopause)
@@ -267,8 +266,8 @@ class PlayerControl(tkinter.LabelFrame):
             self._state = "paused"
             print('State: paused')
 
+# FIXME: Not sure processing is useful -> done in application.context setter?
             if self.application.context == "processing":
-# FIXME: deal with back and forward according to steps...
                 self.config_buttons({self.play_but : 'normal', 
                                      self.back_but : 'normal',
                                      self.forward_but : 'normal', 
@@ -316,8 +315,6 @@ class PlayerControl(tkinter.LabelFrame):
             b.config(state=s)
             b.update()
                 
-    #        print('End change mode: ', mode)
-
     #        # FIXME: does the first test useful. Tackle this more elegantly?
     #        if self._root().data_loaded:
     #            pass

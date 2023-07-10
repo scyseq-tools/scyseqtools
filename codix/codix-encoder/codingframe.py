@@ -33,7 +33,7 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         self.application = parent
         
-        # variables related to player ***from coding file***
+        # variables related to player BUT ***taken from coding file***
         self.player_mode = tkinter.StringVar(value=player['mode'])
         self.period_display = tkinter.StringVar(value=str(player['period']))
 
@@ -44,8 +44,6 @@ class FrameworkFrame(tkinter.LabelFrame):
         self.coding_frame.grid(column=0, columnspan=3, sticky=U.sticky_all)
         self.config_processing_buttons('disabled')
         self.bind('<Button-3>', self.change_color)
-
-        # self.application.state['code_loaded'] = True
 
         self.data = {}
 
@@ -86,7 +84,7 @@ class FrameworkFrame(tkinter.LabelFrame):
         - encoding specifications 
         """
         self.spec_frame.start_but.config(state='disabled')
-        self.application.context = "processing"
+        self.application.context = "initial"
         
         # ----
         # Get and set specifications before disabling entries
@@ -118,6 +116,7 @@ class FrameworkFrame(tkinter.LabelFrame):
             self.application.control.mode = self.player_mode.get()
             self.application.control.period = self.period_display.get()
             # Set initial time
+            self.init_data()
             self.application.time_step = 0
 
     def init_data(self):
@@ -129,20 +128,36 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         print(self.data)
 
-#    def display_codes(self, step):
-#        # self.framework.config_processing_buttons('normal')
-#        panellist = self.framework.coding_frame.panels
-#        for pan in panellist:
-#            # pan.name = recording site
-#            for cname, v in pan.coding.items():
+    def display_codes(self, time_step):
+        panellist = self.coding_frame.panels
+        for pan in panellist:
+            # pan.name = recording site
+            for cname, v in pan.coding.items():
 #            # cname = code_name
-#                sequence = self.container['data'][pan.name][cname]['seq']
-#                local_int = sequence[step]
-#                local_str = self.int2str[pan.name][cname][local_int]
-#                v['var'].set(local_str)
-#        comment = self.container['comments'][step]
+                if time_step == 0 or \
+                    (time_step == self.application.times_length-1 and \
+                    self.coding_length == self.application.times_length-2):
+#                    v['var'].set('-')
+##                elif time_step == self.application.max_step - 1:
+##                    v['var'].set('t-1')
+#                else:
+#                    local_str = self.data[pan.name][cname][time_step - 1]
+#                    # local_int = sequence[step]
+#                    # local_str = self.int2str[pan.name][cname][local_int]
+#                    v['var'].set(local_str)
+                    local_str = '-'
+                # try:
+                else:
+                    local_str = self.data[pan.name][cname][time_step-1]
+#                except:
+                v['var'].set(local_str)
+
+# FIXME: deal with comments later...
+#        comment = self.comments[time_step]
 #        self.framework.coding_frame.comment.set(comment)
-    
+
+
+
 #    def erase_codes(self):
 #        panellist = self.framework.coding_frame.panels
 #        for pan in panellist:
@@ -162,46 +177,45 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         if mode == 'regular': # regular sampling
             # First passage for checking presence of all symbols
-            tmp_symbols = []
-            for pan in panellist:
-                # print pan.name # rec_site
-                for cname, v in pan.coding.items():
-                    tmp_symbols.append(v['var'].get())
+            tmp_symbols = [v['var'].get() for pan in panellist 
+                                          for v in pan.coding.values()]
 
-            if not all([s != '' for s in tmp_symbols]): 
+            if not all([s != '-' for s in tmp_symbols]): 
                 tkinter.messagebox.showinfo('Code missing', 'A code is missing')
                 return
             
             self.config_processing_buttons('disabled')
 
             # Second passage to record the symbols
-#            panellist = self.coding_frame.panels
 #            for pan in panellist:
 #                self.data[pan.name] = {}
 #                for cname, v in pan.coding.items():
 #                    self.data[pan.name][cname] = []
 
-            lseq = [self.data[site.name][code] for site in panellist 
-                                               for code in site.coding.keys()]
-            assert (all([len(s) == len(lseq[0]) for s in lseq]))
-
-            coding_length = len(lseq[0])
+#            lseq = [self.data[site.name][code] for site in panellist 
+#                                               for code in site.coding.keys()]
+#            assert (all([len(s) == len(lseq[0]) for s in lseq]))
+#
+#            coding_length = len(lseq[0])
             time_step = self.application.time_step
 
-            print('coding_length: ', coding_length)
-            print('Time length: ', self.application.max_step)
+            print('coding_length: ', self.coding_length)
+            print('Time length: ', self.application.times_length)
             print('Time step: ', time_step)
 
-            if coding_length == self.application.max_step - 2:
+            if self.coding_length == self.application.times_length - 2:
                 # Append new symbol
                 for pan in panellist:
                     for cname in pan.coding.keys():
-                        self.data[pan.name][cname].append(coding_length) # FIXME
+                        symbol = pan.coding[cname]['var'].get()
+                        self.data[pan.name][cname].append(symbol) # FIXME
             else:
                 # Replace previous symbols
                 for pan in panellist:
                     for cname in pan.coding.keys():
-                        self.data[pan.name][cname][time_step-1] = "m" # FIXME
+                        symbol = pan.coding[cname]['var'].get()
+                        # self.data[pan.name][cname][time_step-1] = "m" # FIXME
+                        self.data[pan.name][cname][time_step-1] = symbol # FIXME
             print(self.data)
 
             local_comment = self.coding_frame.comment.get()
@@ -255,6 +269,16 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         else: # continuous coding
             raise NotImplementedError
+
+
+    @property
+    def coding_length(self):
+        panellist = self.coding_frame.panels
+        lseq = [self.data[site.name][code] for site in panellist 
+                                           for code in site.coding.keys()]
+        assert (all([len(s) == len(lseq[0]) for s in lseq]))
+
+        return len(lseq[0])
 
     def change_color(self, event):
         colortuple = askcolor()
@@ -357,9 +381,6 @@ class Panel(tkinter.LabelFrame):
                                       textvariable=self.coding[code_name]['var'])
             msg.grid(row=max_symbols+1, column=local_col, sticky=U.sticky_all)
             local_col += 1
-        
-        
-
 
     def set_msg(self, symbol, code_name):
         """Show the selected code in the message box
@@ -438,17 +459,3 @@ class SpecificationFrame(tkinter.LabelFrame):
         self.start_but = tkinter.Button(self, text='Start\nprocessing',
                                          command=self.parent.start_processing)
         self.start_but.grid(row=0, column=5, rowspan=4, sticky=U.sticky_all)
-
-    
-
-
-
-# FIXME: is it useful to pause / stop recording?
-#        stop_but = Tkinter.Button(self, text='Stop\nrecording',
-#                                                  command=application.stop_record)
-#        stop_but.grid(row=0, column=6, rowspan=1, sticky=U.sticky_all)
-
-
-    
-
-
