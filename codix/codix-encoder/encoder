@@ -34,6 +34,10 @@ __version__ = '0.3.0'
 __author__ = 'L. Pezard'
 __licence__ = 'GPL'
 
+
+# DEFAULT_CWD = '~'
+DEFAULT_CWD = "~/Documents/videos_synchrony/vidéosynchrony/"
+
 class Application(tkinter.Tk):
     """
     Main codix application class
@@ -61,11 +65,14 @@ class Application(tkinter.Tk):
         self._context = "standard" # lpcomment: intialize to None?
 
 # FIXME: add this when necessary
-#        self.cwd = ''
-#        self.cwd = tkinter.filedialog.askdirectory(title="Choose working directory",
-#                                              initialdir=os.path.expanduser('~'),
-#                                              mustexist=True)
-#        print('cwd: ', self.cwd)
+        self.cwd = DEFAULT_CWD
+        tmp_cwd = tkinter.filedialog.askdirectory(title="Choose working directory",
+                                              initialdir=os.path.expanduser(self.cwd),
+                                              mustexist=True)
+        if tmp_cwd !=  '':
+            self.cwd = tmp_cwd
+
+        print('cwd: ', self.cwd)
 
 # Menu related functions
 #-----------------------
@@ -145,6 +152,11 @@ class Application(tkinter.Tk):
                                     self.control.time_ent: 'disabled'})
             assert(len(self.control.times) == 0)
             self.control.times.append(self.control.time)
+
+            self.container['times'] = self.control.times
+            self.container['data'] = self.framework.data
+            self.container['media'] = self.info.media_file.get()
+
             self.__time_step = 0
             print('TIME_STEP: ', self.time_step)
 
@@ -161,6 +173,9 @@ class Application(tkinter.Tk):
                 self.control.back_but.config(state='normal')
                 self.control.forward_but.config(state='normal')
             self.framework.display_codes(self.time_step)
+
+            # self.info.save_data()
+
         else: # FIXME: raise error?
             pass
 
@@ -195,7 +210,9 @@ class Application(tkinter.Tk):
             # raise error ?
             pass
 
+        self.container['times'] = self.control.times
         self.context = "processing"
+
         print('TIME_STEP: ', self.time_step)
         print(self.control.times)
 

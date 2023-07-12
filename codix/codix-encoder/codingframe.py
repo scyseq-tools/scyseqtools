@@ -19,10 +19,10 @@ class FrameworkFrame(tkinter.LabelFrame):
 
     def __init__(self, parent, filename):
 
-        incode = self.load_code(filename)
+# FIXME: this is complicated to have rawcode and incode...
+        rawcode, incode = self.load_code(filename)
         self.encoding = incode['code']
         player = incode['player']
-#        print(incode)
 
         tkinter.LabelFrame.__init__(self, parent)
         self.configure(background=coding_bg, 
@@ -33,6 +33,9 @@ class FrameworkFrame(tkinter.LabelFrame):
         self.grid(columnspan=2, row=1)
 
         self.application = parent
+
+#FIXME: Not sure this is the best place...
+        self.application.container['code'] = rawcode
         
         # variables related to player BUT ***taken from coding file***
         self.player_mode = tkinter.StringVar(value=player['mode'])
@@ -53,18 +56,18 @@ class FrameworkFrame(tkinter.LabelFrame):
     def load_code(self, fname):
 
         with open(fname, 'r') as ff:
-            localcode = json.load(ff)
+            rawcode = json.load(ff)
 
-        period = localcode['period']
+        period = rawcode['period']
         if period is None:
             mode = "continuous"
         else:
             mode = "regular"
 
-        sites = localcode['sites']
-        codes = localcode['codes']
+        sites = rawcode['sites']
+        codes = rawcode['codes']
         codeframe = {}
-        for site, scodes in localcode['sites'].items():
+        for site, scodes in rawcode['sites'].items():
             code_site = {}
             for lcode in scodes:
                 code_site.update({lcode: codes[lcode]})
@@ -72,7 +75,7 @@ class FrameworkFrame(tkinter.LabelFrame):
        
         outcode = {'code': codeframe, 'player': {'mode': mode, 'period': period}}
 
-        return outcode
+        return rawcode, outcode
 
     def start_processing(self):
         """
@@ -116,6 +119,7 @@ class FrameworkFrame(tkinter.LabelFrame):
             self.application.control.period = self.period_display.get()
             # Set initial time
             self.init_data()
+
 
     def init_data(self):
         panellist = self.coding_frame.panels
@@ -187,11 +191,17 @@ class FrameworkFrame(tkinter.LabelFrame):
                 # Replace previous symbols / comments
                 self.set_data(method='replace')
 
-            print(self.data)
-            print(self.strdata)
-            print(self.coding_comments)
+#            print(self.data)
+#            print(self.strdata)
+#            print(self.coding_comments)
+
+            self.application.container['data'] = self.data
+            self.application.container['comments'] = self.coding_comments
+
+            print(self.application.container)
 
             self.application.context = 'processing'
+            self.application.info.save_data()
 
         else: # continuous coding
             raise NotImplementedError

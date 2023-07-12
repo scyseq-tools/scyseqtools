@@ -17,6 +17,7 @@ class NewCode(tkinter.LabelFrame):
 
     def __init__(self, parent):
         tkinter.LabelFrame.__init__(self, parent)
+        self.application = parent
 
         # Project
         projectframe = tkinter.LabelFrame(self, text="Project")
@@ -221,7 +222,7 @@ class NewCode(tkinter.LabelFrame):
         print(html_report)
 
         filename = tkinter.filedialog.asksaveasfilename(
-                                      initialdir=os.path.expanduser('~'),
+                                      initialdir=os.path.expanduser(self.application.cwd),
                                       initialfile=pname+'.jod')
 
         # FIXME: does not work if file already exists

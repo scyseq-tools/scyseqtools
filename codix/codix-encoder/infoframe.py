@@ -6,7 +6,7 @@ import tkinter.messagebox
 
 import utils as U
 
-from pathlib import Path
+from pathlib import Path # Only used once in a comment...
 import tkinter.font
 from tkinter.colorchooser import askcolor
 # from playercontrol import PlayerControl
@@ -90,14 +90,17 @@ class InfoFrame(tkinter.LabelFrame):
             is_valid = False
             while not is_valid:
                 fname = tkinter.filedialog.askopenfilename(
-                                    initialdir=os.path.expanduser('~'))
-                self.loaded_media=False
+                                    initialdir=os.path.expanduser(self.application.cwd))
+                # self.loaded_media=False # Not Useful?
                 if U.is_valid_media(fname):
                     is_valid = True
                     self.media_file.set(fname)
+
                     self.application.make_media_player(fname)
+
                 else:
-                    tkinter.messagebox.showinfo('Cannot load media file', "Cannot load %s file" % fname)
+                    tkinter.messagebox.showinfo('Cannot load media file', \
+                                                "Cannot load %s file" % fname)
                     self.ask_media()
 
         self.media_load.config(state='disabled')
@@ -117,7 +120,7 @@ class InfoFrame(tkinter.LabelFrame):
             self.application.make_coding_frame(fname)
         else :
             fname = tkinter.filedialog.askopenfilename(filetypes=[('New code', '*.jod')],
-                                                initialdir=os.path.expanduser('~'))
+                                                initialdir=os.path.expanduser(self.application.cwd))
             if U.is_valid_filename(fname, ext='.jod'):
                 self.code_file.set(fname)
                 self.application.make_coding_frame(fname)
@@ -129,7 +132,7 @@ class InfoFrame(tkinter.LabelFrame):
     def ask_data(self):
         raise NotImplementedError()
 #            fname = tkinter.filedialog.askopenfilename(filetypes=[('Codix data file', '*.cdx')],
-#                                                    initialdir=os.path.expanduser('~'))
+#                                                    initialdir=os.path.expanduser(self.application.cwd))
 #            if U.is_valid_filename(fname): 
 #                self.read_data(fname)
 #            else:
@@ -156,33 +159,37 @@ class InfoFrame(tkinter.LabelFrame):
 #            self.data_loaded = True
 #            self.application.start_processing()
 
-#    def save(self):
-#        filename = self.data_file.get()
-#        datafile = open(filename, 'w')
-#        json.dump(self.container, datafile)
-#        datafile.close()
-#        print('Data saved in %s' % filename)
-#    
-#    def save_as(self):
-#        filename = tkinter.filedialog.asksaveasfilename()
-#        # FIXME: does not work if file already exists
-#        if U.is_valid_filename(filename):
-#            datafile = open(filename, 'w')
-#            json.dump(self.container, datafile)
-#            datafile.close()
-#            print('Data saved in %s' % filename)
-#            self.data_file.set(filename)
+    def save(self):
+        filename = self.data_file.get()
+        datafile = open(filename, 'w')
+        json.dump(self.application.container, datafile)
+        datafile.close()
+        print('Data saved in %s' % filename)
+    
+    def save_as(self):
+        filename = \
+        tkinter.filedialog.asksaveasfilename(initialdir=os.path.expanduser(self.application.cwd))
+
+        # FIXME: does not work if file already exists
+        if U.is_valid_filename(filename):
+            datafile = open(filename, 'w')
+            json.dump(self.application.container, datafile)
+            datafile.close()
+            print('Data saved in %s' % filename)
+            self.data_file.set(filename)
+# Do not exist any more in the menu
 #            self.menu.fileMenu.entryconfig(8, state=tkinter.NORMAL) # Save
 #            self.menu.fileMenu.entryconfig(9, state=tkinter.DISABLED) # Save as
-#        else:
-#            tkinter.messagebox.showinfo('File not saved', 'File has not been saved')
-#
+        else:
+            tkinter.messagebox.showinfo('File not saved', 'File has not been saved')
+
     def save_data(self):
-        raise NotImplementedError
-#        if self.data_file.get() == '':
-#            self.save_as()
-#        else:
-#            self.save()
+#        raise NotImplementedError
+        if self.data_file.get() == '':
+            self.save_as()
+        else:
+            self.save()
+
     def change_color(self, event):
         colortuple = askcolor()
         # print colortuple
