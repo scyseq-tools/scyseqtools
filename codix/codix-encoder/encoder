@@ -175,6 +175,16 @@ class Application(tkinter.Tk):
             self.framework.display_codes(self.time_step)
 
             # self.info.save_data()
+        elif value == 'standard':
+            if self.state['code_loaded'] :
+                if self.control.state == 'paused' :
+                    self.framework.spec_frame.start_but.config(state='normal')
+                    
+                elif self.control.state in ['s_playing', 'c_playing']:
+                    self.framework.spec_frame.start_but.config(state='disabled')
+                    # update is needed because of the timer in regular playing 
+                    self.framework.spec_frame.start_but.update()
+
 
         else: # FIXME: raise error?
             pass

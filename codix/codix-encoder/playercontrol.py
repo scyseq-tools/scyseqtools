@@ -101,12 +101,14 @@ class PlayerControl(tkinter.LabelFrame):
         self.times = []
         
     def step_play(self, dt):
-        self.play_but.update() # useful?
+        # if self.application.state['code_loaded'] and self.application.context != 'processing':
+        #             self._root().framework.spec_frame.start_but.config(state='disabled')
         print('Start step play at: ', self.time)
         self.state = "s_playing"
         tt = Timer(dt, self.dopause)
         self.player.play()
         tt.start()
+        
     
     def cont_play(self):
         print('Start continuous play at: ', self.time)
@@ -242,6 +244,10 @@ class PlayerControl(tkinter.LabelFrame):
                                  self.forward_but : 'disabled', 
                                  self.mode_check : 'disabled',
                                  self.period_ent : 'disabled'})
+           
+            tmp_context = self.application.context 
+            self.application.context = tmp_context
+            
 
         elif value == "c_playing" :
             self._state = "c_playing"
@@ -251,6 +257,10 @@ class PlayerControl(tkinter.LabelFrame):
                                  self.forward_but : 'disabled', 
                                  self.mode_check : 'disabled',
                                  self.period_ent : 'disabled'})
+                        
+            tmp_context = self.application.context 
+            self.application.context = tmp_context
+            
 
         elif value == "paused":
             self._state = "paused"
@@ -263,14 +273,16 @@ class PlayerControl(tkinter.LabelFrame):
                                      self.mode_check : 'normal',
                                      self.period_ent : 'normal'})
 # FIXME: why do we need to deal with framework state here!?
-                if self.application.state['code_loaded']: # and self.application.context != 'processing':
-                    self._root().framework.spec_frame.start_but.config(state='normal')
+                
+
             # processing => code_loaded    
-            # if self.application.state['code_loaded'] and self.application.context == 'processing':
+            
             elif self.application.context == 'processing':
                 self.config_buttons({self.play_but :'disabled',
                                      self.back_but : 'disabled',
                                      self.forward_but : 'disabled'})
+            tmp_context = self.application.context 
+            self.application.context = tmp_context
 
 # *** From dopause ***
 ## FIXME: maybe should be in state.setter ^^^
@@ -302,16 +314,16 @@ class PlayerControl(tkinter.LabelFrame):
     def mode(self):
         return self._mode.get()
 
-    @mode.setter
-    def mode(self, value):
-        if value == "regular":
-            self._mode.set(value)
-            print('Mode: regular')
-        elif value == "continuous":
-            self._mode.set(value)
-            print('Mode: continuous')
-        else:
-            raise ValueError
+    # @mode.setter
+    # def mode(self, value):
+    #     if value == "regular":
+    #         self._mode.set(value)
+    #         print('Mode: regular')
+    #     elif value == "continuous":
+    #         self._mode.set(value)
+    #         print('Mode: continuous')
+    #     else:
+    #         raise ValueError
 
     @property
     def period(self):
