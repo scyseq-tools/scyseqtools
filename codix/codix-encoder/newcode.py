@@ -221,8 +221,9 @@ class NewCode(tkinter.LabelFrame):
         html_report = H.to_html_report(all_specs)
         print(html_report)
 
+        code_folder = os.path.expanduser(self.application.cwd)
         filename = tkinter.filedialog.asksaveasfilename(
-                                      initialdir=os.path.expanduser(self.application.cwd),
+                                      initialdir=code_folder,
                                       initialfile=pname+'.jod')
 
         # FIXME: does not work if file already exists

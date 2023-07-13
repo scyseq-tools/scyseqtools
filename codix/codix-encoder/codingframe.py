@@ -50,7 +50,7 @@ class FrameworkFrame(tkinter.LabelFrame):
         self.bind('<Button-3>', self.change_color)
 
         self.data = {}
-        self.strdata = {}
+        # self.strdata = {}
         self.coding_comments = []
 
     def load_code(self, fname):
@@ -87,7 +87,6 @@ class FrameworkFrame(tkinter.LabelFrame):
         """
         
         self.spec_frame.start_but.config(state='disabled')
-        self.application.context = "initial"
         # ----
         # Get and set specifications before disabling entries
         observer = self.spec_frame.person.get()
@@ -104,19 +103,29 @@ class FrameworkFrame(tkinter.LabelFrame):
 
         self.config_specifications('disabled')
         # ----
+        # Coding frame imposes the mode and period of player Control
+        self.application.control.mode = self.player_mode.get()
+        self.application.control.period = self.period_display.get()
 
         if self.application.state['data_loaded']: # resume session
+            self.application.context = "resume"
+
+#            # Coding frame imposes the mode and period of player Control
+#            self.application.control.mode = self.player_mode.get()
+#            self.application.control.period = self.period_display.get()
+            
             # get times and steps lists for data
-            raise NotImplementedError # FIXME: resume session not implemented yet
+            # raise NotImplementedError # FIXME: resume session not implemented yet
 
 #            self.control.set_time(self.container['times'][0], msg='Start processing')
 #            self.current_step = 0
 #            self.max_step = len(self.container['times'])
 #            
         else: # starts a new session
-            # Coding frame imposes the mode and period of player Control
-            self.application.control.mode = self.player_mode.get()
-            self.application.control.period = self.period_display.get()
+            self.application.context = "initial"
+#            # Coding frame imposes the mode and period of player Control
+#            self.application.control.mode = self.player_mode.get()
+#            self.application.control.period = self.period_display.get()
             # Set initial time
             self.init_data()
 
@@ -125,13 +134,13 @@ class FrameworkFrame(tkinter.LabelFrame):
         panellist = self.coding_frame.panels
         for pan in panellist:
             self.data[pan.name] = {}
-            self.strdata[pan.name] = {}
+            # self.strdata[pan.name] = {}
             for cname, v in pan.coding.items():
-                self.strdata[pan.name][cname] = []
+                # self.strdata[pan.name][cname] = []
                 self.data[pan.name][cname] = []
 
         print(self.data)
-        print(self.strdata)
+        # print(self.strdata)
 
     def display_codes(self, time_step):
         panellist = self.coding_frame.panels
@@ -144,7 +153,8 @@ class FrameworkFrame(tkinter.LabelFrame):
                     self.coding_length == self.application.times_length-2):
                     local_str = '-'
                 else:
-                    local_str = self.strdata[pan.name][cname][time_step-1]
+                    idx = self.data[pan.name][cname][time_step-1]
+                    local_str = self.encoding[pan.name][cname][idx]
                 v['var'].set(local_str)
 
         if time_step == 0 or \
@@ -215,11 +225,11 @@ class FrameworkFrame(tkinter.LabelFrame):
                 intval = self.encoding[pan.name][cname].index(symbol)
                 if method == "append":
                     # Append new symbol
-                    self.strdata[pan.name][cname].append(symbol) # FIXME
+                    # self.strdata[pan.name][cname].append(symbol) # FIXME
                     self.data[pan.name][cname].append(intval) # FIXME
                 elif method == "replace":
                     # Replace previous symbols
-                    self.strdata[pan.name][cname][time_step-1] = symbol # FIXME
+                    # self.strdata[pan.name][cname][time_step-1] = symbol # FIXME
                     self.data[pan.name][cname][time_step-1] = intval # FIXME
                 else: # raise error?
                     pass

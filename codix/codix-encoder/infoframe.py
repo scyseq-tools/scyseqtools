@@ -6,7 +6,9 @@ import tkinter.messagebox
 
 import utils as U
 
-from pathlib import Path # Only used once in a comment...
+# from pathlib import Path # Only used once in a comment...
+
+import os.path as opath
 import tkinter.font
 from tkinter.colorchooser import askcolor
 # from playercontrol import PlayerControl
@@ -86,8 +88,11 @@ class InfoFrame(tkinter.LabelFrame):
         else:
             is_valid = False
             while not is_valid:
-                fname = tkinter.filedialog.askopenfilename(
-                                    initialdir=os.path.expanduser(self.application.cwd))
+                # We suppose that media files are in cwd/media folder
+                media_folder = os.path.join(os.path.expanduser(self.application.cwd), 'media') 
+
+                # fname = tkinter.filedialog.askopenfilename(initialdir=os.path.expanduser(self.application.cwd))
+                fname = tkinter.filedialog.askopenfilename(initialdir=media_path)
                 # self.loaded_media=False # Not Useful?
                 if U.is_valid_media(fname):
                     is_valid = True
@@ -110,14 +115,19 @@ class InfoFrame(tkinter.LabelFrame):
         # if self.application.control.state == 'c_playing' or self.application.control.state == 's_playing':
         if self.application.control.state in ['c_playing', 's_playing']:
             self.application.control.dopause()
-        
+       
+        # lpcomment: 
+        # Finally, I don't like .jod extension. maybe go back to .cod?
         fname = "test2.jod"
         if os.path.exists(fname):
             self.code_file.set(fname)
             self.application.make_coding_frame(fname)
-        else :
-            fname = tkinter.filedialog.askopenfilename(filetypes=[('New code', '*.jod')],
-                                                initialdir=os.path.expanduser(self.application.cwd))
+        else:
+            code_folder = os.path.expanduser(self.application.cwd)
+            code_filetypes = [('Code file', '*.cod'), ('New code', '*.jod')]
+            fname = tkinter.filedialog.askopenfilename(filetypes= code_filetypes,
+                                                # initialdir=os.path.expanduser(self.application.cwd))
+                                                initialdir=code_folder)
             if U.is_valid_filename(fname, ext='.jod'):
                 self.code_file.set(fname)
                 self.application.make_coding_frame(fname)
@@ -130,9 +140,13 @@ class InfoFrame(tkinter.LabelFrame):
         
         #fname = "/home/leo/codix-suite/codix/codix-encoder/new_record"
 
-        fname = tkinter.filedialog.askopenfilename(filetypes=[('Codix data file', '*.cdx')],
-                                                    initialdir=os.path.expanduser(self.application.cwd))
+        data_folder = os.path.join(os.path.expanduser(self.application.cwd), 'data')
+        data_filetypes = [('Codix data file', '*.cdx'), ('All files', '*.*')]
+
+        fname = tkinter.filedialog.askopenfilename(filetypes= data_filetypes,
+                                                   initialdir= data_folder)
         if U.is_valid_filename(fname): 
+            self.data_file.set(fname)
             self.read_data(fname)
             self.data_load.config(state='disabled')
         else:
@@ -142,6 +156,11 @@ class InfoFrame(tkinter.LabelFrame):
     def read_data(self, fname):
         with open(fname, 'r') as ff:
             data = json.load(ff)
+
+        self.application.state['data_loaded'] = True
+        
+        # lpcomment: we do this in newcode BUT user can change the name of the
+        # code file and this is not written in the codefile
         code = data['code']['project'] + ".jod"
         media = data['media']
         if os.path.exists(media) and U.is_valid_media(media):
@@ -160,7 +179,10 @@ class InfoFrame(tkinter.LabelFrame):
 
         # self.application.data_file.set(fname)
         # self.application.code_file.set('Retrieved from data file')
-        # self.application.container.update(data)
+
+# lpcomment: everything at the good place in the container
+        self.application.container.update(data)
+        print(self.application.container)
         # self.application.parse_code(self.container['code'])
         # self.code_loaded = True
         # print(self.application.container)
@@ -177,7 +199,6 @@ class InfoFrame(tkinter.LabelFrame):
         #    self.application.start_processing()
 
     def save_data(self):
-#        raise NotImplementedError
         if self.data_file.get() == '':
             self.save_as()
         else:
@@ -192,8 +213,9 @@ class InfoFrame(tkinter.LabelFrame):
         print('Data saved in %s' % filename)
     
     def save_as(self):
+        data_folder = os.path.join(os.path.expanduser(self.application.cwd), 'data')
         filename = \
-        tkinter.filedialog.asksaveasfilename(initialdir=os.path.expanduser(self.application.cwd))
+        tkinter.filedialog.asksaveasfilename(initialdir=data_folder)
 
         # FIXME: does not work if file already exists
         if U.is_valid_filename(filename):

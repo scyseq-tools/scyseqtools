@@ -15,7 +15,6 @@ import tkinter
 import tkinter.filedialog
 import tkinter.messagebox
 import tkinter.simpledialog
-import tkinter.filedialog
 
 # tk colors : https://www.tcl.tk/man/tcl/TkCmd/colors.html
 
@@ -69,6 +68,7 @@ class Application(tkinter.Tk):
         tmp_cwd = tkinter.filedialog.askdirectory(title="Choose working directory",
                                               initialdir=os.path.expanduser(self.cwd),
                                               mustexist=True)
+# FIXME: check that subfolders 'media' and 'data' exist. If not create them
         if tmp_cwd !=  '':
             self.cwd = tmp_cwd
 
@@ -159,6 +159,30 @@ class Application(tkinter.Tk):
 
             self.__time_step = 0
             print('TIME_STEP: ', self.time_step)
+        
+        elif value == "resume":
+            self._context = "processing"
+            print('Context Resume session')
+            self.control.config_buttons({self.control.play_but : 'normal', 
+                                    self.control.back_but : 'disabled',
+                                    self.control.forward_but : 'disabled', 
+                                    self.control.mode_check : 'disabled',
+                                    self.control.period_ent : 'disabled',
+                                    self.control.time_ent: 'disabled'})
+
+            # assert(len(self.control.times) == 0)
+            # self.control.times.append(self.control.time)
+            # self.container['times'] = self.control.times
+            # self.container['data'] = self.framework.data
+            # self.container['media'] = self.info.media_file.get()
+            
+            self.control.times = self.container['times']
+            self.framework.data = self.container['data']
+            self.framework.coding_comments = self.container['comments']
+            # self.container['media'] = self.info.media_file.get()
+
+            self.time_step = 'last'
+            print('TIME_STEP: ', self.time_step)
 
         elif value == "processing":
             print('Context Processing')
@@ -216,6 +240,10 @@ class Application(tkinter.Tk):
         elif value == -1:
             self.__time_step = max(0, self.__time_step - 1)
             self.control.time = self.control.times[self.time_step]
+
+        elif value == 'last':
+            self.__time_step = self.times_length - 1
+            self.control.time = self.control.times[-1]
         else:
             # raise error ?
             pass
