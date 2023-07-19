@@ -35,46 +35,60 @@ class InfoFrame(tkinter.LabelFrame):
         self.code_file = tkinter.StringVar()
         self.media_file = tkinter.StringVar()
         self.data_file = tkinter.StringVar()
+        self.directory_file = tkinter.StringVar()
         
+
+        # Repertoire
+        self.directory_label = tkinter.Label(self, text='Directory: ', background = info_bg)
+        self.directory_label.grid(row =1, column =0)
+        self.directory_msg = tkinter.Label(self, text= 'Please load files', background=info_bg)
+
+
+        # directory_msg = tkinter.Entry(self, textvariable= self.directory_file,
+        #                                 state=tkinter.DISABLED,
+        #                                 width=filename_width)
+        self.directory_msg.grid(row=1, column = 1,)
+
         # Media File
         self.media_label = tkinter.Label(self, text='Media file: ', background=info_bg)
-        self.media_label.grid(row=1, column=0, sticky=tkinter.W)
+        self.media_label.grid(row=2, column=0, sticky=tkinter.W)
         media_msg = tkinter.Entry(self, textvariable=self.media_file, 
                                         state=tkinter.DISABLED,
                                         width=filename_width, 
                                         disabledbackground=disabled_bg)
-        media_msg.grid(row=1, column=1, sticky=tkinter.W)
+        media_msg.grid(row=2, column=1, sticky=tkinter.W)
         self.media_load = tkinter.Button(self, text='Load', state=states[0],
                                          command=self.ask_media)
-        self.media_load.grid(row=1, column=2, sticky=tkinter.W)
+        self.media_load.grid(row=2, column=2, sticky=tkinter.W)
 
         # Code File
         self.code_label = tkinter.Label(self, text='Code file: ', 
                                          background=info_bg)
-        self.code_label.grid(row=2, column=0, sticky=tkinter.W)
+        self.code_label.grid(row=3, column=0, sticky=tkinter.W)
+        
         code_msg = tkinter.Entry(self, textvariable=self.code_file,
                                        state=tkinter.DISABLED, 
                                        width=filename_width, 
                                        disabledbackground=disabled_bg)
-        code_msg.grid(row=2, column=1, sticky=tkinter.W)
+        code_msg.grid(row=3, column=1, sticky=tkinter.W)
         self.code_load = tkinter.Button(self, text='Load',
                                         state=states[1],
                                         command=self.ask_code)
-        self.code_load.grid(row=2, column=2, sticky=tkinter.W)
+        self.code_load.grid(row=3, column=2, sticky=tkinter.W)
 
         # Data File
         self.data_label = tkinter.Label(self, text='Data file: ', 
                                          background=info_bg)
-        self.data_label.grid(row=3, column=0, sticky=tkinter.W)
+        self.data_label.grid(row=4, column=0, sticky=tkinter.W)
         data_msg = tkinter.Entry(self, textvariable=self.data_file, 
                                        state=tkinter.DISABLED, 
                                        width=filename_width, 
                                        disabledbackground=disabled_bg) 
-        data_msg.grid(row=3, column=1, sticky=tkinter.W)
+        data_msg.grid(row=4, column=1, sticky=tkinter.W)
         self.data_load = tkinter.Button(self, text='Load',
                                         state=states[2],
                                         command=self.ask_data)
-        self.data_load.grid(row=3, column=2, sticky=tkinter.W)
+        self.data_load.grid(row=4, column=2, sticky=tkinter.W)
         
 
         self.bind('<Button-3>', self.change_color)
@@ -82,12 +96,6 @@ class InfoFrame(tkinter.LabelFrame):
     def ask_media(self):
         """Load media file
         """
-#        fname = "/home/leo/Bureau/leo_dev/video/164360 (720p).mp4"
-#        #fname = "/home/zarpe/Documents/videos_synchrony/vidéosynchrony/208_S2.MPG"  
-#        if os.path.exists(fname) and U.is_valid_media(fname):
-#            self.media_file.set(fname)
-#            self.application.make_media_player(fname)
-#        else:
         is_valid = False
         while not is_valid:
             # We suppose that media files are in cwd/media folder
@@ -96,7 +104,12 @@ class InfoFrame(tkinter.LabelFrame):
             # self.loaded_media=False # Not Useful?
             if U.is_valid_media(fname):
                 is_valid = True
-                self.media_file.set(fname)
+                # mediaFile = fname.split('/')
+                # self.media_file.set(mediaFile[-1])
+                self.media_file.set(self.set_name_of(fname))
+
+                directoryFile = '/'.join(fname.split('/')[:-1])                
+                self.directory_msg.config(text = directoryFile)
 
                 self.application.make_media_player(fname)
 
@@ -112,30 +125,20 @@ class InfoFrame(tkinter.LabelFrame):
         """Loading files defining a coding framework.
         Now only supports the new .jod (json) files
         """
-        # if self.application.control.state == 'c_playing' or self.application.control.state == 's_playing':
         if self.application.control.state in ['c_playing', 's_playing']:
             self.application.control.dopause()
        
         # lpcomment: 
         # Finally, I don't like .jod extension. maybe go back to .cod?
-
-#        fname = "test2.jod"
-#        if os.path.exists(fname):
-#            self.code_file.set(fname)
-#            self.application.make_coding_frame(fname)
-#        else:
-
         code_folder = os.path.expanduser(self.application.cwd)
         code_filetypes = [('Code file', '*.cod'), ('New code', '*.jod')]
         fname = tkinter.filedialog.askopenfilename(filetypes= code_filetypes,
                                             initialdir=code_folder)
         if U.is_valid_filename(fname, ext='.jod'):
-            self.code_file.set(fname)
+            self.code_file.set(self.set_name_of(fname))
             self.application.make_coding_frame(fname)
         else:
             tkinter.messagebox.showinfo('Cannot load code file', 'Cannot load %s file' % fname)
-        # lpcomment: en a-t-on vraiment besoin dans le container?
-        self.application.container['find_code'] = fname
         self.code_load.config(state='disabled')
 
     def ask_data(self):
@@ -148,11 +151,15 @@ class InfoFrame(tkinter.LabelFrame):
         fname = tkinter.filedialog.askopenfilename(filetypes= data_filetypes,
                                                    initialdir= data_folder)
         if U.is_valid_filename(fname): 
-            self.data_file.set(fname)
+            self.data_file.set(self.set_name_of(fname))
             self.read_data(fname)
             self.data_load.config(state='disabled')
         else:
             tkinter.messagebox.showinfo('Cannot load code file', " Media file doesn't exist or not in directory %s "  % fname)
+
+    def set_name_of(self, st):
+        file = st.split('/')
+        return file[-1]
 
 
     def read_data(self, fname):
@@ -165,13 +172,15 @@ class InfoFrame(tkinter.LabelFrame):
         # code file and this is not written in the codefile
         code = data['code']['filename']
         media = data['media']
+        fileDirectory = '/'.join(media.split('/')[:-1])
         if os.path.exists(media) and U.is_valid_media(media):
-            self.media_file.set(media)
+            self.media_file.set(self.set_name_of(media))
+            self.directory_msg.config(text = fileDirectory)
             self.application.make_media_player(media)
         else :
             tkinter.messagebox.showinfo('Cannot load media file', " Media file doesn't exist or not in directory %s "  % media)
         if os.path.exists(code): # and U.is_valid_filename(code):
-            self.code_file.set(code)
+            self.code_file.set(self.set_name_of(code))
             self.application.make_coding_frame(code)
         else :
             tkinter.messagebox.showinfo('Cannot load code file', " Code file doesn't exist or not in directory %s "  % code)

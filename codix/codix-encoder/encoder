@@ -54,8 +54,6 @@ class Application(tkinter.Tk):
 
         self.container = {'history': [], # [(date, observer, comment), ...]
                           'media': '', # path for the media file
-                          # lpcomment: en quoi est-ce utile ou necessaire?
-                          'find_code': '', 
                           'code': {}, # dictionary taken from the code file
                           'times': [], # sample times (in ms) taken from the player
                           'comments': [], # sample comments taken from codingframe
@@ -162,7 +160,8 @@ class Application(tkinter.Tk):
 
             self.container['times'] = self.control.times
             self.container['data'] = self.framework.data
-            self.container['media'] = self.info.media_file.get()
+            self.container['media'] = self.info.directory_msg.cget("text") + '/' + self.info.media_file.get()
+
 
             self.__time_step = 0
             print('TIME_STEP: ', self.time_step)
