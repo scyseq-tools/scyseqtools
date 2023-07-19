@@ -16,6 +16,8 @@ from methods import Method
 import inspect
 from symbolix import Symbolix
 
+from myladon import myservices
+
 __version__ = '0.1'
 __author__ = 'L. Pezard'
 __licence__ = 'GPL'
@@ -108,10 +110,14 @@ class Application(tkinter.Tk):
 #        self.json_client = JSONWSPClient(self.service.get())
 #        list_of_methods = self.json_client.list_methods()
 
-        funs = inspect.getmembers(Symbolix, predicate=inspect.isfunction)
+#        funs = inspect.getmembers(Symbolix, predicate=inspect.isfunction)
         # list_of_methods = [f[0] for f in funs]
         # self.methods = [Method(name, self) for name in list_of_methods]
-        self.methods = [Method(f[0], f[1], self) for f in funs]
+#        self.methods = [Method(f[0], f[1], self) for f in funs]
+
+#       print(myservices.info)
+
+        self.methods = [Method(m, self) for m in myservices.info]
 
     def get_directory(self):
         #outdir = tkFileDialog.askdirectory()

@@ -7,6 +7,8 @@ import io
 import json
 import numpy as np
 
+from myladon import ladonize
+
 #from .ladon.ladonizer import ladonize
 #from .ladon.types.ladontype import LadonType
 #from .ladon.types.attachment import attachment
@@ -21,7 +23,13 @@ SEQ_EXT = '.json'
 TABLE_EXT = '.csv'
 SEP = ';'
 
+class PORTABLE_STRING(object):
+    pass
+
+
 #class Sequence(LadonType):
+class Sequence(object):
+    pass
 #    """
 #    A usable representation of a symbolic sequence
 #    """
@@ -29,8 +37,10 @@ SEP = ';'
 #                'doc': 'List of coding items'}
 #    svalues = {'type': [int], 
 #               'doc': 'The sequence itself, ie a list of integers'}
-#
+
 #class Data(LadonType):
+class Data(object):
+    pass
 #    """
 #    Information about data surrounding the symbolic sequence.
 #    """
@@ -42,8 +52,10 @@ SEP = ';'
 #                'doc': 'Name of the encoding framework'}
 #    sequence = {'type': Sequence,
 #                'doc': 'The sequence and its alphabet'}
-#
+
 #class File(LadonType):
+class File(object):
+    pass
 #    """
 #    A file object with a name and a data buffer
 #    """
@@ -101,7 +113,7 @@ class Symbolix(object):
 #    def add(self, a,b):
 #        return a+b
 
-#    @ladonize([Data], rtype=File)
+    @ladonize([Data], rtype=File)
     def statistics(self, lod):
         """
         Returns the length of each sequence and the symbols with their
@@ -128,7 +140,7 @@ class Symbolix(object):
 #            rows.append(retlist)
 #        return table_to_file(filename, headers, rows)
 
-#    @ladonize([Data], [Data], rtype=File)
+    @ladonize([Data], [Data], rtype=File)
     def mutual_information(self, lod1, lod2):
         """
         Returns the mutual information between two sequences
@@ -153,7 +165,7 @@ class Symbolix(object):
 #            rows.append(retlist)
 #        return table_to_file(filename, headers, rows)
 
-#    @ladonize([Data], rtype=File)
+    @ladonize([Data], rtype=File)
     def complexity(self, lod):
         """
         Returns the normalized Lempel-Ziv Complexity
@@ -175,7 +187,7 @@ class Symbolix(object):
 #            rows.append(retlist)
 #        return table_to_file(filename, headers, rows)
 
-#    @ladonize([Data], int, rtype=File)
+    @ladonize([Data], int, rtype=File)
     def transition_probability(self, lod, step):
         """
         Compute the transition matrix for a sequence for step time step ahead
@@ -201,7 +213,7 @@ class Symbolix(object):
 #            rows.append(retlist)
 #        return table_to_file(filename, headers, rows)
 
-#    @ladonize([Data], [Data], int, rtype=File)
+    @ladonize([Data], [Data], int, rtype=File)
     def influence_probability(self, lod1, lod2, step):
         """
         Computes the influence of sequence one to sequence two for certain time
@@ -233,7 +245,7 @@ class Symbolix(object):
 #            rows.append(retlist)
 #        return table_to_file(filename, headers, rows)
     
-#    @ladonize([Data], [Data], rtype=[File])
+    @ladonize([Data], [Data], rtype=[File])
     def join(self, lod1, lod2):
         """
         Joins two sequences
@@ -266,7 +278,7 @@ class Symbolix(object):
 #            retlist.append(retfile)
 #        return retlist
 
-#    @ladonize([Data], PORTABLE_STRING, [int], [PORTABLE_STRING], rtype=[File])
+    @ladonize([Data], PORTABLE_STRING, [int], [PORTABLE_STRING], rtype=[File])
     def change_code(self, lod, name, correspondance, alphabet):
         """
         Change the code according to a correspondance given as a list of

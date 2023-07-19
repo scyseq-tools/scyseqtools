@@ -15,11 +15,11 @@ class Method(object):
     """
     # def __init__(self, name, client, page):
     # def __init__(self, name, parent):
-    def __init__(self, name, fun, parent):
+    def __init__(self, meth, parent):
         """
         Define the method with its tab and own method
         """
-        self.name = name
+        self.name = meth['name']
         self.tab = parent.notebook.add(self.name.replace('_', ' ').title())
         self.parent = parent
 
@@ -28,24 +28,32 @@ class Method(object):
 #        ret_info = method_info['ret_info']
 #        self.rtype = ret_info['type']
 #        params_info = method_info['params_info']
+
 #        doc_lines = method_info['doc_lines']
-        doc_lines = fun.__doc__
+        doc_lines = meth['doc']
         # Documentation
         doc_frame = tkinter.LabelFrame(self.tab, text='Documentation')
 #        tkinter.Label(doc_frame, text='\n'.join(doc_lines)).grid()
         tkinter.Label(doc_frame, text=doc_lines).grid()
         doc_frame.grid(column=0, row=0)
+
         # Inputs
         self.gdata = {}
         self.selected_files = []
         self.parameters = []
 
+        args = meth['args']
+        retval = meth['kwargs']['rtype']
+
 #        for param, status in params_info.items():
 #        # status in: ['def_order', 'doc_lines', 'type', 'optional']
 #            par = Parameter(param, status, self)
+        for param in args:
+            par = Parameter(param, self)
 #            par.frame.grid(column=int(status['optional']),
 #                           row=status['def_order']+2)
-#            self.parameters.append(par)
+            par.frame.grid()
+            self.parameters.append(par)
         
         launch_but = tkinter.Button(self.tab, text='Launch',
                                     command=self.launch)
@@ -118,14 +126,14 @@ class Method(object):
 #            raise ValueError("Do not know the type of the result")
         
     def update_state(self, state):
-        pass
+        # pass
 #    # def update_state(self):
-#        """
-#        Update the interface on the basis of application changes
-#        """
-#        # FIXME: this could certainly use self.parent.selected_files etc. but
-#        # need to change parameters
-#        self.selected_files = state['files']
-#        self.gdata = state['data']
-#        for param in self.parameters:
-#            param.update(state)
+        """
+        Update the interface on the basis of application changes
+        """
+        # FIXME: this could certainly use self.parent.selected_files etc. but
+        # need to change parameters
+        self.selected_files = state['files']
+        self.gdata = state['data']
+        for param in self.parameters:
+            param.update(state)

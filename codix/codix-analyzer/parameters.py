@@ -5,44 +5,66 @@ Module to deal with parameters
 import tkinter
 import utils as U
         
-KNOWN_TYPES = ['number', 'string', 'float', 'Data', 'listof']
+KNOWN_TYPES = ['number', 'string', 'float', 'Data', 'listof', 'int',
+'PORTABLE_STRING']
 
 class Parameter(object):
     """
     Class to deal with different parameter types
     """
 
-    def __init__(self, name, status, method):
+    # def __init__(self, name, status, method):
+    def __init__(self, par, method):
         """
         Initialize interface and getters
         """
-        self.name = name
+        # self.name = name
+        self.name = 'name'
         mframe = method.tab
-        self.frame = tkinter.LabelFrame(mframe, text=name)
+        self.frame = tkinter.LabelFrame(mframe, text=self.name)
         pframe = self.frame
         description = tkinter.LabelFrame(pframe, text='Description')
+
         tkinter.Label(description, 
-                text=' '.join(['Type:', str(status['type'])])).grid()
+#                text=' '.join(['Type:', str(status['type'])])).grid()
+                text='Text 1 ').grid()
         tkinter.Label(description,
-                text='\n'.join(status['doc_lines'])).grid()
+#                text='\n'.join(status['doc_lines'])).grid()
+                text='text 2').grid()
         tkinter.Label(description,
-          text=' '.join(['Optional: ', str(status['optional'])])).grid()
+#          text=' '.join(['Optional: ', str(status['optional'])])).grid()
+          text='Text 3').grid()
         description.grid(sticky=tkinter.W)
 
-        # self.ptype = status['type']
-        if type(status['type']) is list:
-            ltype = status['type'][0]
+        if type(par) is list:
+            print('list of ', par[0].__name__)
+        else:
+            print(par.__name__)
+
+
+#        # self.ptype = status['type']
+#        if type(status['type']) is list:
+        if type(par) is list:
+#            ltype = status['type'][0]
+            ltype = par[0].__name__
             if ltype == 'Data':
-                self.ptype = status['type'][0]
+                self.ptype = 'Data'
             else:
                 self.ptype = 'listof'
+#                self.ptype = status['type'][0]
+#            else:
+#                self.ptype = 'listof'
         else:
-            self.ptype = status['type']
+            self.ptype = par.__name__
 
+#            self.ptype = status['type']
+#
         if self.ptype not in KNOWN_TYPES:
+            print(self.ptype)
             raise NotImplementedError
 
-        elif self.ptype in ['number', 'string', 'float', 'listof']:
+        # elif self.ptype in ['number', 'string', 'float', 'listof']:
+        elif self.ptype in ['int', 'PORTABLE_STRING', 'float', 'listof']:
             self.value = tkinter.StringVar()
             self.tk = tkinter.Entry(pframe, textvariable=self.value)
 
@@ -51,7 +73,8 @@ class Parameter(object):
             self.tk = Input_Sequence(pframe, variable=self.value)
 
         self.tk.grid()
-
+#        tkinter.grid()
+#
         self.gdata = {}
         self.gfiles = []
 
