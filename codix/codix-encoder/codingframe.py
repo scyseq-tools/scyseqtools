@@ -1,5 +1,7 @@
+import os
 import json
 import tkinter
+import configparser
 import tkinter.simpledialog
 import tkinter.messagebox
 from datetime import datetime
@@ -9,11 +11,12 @@ from tkinter.colorchooser import askcolor
 import utils as U
 
 bd = 2 # borderwidth
-coding_bg = 'cyan' # information background
+coding_bg = 'cornflowerblue' # information background
 disabled_bg = 'light gray' # disabled background
 relief = 'groove' # ['flat', 'raised', 'sunken', 'solid', 'ridge', 'groove']
-
 panel_max = 5
+CONFIG = 'config.ini'
+ 
 
 class FrameworkFrame(tkinter.LabelFrame):
 
@@ -23,6 +26,21 @@ class FrameworkFrame(tkinter.LabelFrame):
         rawcode, incode = self.load_code(filename)
         self.encoding = incode['code']
         player = incode['player']
+        self.application = parent
+
+
+        # config = configparser.ConfigParser()
+        # if os.path.exists(os.path.join(self.application.cwd, CONFIG)):
+        #     config.read(os.path.join(self.application.cwd, CONFIG))
+        # else:
+        #     config.read(CONFIG)
+
+        # bd = config['codingframework']['borderwidth']
+        # coding_bg = config['codingframework']['background']
+        # relief = config['codingframework']['relief']
+        # disabled_bg = config['codingframework']['disabled_bg']
+        # panel_max = config['codingframework']['panel_max']
+
 
         tkinter.LabelFrame.__init__(self, parent)
         self.configure(background=coding_bg, 
@@ -32,7 +50,7 @@ class FrameworkFrame(tkinter.LabelFrame):
                        text='Coding framework: ', font=('bold',))
         self.grid(columnspan=2, row=1)
 
-        self.application = parent
+        
 
 #FIXME: Not sure this is the best place...
         self.application.container['code'] = rawcode

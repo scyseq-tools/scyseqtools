@@ -1,5 +1,6 @@
 import os
 import json
+import configparser
 
 # from pathlib import Path # Only used once in a comment...
 # import os.path as opath
@@ -12,14 +13,15 @@ from tkinter.colorchooser import askcolor
 
 import utils as U
 
-# from playercontrol import PlayerControl
 
-bd = 2 # borderwidth
-info_bg = 'yellow' # information background
-disabled_bg = 'light grey' # disabled background
-relief = 'groove'
-filename_width = 30
+#### leomodif : on met ces variables dans config.ini directement
 
+#bd = 2 # borderwidth
+#info_bg = 'yellow' # information background
+#disabled_bg = 'light grey' # disabled background
+#relief = 'groove'
+#filename_width = 30
+CONFIG = 'config.ini'
 # relief in ['flat', 'raised', 'sunken', 'solid', 'ridge', 'groove']
 
 class InfoFrame(tkinter.LabelFrame):
@@ -27,6 +29,18 @@ class InfoFrame(tkinter.LabelFrame):
     def __init__(self, parent, states=[None, None, None]):
         tkinter.LabelFrame.__init__(self, parent)
         self.application = parent
+
+        config = configparser.ConfigParser()
+        if os.path.exists(os.path.join(self.application.cwd, CONFIG)):
+            config.read(os.path.join(self.application.cwd, CONFIG))
+        else:
+            config.read(CONFIG)
+
+        bd = config['infoframe']['borderwidth']
+        info_bg = config['infoframe']['background']
+        relief = config['infoframe']['relief']
+        disabled_bg = config['infoframe']['disabled_bg']
+        filename_width = config['infoframe']['filename_width']
 
         self.configure(background=info_bg, borderwidth=bd, padx=20, pady=20, 
                        relief=relief, text='Information: ', font=(tkinter.font.BOLD,))
@@ -196,7 +210,7 @@ class InfoFrame(tkinter.LabelFrame):
 
 
     def save(self):
-        filename = self.data_file.get() 
+        filename = self.directory_msg.cget("text") +'/data/'+ self.data_file.get() 
         datafile = open(filename, 'w')
         json.dump(self.application.container, datafile)
         datafile.close()
@@ -216,7 +230,7 @@ class InfoFrame(tkinter.LabelFrame):
             json.dump(self.application.container, datafile)
             datafile.close()
             print('Data saved in %s' % filename)
-            self.data_file.set(filename)
+            self.data_file.set(self.set_name_of(filename))
 # Do not exist any more in the menu
 #            self.menu.fileMenu.entryconfig(8, state=tkinter.NORMAL) # Save
 #            self.menu.fileMenu.entryconfig(9, state=tkinter.DISABLED) # Save as
