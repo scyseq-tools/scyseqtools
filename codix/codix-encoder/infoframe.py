@@ -117,12 +117,10 @@ class InfoFrame(tkinter.LabelFrame):
             # self.loaded_media=False # Not Useful?
             if U.is_valid_media(fname):
                 is_valid = True
-                # mediaFile = fname.split('/')
-                # self.media_file.set(mediaFile[-1])
-                self.media_file.set(self.set_name_of(fname))
-
-                directoryFile = '/'.join(fname.split('/')[:-1])                
+                
+                directoryFile = '/'.join(fname.split('/')[:-2])                
                 self.directory_msg.config(text = directoryFile)
+                self.media_file.set(self.set_name_of(fname))
 
                 self.application.make_media_player(fname)
 
@@ -164,15 +162,17 @@ class InfoFrame(tkinter.LabelFrame):
         fname = tkinter.filedialog.askopenfilename(filetypes= data_filetypes,
                                                    initialdir= data_folder)
         if U.is_valid_filename(fname): 
-            self.data_file.set(self.set_name_of(fname))
             self.read_data(fname)
+            self.data_file.set(self.set_name_of(fname))
             self.data_load.config(state='disabled')
         else:
             tkinter.messagebox.showinfo('Cannot load code file', " Media file doesn't exist or not in directory %s "  % fname)
 
-    def set_name_of(self, st):
-        file = st.split('/')
-        return file[-1]
+    def set_name_of(self, st):# return the localisation of the file after the principal directory
+        file_directory = self.directory_msg.cget('text')
+        index = st.find(file_directory)
+        return st[index+len(file_directory):]
+        
 
 
     def read_data(self, fname):
@@ -185,10 +185,10 @@ class InfoFrame(tkinter.LabelFrame):
         # code file and this is not written in the codefile
         code = data['code']['filename']
         media = data['media']
-        fileDirectory = '/'.join(media.split('/')[:-1])
+        fileDirectory = '/'.join(media.split('/')[:-2])
         if os.path.exists(media) and U.is_valid_media(media):
-            self.media_file.set(self.set_name_of(media))
             self.directory_msg.config(text = fileDirectory)
+            self.media_file.set(self.set_name_of(media))
             self.application.make_media_player(media)
         else :
             tkinter.messagebox.showinfo('Cannot load media file', " Media file doesn't exist or not in directory %s "  % media)
