@@ -78,7 +78,41 @@ class Application(tkinter.Tk):
 #            self.cwd = tmp_cwd
 
         print('cwd: ', self.cwd)
+        self.interface = True 
 
+
+# Interface fonction 
+    def change_interface(self):
+        if self.interface :
+            self.change_color(['light_to_dark',self.control.elements, self.framework.elements, self.info.elements])
+            self.interface = False 
+            self.framework.interface_button.config(text='Light mode')
+        else :
+            self.change_color(['dark_to_light', self.control.elements, self.framework.elements, self.info.elements])
+            self.framework.interface_button.config(text='Dark mode')
+            self.interface = True
+
+    def change_color(self, list):
+        if list[0] == 'light_to_dark':
+            for zone in list[1:] :
+                for elem in zone :
+                    if elem == self.control.elements :
+                        elem.config(background = self.control.dark_bg)
+                    if elem == self.info.elements :
+                        elem.config(background = self.info.dark_bg)
+                    else :
+                        elem.config(background = self.framework.dark_bg)
+        else :
+            for zone in list[1:] :
+                for elem in zone :
+                    if elem == self.control.elements :
+                        elem.config(background = self.control.light_bg)
+                    if elem == self.info.elements :
+                        elem.config(background = self.info.light_bg)
+                    else:
+                        elem.config(background = self.framework.light_bg)
+
+    
 # Menu related functions
 #-----------------------
 

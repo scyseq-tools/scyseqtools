@@ -45,7 +45,8 @@ class PlayerControl(tkinter.LabelFrame):
         bd = config['playercontrol']['borderwidth']
         ctrl_bg = config['playercontrol']['background']
         relief = config['playercontrol']['relief']
-
+        self.dark_bg = config['playercontrol']['dark_bg']
+        self.light_bg = config['playercontrol']['light_bg']
 
         tkinter.LabelFrame.__init__(self, parent)
 
@@ -77,6 +78,9 @@ class PlayerControl(tkinter.LabelFrame):
                                               onvalue='regular', offvalue='continuous',
                                               background=ctrl_bg)
         self.mode_check.grid(column=0, row=2, sticky=tkinter.W)
+
+        
+        
         # FIXME: is it useful?
         # self.mode_check.bind('<Button>', self.change_mode)
 
@@ -118,6 +122,8 @@ class PlayerControl(tkinter.LabelFrame):
             tkinter.messagebox.showinfo('Cannot get max time', 
                                   'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
+
+        self.elements = [self, self.period_lab, self.time_lab, self.mode_check, self.unit_lab]
 
         self.times = []
         

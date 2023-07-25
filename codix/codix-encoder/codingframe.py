@@ -11,7 +11,9 @@ from tkinter.colorchooser import askcolor
 import utils as U
 
 bd = 2 # borderwidth
-coding_bg = 'cornflowerblue' # information background
+coding_bg = 'lightsteelblue' # information background
+dark_bg = 'dimgray'
+light_bg = 'lightsteelblue'
 disabled_bg = 'light gray' # disabled background
 relief = 'groove' # ['flat', 'raised', 'sunken', 'solid', 'ridge', 'groove']
 panel_max = 5
@@ -48,9 +50,11 @@ class FrameworkFrame(tkinter.LabelFrame):
                        padx=20, pady=20, 
                        relief=relief,
                        text='Coding framework: ', font=('bold',))
-        self.grid(columnspan=2, row=1)
+        self.grid(columnspan=2, row=2)
 
-        
+        # Interface color
+        self.interface_button = tkinter.Button(self, text = "Dark mode", command = self.application.change_interface)
+        self.interface_button.grid(row=3, column = 1, sticky = 'w')
 
 #FIXME: Not sure this is the best place...
         self.application.container['code'] = rawcode
@@ -63,13 +67,17 @@ class FrameworkFrame(tkinter.LabelFrame):
         self.spec_frame.grid(sticky=U.sticky_all)
 
         self.coding_frame = CodingFrame(parent=self, encoding=self.encoding)
-        self.coding_frame.grid(column=0, columnspan=3, sticky=U.sticky_all)
+        self.coding_frame.grid(column=0, columnspan=2, sticky=U.sticky_all)
         self.config_processing_buttons('disabled')
         self.bind('<Button-3>', self.change_color)
 
+        self.dark_bg = dark_bg
+        self.light_bg = light_bg
         self.data = {}
         # self.strdata = {}
         self.coding_comments = []
+        self.elements = [self]
+
 
     def load_code(self, fname):
 

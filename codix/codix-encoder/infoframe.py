@@ -41,6 +41,8 @@ class InfoFrame(tkinter.LabelFrame):
         relief = config['infoframe']['relief']
         disabled_bg = config['infoframe']['disabled_bg']
         filename_width = config['infoframe']['filename_width']
+        self.dark_bg = config['infoframe']['dark_bg']
+        self.light_bg = config['infoframe']['light_bg']
 
         self.configure(background=info_bg, borderwidth=bd, padx=20, pady=20, 
                        relief=relief, text='Information: ', font=(tkinter.font.BOLD,))
@@ -60,7 +62,7 @@ class InfoFrame(tkinter.LabelFrame):
         self.directory_msg = tkinter.Label(self, text= 'Please load file', background=info_bg)
         self.directory_msg.grid(row=1, column = 1,)
         
-
+        
         
         # Media File
         self.media_label = tkinter.Label(self, text='Media file: ', background=info_bg)
@@ -103,6 +105,9 @@ class InfoFrame(tkinter.LabelFrame):
                                         command=self.ask_data)
         self.data_load.grid(row=4, column=2, sticky=tkinter.W)
         
+# Interface elements
+        self.elements = [self, self.directory_label, self.media_label, self.data_label, self.code_label, self.directory_msg]
+
         self.bind('<Button-3>', self.change_color)
 
 
@@ -210,7 +215,7 @@ class InfoFrame(tkinter.LabelFrame):
 
 
     def save(self):
-        filename = self.directory_msg.cget("text") +'/data/'+ self.data_file.get() 
+        filename = self.directory_msg.cget("text") + self.data_file.get() 
         datafile = open(filename, 'w')
         json.dump(self.application.container, datafile)
         datafile.close()
