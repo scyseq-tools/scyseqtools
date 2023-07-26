@@ -180,6 +180,7 @@ class Application(tkinter.Tk):
 
     @context.setter
     def context(self, value):
+        print("coding_length : " ,self.framework.coding_length)
         if value == "initial":
             self._context = "processing"
             print('Context Initial')
@@ -228,15 +229,28 @@ class Application(tkinter.Tk):
         elif value == "processing":
             print('Context Processing')
             self.control.play_but.config(state='normal')
-            if self.time_step == self.times_length - 1:
+            if self.time_step == self.times_length - 1 :
                 self.control.forward_but.config(state='disabled')
                 self.control.back_but.config(state='normal')
-            elif self.time_step == 0:
+            elif self.time_step == 0 :
+                # if self.framework.nb_records == 0 :
+                #     self.control.forward_but.config(state = 'disabled')
+                # else:    
                 self.control.forward_but.config(state='normal')
                 self.control.back_but.config(state='disabled')
             else:
+                # if self.framework.nb_records == 0 :
+                #     self.control.forward_but.config(state = 'disabled')
+                # else :
+                if self.framework.coding_length < self.times_length - 1 : # and self.time_step == self.times_length - 1:
+                    self.control.forward_but.config(state='normal')
+                    print("cas1")
+                else :
+                    self.control.forward_but.config(state='disabled')
+                    print("cas2")
                 self.control.back_but.config(state='normal')
-                self.control.forward_but.config(state='normal')
+                
+            
             self.framework.display_codes(self.time_step)
 
             # self.info.save_data()
@@ -253,6 +267,7 @@ class Application(tkinter.Tk):
 
         else: # FIXME: raise error?
             pass
+        
 
     @property
     def times_length(self):
@@ -275,12 +290,14 @@ class Application(tkinter.Tk):
             self.framework.config_processing_buttons('normal')
 
         elif value == 1:
-                self.__time_step = min(self.__time_step + 1, self.times_length-1)
-                self.control.time = self.control.times[self.time_step]
+            self.__time_step = min(self.__time_step + 1, self.times_length-1)
+            self.control.time = self.control.times[self.time_step]
+            self.framework.config_processing_buttons('disabled')
 
         elif value == -1:
             self.__time_step = max(0, self.__time_step - 1)
             self.control.time = self.control.times[self.time_step]
+            self.framework.config_processing_buttons('disabled')
 
         elif value == 'last':
             self.__time_step = self.times_length - 1

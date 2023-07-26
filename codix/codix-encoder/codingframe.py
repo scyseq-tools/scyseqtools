@@ -77,6 +77,7 @@ class FrameworkFrame(tkinter.LabelFrame):
         # self.strdata = {}
         self.coding_comments = []
         self.elements = [self]
+        #self.nb_records = 0
 
 
     def load_code(self, fname):
@@ -187,9 +188,11 @@ class FrameworkFrame(tkinter.LabelFrame):
             (time_step == self.application.times_length-1 and \
             self.coding_length == self.application.times_length-2):
             comment = ''
-        else:
+        else :
             comment = self.coding_comments[time_step-1]
+       
         self.coding_frame.comment.set(comment)
+        
 
 #    def erase_codes(self):
 #        panellist = self.framework.coding_frame.panels
@@ -218,16 +221,18 @@ class FrameworkFrame(tkinter.LabelFrame):
                 return
             
             self.config_processing_buttons('disabled')
-            ######leomodif
-            self.application.control.play_but.config(state='normal')
-
+            
             # Second passage to record the symbols
-            if self.coding_length == self.application.times_length - 2:
-                # Append new symbol / comment
-                self.set_data(method='append')
-            else:
+            if self.application.time_step <= self.coding_length :
                 # Replace previous symbols / comments
                 self.set_data(method='replace')
+            else :
+                # Append new symbol / comment
+                
+                self.set_data(method='append')
+
+
+
 
 #            print(self.data)
 #            print(self.strdata)
@@ -237,9 +242,11 @@ class FrameworkFrame(tkinter.LabelFrame):
             self.application.container['comments'] = self.coding_comments
 
             print(self.application.container)
-
-            self.application.context = 'processing'
+            
             self.application.info.save_data()
+            
+            self.application.context = 'processing'
+            
 
         else: # continuous coding
             raise NotImplementedError
@@ -271,12 +278,15 @@ class FrameworkFrame(tkinter.LabelFrame):
 
     @property
     def coding_length(self):
-        panellist = self.coding_frame.panels
-        lseq = [self.data[site.name][code] for site in panellist 
-                                           for code in site.coding.keys()]
-        assert (all([len(s) == len(lseq[0]) for s in lseq]))
+        if len(self.data) == 0 :
+            return 0
+        else :
+            panellist = self.coding_frame.panels
+            lseq = [self.data[site.name][code] for site in panellist 
+                                            for code in site.coding.keys()]
+            assert (all([len(s) == len(lseq[0]) for s in lseq]))
 
-        return len(lseq[0])
+            return len(lseq[0])
 
     def change_color(self, event):
         colortuple = askcolor()

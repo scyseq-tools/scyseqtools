@@ -241,6 +241,7 @@ class InfoFrame(tkinter.LabelFrame):
 #            self.menu.fileMenu.entryconfig(9, state=tkinter.DISABLED) # Save as
         else:
             tkinter.messagebox.showinfo('File not saved', 'File has not been saved')
+            self.save_data()
 
     
 
