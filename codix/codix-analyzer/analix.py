@@ -13,7 +13,7 @@ import tkinter.filedialog
 # from ladon.clients.jsonwsp import JSONWSPClient
 from methods import Method
 
-import inspect
+# FIXME: this is needed but not directly used in this module...
 from symbolix import Symbolix
 
 from myladon import myservices
@@ -24,7 +24,7 @@ __licence__ = 'GPL'
 
 PLATFORM = sys.platform
 
-SERVICE = 'http://localhost:8081/symbolix/jsonwsp/description'
+# SERVICE = 'http://localhost:8081/symbolix/jsonwsp/description'
 
 class Application(tkinter.Tk):
 
@@ -33,23 +33,26 @@ class Application(tkinter.Tk):
         tkinter.Tk.__init__(self)
         Pmw.initialise(self)
         
-        self.service = tkinter.StringVar()
-        self.service.set(SERVICE)
+#        self.service = tkinter.StringVar()
+#        self.service.set(SERVICE)
 
         self.data = {} # data[file][...]
         #self.appstate = {}
 
         self.ddir = tkinter.StringVar()
         self.ddir.set('')
+
 #        self.filelist = tkinter.StringVar()
 #        self.filelist.set('')
-        self.methods = []
+        # self.methods = [] 
+
         self.filelist = []
         self.selectedlist = []
+
         # self.sitelist = tkinter.StringVar()
         # self.codelist = tkinter.StringVar()
 
-        self.json_client = None
+#        self.json_client = None
 
         self.notebook = Pmw.NoteBook(self)
         self.notebook.pack(fill = 'both', expand = 1, padx = 10, pady = 10)
@@ -58,16 +61,16 @@ class Application(tkinter.Tk):
         config_frame = self.notebook.add('Configuration')
         self.notebook.tab('Configuration').focus_set()
         
-        service_lab = tkinter.Label(config_frame, text='Service: ')
-        service_ent = tkinter.Entry(config_frame, textvariable=self.service,
-                                    state=tkinter.NORMAL, 
-                                    disabledbackground='white',
-                                    width=50)
-        service_but = tkinter.Button(config_frame, text='Get methods',
-                                     command=self.get_methods)
-        service_lab.grid(column=0, row=0)
-        service_ent.grid(column=1, row=0)
-        service_but.grid(column=2, row=0)
+#        service_lab = tkinter.Label(config_frame, text='Service: ')
+#        service_ent = tkinter.Entry(config_frame, textvariable=self.service,
+#                                    state=tkinter.NORMAL, 
+#                                    disabledbackground='white',
+#                                    width=50)
+#        service_but = tkinter.Button(config_frame, text='Get methods',
+#                                     command=self.get_methods)
+#        service_lab.grid(column=0, row=0)
+#        service_ent.grid(column=1, row=0)
+#        service_but.grid(column=2, row=0)
 
         dir_lab = tkinter.Label(config_frame, text='Directory')
         dir_ent = tkinter.Entry(config_frame, textvariable=self.ddir,
@@ -103,19 +106,19 @@ class Application(tkinter.Tk):
 
         self.notebook.setnaturalsize()
 
-    def get_methods(self):
-        """
-        Ask the service about methods so build the rest of the interface
-        """
-#        self.json_client = JSONWSPClient(self.service.get())
-#        list_of_methods = self.json_client.list_methods()
-
-#        funs = inspect.getmembers(Symbolix, predicate=inspect.isfunction)
-        # list_of_methods = [f[0] for f in funs]
-        # self.methods = [Method(name, self) for name in list_of_methods]
-#        self.methods = [Method(f[0], f[1], self) for f in funs]
-
-#       print(myservices.info)
+#    def get_methods(self):
+#        """
+#        Ask the service about methods so build the rest of the interface
+#        """
+##        self.json_client = JSONWSPClient(self.service.get())
+##        list_of_methods = self.json_client.list_methods()
+#
+##        funs = inspect.getmembers(Symbolix, predicate=inspect.isfunction)
+#        # list_of_methods = [f[0] for f in funs]
+#        # self.methods = [Method(name, self) for name in list_of_methods]
+##        self.methods = [Method(f[0], f[1], self) for f in funs]
+#
+##       print(myservices.info)
 
         self.methods = [Method(m, self) for m in myservices.info]
 
@@ -140,6 +143,9 @@ class Application(tkinter.Tk):
         sites = []
         codes = {}
         for fname in file_tuple:
+
+# FIXME: use scikits.symbolic.iosymb.read_codix!!!
+
             fid = open(os.path.join(self.ddir.get(), fname), 'r')
             wholedata = json.load(fid)
             fid.close()
