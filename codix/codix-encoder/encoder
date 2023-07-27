@@ -79,7 +79,6 @@ class Application(tkinter.Tk):
 
         print('cwd: ', self.cwd)
         self.interface = True 
-        self.recorded_steps = []
 
 
 # Interface fonction 
@@ -182,7 +181,6 @@ class Application(tkinter.Tk):
     @context.setter
     def context(self, value):
         print("coding_length : " ,self.framework.coding_length)
-        print("recorded steps : ", self.recorded_steps)
         if value == "initial":
             self._context = "processing"
             print('Context Initial')
@@ -251,8 +249,8 @@ class Application(tkinter.Tk):
                     self.control.forward_but.config(state='disabled')
                     print("cas2")
                 self.control.back_but.config(state='normal')
-            print("len self.record.... ", len(self.recorded_steps), 'time step ', self.time_step)
-            if  len(self.recorded_steps) > self.time_step :
+
+            if  self.framework.coding_length > self.time_step :
                 self.control.forward_but.config(state='normal')
 
             

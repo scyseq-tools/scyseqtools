@@ -230,8 +230,7 @@ class FrameworkFrame(tkinter.LabelFrame):
                 # Append new symbol / comment
                 
                 self.set_data(method='append')
-            if self.application.time_step not in self.application.recorded_steps :
-                self.application.recorded_steps.append(self.application.time_step)
+            
 
 
 
