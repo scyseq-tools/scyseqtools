@@ -57,8 +57,8 @@ class Application(tkinter.Tk):
                           'code': {}, # dictionary taken from the code file
                           'times': [], # sample times (in ms) taken from the player
                           'comments': [], # sample comments taken from codingframe
-                          'data': {}, # data
-                          'recorded_steps': {}} # recorded steps, useful for retrieve session
+                          'data': {}} # data
+                          
                         
         self._context = "standard"
         

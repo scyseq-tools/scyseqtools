@@ -206,7 +206,15 @@ class InfoFrame(tkinter.LabelFrame):
             tkinter.messagebox.showinfo('Cannot load code file', " Code file doesn't exist or not in directory %s "  % code)     
 # lpcomment: everything at the good place in the container
         self.application.container.update(data)
-        self.application.recorded_steps = data['recorded_steps']
+
+        #### LEOMODIF ici on a 2 choix, soit on met le recorded_step dans le container pour retrieve plus facilement mais on en a pas nécéssairement besoin 
+            # soit on crée une liste de la longueur des temps déja visionnés (donc enregistrés) pour éviter de surcharger le container
+
+        #self.application.recorded_steps = data['recorded_steps']
+        list = []
+        for i in range(1,len(data['times'])):
+            list.append(i)
+        self.application.recorded_steps = list 
         print(self.application.container)
         
 

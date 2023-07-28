@@ -242,7 +242,6 @@ class FrameworkFrame(tkinter.LabelFrame):
 
             self.application.container['data'] = self.data
             self.application.container['comments'] = self.coding_comments
-            self.application.container['recorded_steps'] = self.application.recorded_steps
             print(self.application.container)
             
             self.application.info.save_data()
