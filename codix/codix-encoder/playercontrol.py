@@ -45,12 +45,17 @@ class PlayerControl(tkinter.LabelFrame):
         bd = config['playercontrol']['borderwidth']
         ctrl_bg = config['playercontrol']['background']
         relief = config['playercontrol']['relief']
-
+        self.dark_bg = config['playercontrol']['dark_bg']
+        self.light_bg = config['playercontrol']['light_bg']
 
         tkinter.LabelFrame.__init__(self, parent)
+
         self.configure(background=ctrl_bg, borderwidth=bd, padx=20, pady=20,
-                       relief=relief, text='Control: ', font=('bold',))
+                                relief=relief, text='Control: ', font=('bold',))
+
+        
         self.grid(column=1, row=0)
+        
         
         self._mode = tkinter.StringVar(value='continuous')
         self._period = tkinter.StringVar(value='5')
@@ -60,9 +65,11 @@ class PlayerControl(tkinter.LabelFrame):
         self.back_but = tkinter.Button(self, text='Back', command=self.backward) 
         self.back_but.grid(row=1, column=0, sticky=tkinter.W)
 
+
         self.play_but = tkinter.Button(self, text='Play/Pause', command=self.playpause)
         self.play_but.grid(row=1, column=1, sticky=tkinter.W)
-        
+
+
         self.forward_but = tkinter.Button(self, text='Forward', command=self.forward)
         self.forward_but.grid(row=1, column=2)
        
@@ -71,6 +78,9 @@ class PlayerControl(tkinter.LabelFrame):
                                               onvalue='regular', offvalue='continuous',
                                               background=ctrl_bg)
         self.mode_check.grid(column=0, row=2, sticky=tkinter.W)
+
+        
+        
         # FIXME: is it useful?
         # self.mode_check.bind('<Button>', self.change_mode)
 
@@ -113,6 +123,8 @@ class PlayerControl(tkinter.LabelFrame):
                                   'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
 
+        self.elements = [self, self.period_lab, self.time_lab, self.mode_check, self.unit_lab]
+
         self.times = []
         
     def step_play(self, dt):
@@ -124,6 +136,7 @@ class PlayerControl(tkinter.LabelFrame):
         self.player.play()
         tt.start()
         
+        
     
     def cont_play(self):
         print('Start continuous play at: ', self.time)
@@ -133,6 +146,9 @@ class PlayerControl(tkinter.LabelFrame):
     def dopause(self):
         self.player.set_pause(do_pause=1)
         self.state = "paused"
+        #### leomodif
+        if self.application.context == 'processing':
+            self.play_but.config(state='disabled')
 
 
     def playpause(self):
@@ -168,6 +184,11 @@ class PlayerControl(tkinter.LabelFrame):
         else:
 
             raise ValueError('Unknown player mode' + self.mode)
+
+        if self.application.context == 'processing' :
+            self.application.context = 'not_recorded'
+
+        print("context :" , self.application.context)
      
     def backward(self):
         self.move('back')

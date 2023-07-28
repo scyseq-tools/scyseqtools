@@ -52,8 +52,6 @@ class Application(tkinter.Tk):
 
         self.container = {'history': [], # [(date, observer, comment), ...]
                           'media': '', # path for the media file
-                          # lpcomment: en quoi est-ce utile ou necessaire?
-                          'find_code': '', 
                           'code': {}, # dictionary taken from the code file
                           'times': [], # sample times (in ms) taken from the player
                           'comments': [], # sample comments taken from codingframe
@@ -79,7 +77,42 @@ class Application(tkinter.Tk):
 #            self.cwd = tmp_cwd
 
         print('cwd: ', self.cwd)
+        self.interface = True 
+        self.recorded_steps = []
 
+
+# Interface fonction 
+    def change_interface(self):
+        if self.interface :
+            self.change_color(['light_to_dark',self.control.elements, self.framework.elements, self.info.elements])
+            self.interface = False 
+            self.framework.interface_button.config(text='Light mode')
+        else :
+            self.change_color(['dark_to_light', self.control.elements, self.framework.elements, self.info.elements])
+            self.framework.interface_button.config(text='Dark mode')
+            self.interface = True
+
+    def change_color(self, list):
+        if list[0] == 'light_to_dark':
+            for zone in list[1:] :
+                for elem in zone :
+                    if elem == self.control.elements :
+                        elem.config(background = self.control.dark_bg)
+                    if elem == self.info.elements :
+                        elem.config(background = self.info.dark_bg)
+                    else :
+                        elem.config(background = self.framework.dark_bg)
+        else :
+            for zone in list[1:] :
+                for elem in zone :
+                    if elem == self.control.elements :
+                        elem.config(background = self.control.light_bg)
+                    if elem == self.info.elements :
+                        elem.config(background = self.info.light_bg)
+                    else:
+                        elem.config(background = self.framework.light_bg)
+
+    
 # Menu related functions
 #-----------------------
 
@@ -137,7 +170,7 @@ class Application(tkinter.Tk):
         """
         creates the coding frame
         """
-        self.framework = FrameworkFrame(parent=self, filename=fname)
+        self.framework = FrameworkFrame(parent=self, filename=fname) 
         self.framework.grid(row=2, column=0, sticky=U.sticky_all)
         self.state['code_loaded'] = True
 
@@ -161,7 +194,8 @@ class Application(tkinter.Tk):
 
             self.container['times'] = self.control.times
             self.container['data'] = self.framework.data
-            self.container['media'] = self.info.media_file.get()
+            self.container['media'] = self.info.directory_msg.cget("text") + '/' + self.info.media_file.get()
+
 
             self.__time_step = 0
             print('TIME_STEP: ', self.time_step)
@@ -169,7 +203,8 @@ class Application(tkinter.Tk):
         elif value == "resume":
             self._context = "processing"
             print('Context Resume session')
-            self.control.config_buttons({self.control.play_but : 'normal', 
+            #### leomodif : j'ai commenté le premier bouton et je l'ai réactivé quand on clique sur record
+            self.control.config_buttons({#self.control.play_but : 'normal', 
                                     self.control.back_but : 'disabled',
                                     self.control.forward_but : 'disabled', 
                                     self.control.mode_check : 'disabled',
@@ -192,17 +227,44 @@ class Application(tkinter.Tk):
 
         elif value == "processing":
             print('Context Processing')
+            print("Recorded steps : ", self.recorded_steps)
             self.control.play_but.config(state='normal')
-            if self.time_step == self.times_length - 1:
-                self.control.forward_but.config(state='disabled')
-                self.control.back_but.config(state='normal')
-            elif self.time_step == 0:
-                self.control.forward_but.config(state='normal')
+            # if self.time_step == self.times_length - 1 :
+            #     self.control.forward_but.config(state='disabled')
+            #     self.control.back_but.config(state='normal')
+            # elif self.time_step == 0 :
+            #     self.control.back_but.config(state='disabled')
+            # else:
+            #     self.control.back_but.config(state='normal')
+
+            # if len(self.recorded_steps) > self.time_step :
+            #     self.control.forward_but.config(state='normal')
+
+            
+            if self.time_step == 0 :
                 self.control.back_but.config(state='disabled')
             else:
                 self.control.back_but.config(state='normal')
+
+            if len(self.recorded_steps) > self.time_step :
                 self.control.forward_but.config(state='normal')
+            else :
+                self.control.forward_but.config(state='disabled')
+
+
+
+
             self.framework.display_codes(self.time_step)
+
+        elif value == 'not_recorded':
+            self.control.config_buttons({self.control.play_but : 'disabled', 
+                                    self.control.back_but : 'disabled',
+                                    self.control.forward_but : 'disabled', 
+                                    self.control.mode_check : 'disabled',
+                                    self.control.period_ent : 'disabled',
+                                    self.control.time_ent: 'disabled'})
+            self.framework.config_processing_buttons('normal')
+
 
             # self.info.save_data()
         elif value == 'standard':
@@ -218,6 +280,7 @@ class Application(tkinter.Tk):
 
         else: # FIXME: raise error?
             pass
+        
 
     @property
     def times_length(self):
@@ -240,12 +303,14 @@ class Application(tkinter.Tk):
             self.framework.config_processing_buttons('normal')
 
         elif value == 1:
-                self.__time_step = min(self.__time_step + 1, self.times_length-1)
-                self.control.time = self.control.times[self.time_step]
+            self.__time_step = min(self.__time_step + 1, self.times_length-1)
+            self.control.time = self.control.times[self.time_step]
+            self.framework.config_processing_buttons('disabled')
 
         elif value == -1:
             self.__time_step = max(0, self.__time_step - 1)
             self.control.time = self.control.times[self.time_step]
+            self.framework.config_processing_buttons('disabled')
 
         elif value == 'last':
             self.__time_step = self.times_length - 1

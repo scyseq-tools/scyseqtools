@@ -220,10 +220,7 @@ class NewCode(tkinter.LabelFrame):
         else:
             all_specs.update({'sites': self.sites_container})
 
-        print(all_specs)
-
-        html_report = H.to_html_report(all_specs)
-        print(html_report)
+        
 
         code_folder = os.path.expanduser(self.application.cwd)
         filename = tkinter.filedialog.asksaveasfilename(
@@ -234,6 +231,12 @@ class NewCode(tkinter.LabelFrame):
         if U.is_valid_filename(filename):
             if not filename.endswith('.jod'):
                 filename += '.jod'
+            all_specs['filename'] = filename
+            print(all_specs)
+            
+            html_report = H.to_html_report(all_specs)
+            print(html_report)
+
             datafile = open(filename, 'w')
             json.dump(all_specs, datafile)
             datafile.close()
