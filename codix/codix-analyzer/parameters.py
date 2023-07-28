@@ -10,7 +10,7 @@ import symbolix
 
 ITEMSEP = ' |,|-|;|:|/'
 
-class Parameter(object):
+class Parameter():
     """
     Class to deal with different parameter types
     """
@@ -27,7 +27,7 @@ class Parameter(object):
         pframe = self.frame
         description = tkinter.LabelFrame(pframe, text='Description')
 
-        tkinter.Label(description, 
+        tkinter.Label(description,
                 text=' '.join(['Type:', str(annotation)])).grid()
 
 #        tkinter.Label(description,
@@ -35,10 +35,10 @@ class Parameter(object):
 #        tkinter.Label(description,
 ##          text=' '.join(['Optional: ', str(status['optional'])])).grid()
         description.grid(sticky=tkinter.W)
-        
+
         if annotation is symbolix.Data:
             self.value = Sequence()
-            self.tk = Input_Sequence(pframe, variable=self.value)
+            self.tk = InputSequence(pframe, variable=self.value)
         else:
             self.value = tkinter.StringVar()
             self.tk = tkinter.Entry(pframe, textvariable=self.value)
@@ -56,16 +56,14 @@ class Parameter(object):
             s_site, s_code = outval['site'], outval['code']
             retval = []
             for fichier in self.method.selected_files:
-                s = self.gdata[fichier][s_site][s_code]
+                seq = self.gdata[fichier][s_site][s_code]
                 retval.append({'filename': os.path.basename(fichier),
                                'sitename': s_site,
                                'codename': s_code,
-                               'sequence': s})
+                               'sequence': seq})
         else:
-#           FIXME: the split is very restrictive...
             val = self.value.get()
             tmp = [c for c in re.split(ITEMSEP, val) if c!='']
-            # tmp = self.value.get().split(', ')
             print('tmp: ', tmp)
             print(self.annotation)
             if len(tmp) == 1:
@@ -77,9 +75,9 @@ class Parameter(object):
                     try:
                         retval = int(tmp[0])
                     except:
-                        raise ValueError('Bad parameter %s' % self.name)
+                        raise ValueError(f'Bad parameter {self.name}')
                 else:
-                    raise ValueError('Bad parameter %s' % self.name)
+                    raise ValueError(f'Bad parameter {self.name}')
             else:
                 if self.annotation == list[str]:
                     print("list string case")
@@ -89,12 +87,11 @@ class Parameter(object):
                     try:
                         retval = [int(s) for s in tmp]
                     except:
-                        raise ValueError('Bad parameter %s' % self.name)
+                        raise ValueError(f'Bad parameter {self.name}')
                 else:
-                    raise ValueError('Bad parameter %s' % self.name)
+                    raise ValueError(f'Bad parameter {self.name}')
 
         return retval
-        
 
     def update(self, state):
         """
@@ -139,7 +136,7 @@ class Sequence(object):
         self.gsites = state['sites']
         self.gcodes = state['codes']
 
-class Input_Sequence(tkinter.Frame):
+class InputSequence(tkinter.Frame):
     """
     Input of list of sequences
     """
@@ -150,7 +147,7 @@ class Input_Sequence(tkinter.Frame):
         """
         self.sites = []
         self.codes = {}
-        
+
         def set_code():
             """
             Local function to set the code when th recording site is selected
@@ -163,15 +160,15 @@ class Input_Sequence(tkinter.Frame):
         self.sitelist = tkinter.StringVar()
         self.codelist = tkinter.StringVar()
 
-        s_lb, s_choice = U.listbox(self, 'Site', self.sitelist, multiple=False) 
+        s_lb, s_choice = U.listbox(self, 'Site', self.sitelist, multiple=False)
         s_lb.grid(column=1, row=0)
-        
-        c_lb, c_choice = U.listbox(self, 'Code', self.codelist, multiple=False) 
+
+        c_lb, c_choice = U.listbox(self, 'Code', self.codelist, multiple=False)
         c_lb.grid(column=2, row=0)
 
         site_but = tkinter.Button(self, text='Select', command=set_code)
         site_but.grid(column=1, row=1)
-        
+
         # this is the trick to get access to the listboxes
         variable.sget = s_choice
         variable.cget = c_choice
@@ -184,4 +181,3 @@ class Input_Sequence(tkinter.Frame):
         self.codes = state['codes']
         self.sitelist.set(' '.join(self.sites))
         self.codelist.set('')
-

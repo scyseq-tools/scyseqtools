@@ -6,8 +6,9 @@ import tkinter.filedialog
 
 import pathlib
 
-# import os
+import os
 # import inspect
+import sys
 from parameters import Parameter
 # import utils as U
 # import symbolix
@@ -88,8 +89,8 @@ class Method():
         if len(output) == 2:
         # FIXME: Suppose this is a table
             fname, table = output
-            with open(os.path.join(outdir, fname), 'w') as datafile:
-                    datafile.write(line)
+            with open(os.path.join(outdir, fname), 'w', encoding='utf-8') as datafile:
+                datafile.writelines(table)
         else:
         # FIXME: Suppose this is a list of sequences...
             for elem in output:

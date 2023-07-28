@@ -15,10 +15,10 @@ def listbox(upper, title, choice_list, multiple):
     label.grid(row=0, column=0, sticky=(tkinter.N, tkinter.W))
 
     yscroll = tkinter.Scrollbar(master, orient=tkinter.VERTICAL)
-    yscroll.grid(row=1, column=1, 
+    yscroll.grid(row=1, column=1,
                  sticky=(tkinter.N, tkinter.S, tkinter.W))
     xscroll = tkinter.Scrollbar(master, orient=tkinter.HORIZONTAL)
-    xscroll.grid(row=2, column=0, 
+    xscroll.grid(row=2, column=0,
               sticky=(tkinter.E, tkinter.S, tkinter.W))
 
 # NB: exportselection=False means that you can select for each listbox
@@ -32,9 +32,8 @@ def listbox(upper, title, choice_list, multiple):
                                     yscrollcommand=yscroll.set,
                                     xscrollcommand=xscroll.set,
                                     exportselection=False)
-    choice.grid(row=1, column=0, sticky=(tkinter.N, tkinter.E)) 
+    choice.grid(row=1, column=0, sticky=(tkinter.N, tkinter.E))
     yscroll['command'] = choice.yview
     xscroll['command'] = choice.xview
 
     return master, choice
-

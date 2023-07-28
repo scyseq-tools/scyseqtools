@@ -1,20 +1,20 @@
 """
 A Tk client for symbolic analysis
 """
+
+from methods import Method
+from symbolix import Symbolix
+
 import os
 import sys
-# import json
 import inspect
 import pathlib
 
 import tkinter
 import tkinter.filedialog
-import tkinter.messagebox 
+import tkinter.messagebox
 
 import Pmw
-
-from methods import Method
-from symbolix import Symbolix
 
 sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
 import iosymb as IO
@@ -27,14 +27,16 @@ __licence__ = 'GPL'
 ANALYZERDIR = 'analyzer_files'
 
 class Application(tkinter.Tk):
+    """
+    The main frame for the analyzer application
+    """
 
     def __init__(self):
 #       Create and pack the NoteBook.
         tkinter.Tk.__init__(self)
         Pmw.initialise(self)
-        
-        self.data = {} # data[file][...]
 
+        self.data = {} # data[file][...]
         self.ddir = tkinter.StringVar()
         self.ddir.set('')
         self.cwd = None
@@ -45,14 +47,13 @@ class Application(tkinter.Tk):
 
         self.notebook = Pmw.NoteBook(self)
         self.notebook.pack(fill = 'both', expand = 1, padx = 10, pady = 10)
-        
         # Add the "Configuration" page to the notebook.
         config_frame = self.notebook.add('Configuration')
         self.notebook.tab('Configuration').focus_set()
 
         dir_lab = tkinter.Label(config_frame, text='Directory')
         dir_ent = tkinter.Entry(config_frame, textvariable=self.ddir,
-                                    state=tkinter.NORMAL, 
+                                    state=tkinter.NORMAL,
                                     disabledbackground='white',
                                     width=50)
         self.dir_but = tkinter.Button(config_frame, text='Choose directory',
@@ -60,7 +61,7 @@ class Application(tkinter.Tk):
         dir_lab.grid(column=0, row=1)
         dir_ent.grid(column=1, row=1)
         self.dir_but.grid(column=2, row=1)
-        
+
         grp = Pmw.Group(config_frame, tag_text='Files')
         grp.grid(row=2, column=0, columnspan=3)
         self.available = Pmw.ScrolledListBox(grp.interior(),
@@ -75,7 +76,7 @@ class Application(tkinter.Tk):
                                   command=self.load_file)
         self.file_but.grid(row=2, column=2)
 
-        self.selected = Pmw.ScrolledText(grp.interior(), 
+        self.selected = Pmw.ScrolledText(grp.interior(),
                                labelpos='nw',
                                label_text='Selected files')
         self.selected.grid(row=2, column=3)
@@ -98,17 +99,17 @@ class Application(tkinter.Tk):
         self.ddir.set(outdir)
         # ddir = self.ddir.get()
         if 'data' in outdir:
-            wd = outdir.split('data')[0]
+            wdy = outdir.split('data')[0]
         else:
-            wd = outdir
-        cwd = os.path.join(wd, ANALYZERDIR)
+            wdy = outdir
+        cwd = os.path.join(wdy, ANALYZERDIR)
         if not os.path.exists(cwd):
             if tkinter.messagebox.askokcancel(\
                        title='Create working directory?',
                        message=f'Create {cwd}?'):
                 pathlib.Path(cwd).mkdir()
             else:
-                cwd = wd
+                cwd = wdy
         tkinter.messagebox.showinfo(title='Current working directory',
                        message=f'Files will be saved in folders of {cwd}')
         self.cwd = cwd
@@ -120,18 +121,6 @@ class Application(tkinter.Tk):
         self.selected.setvalue('')
         self.dir_but.config(state='disabled')
 
-#    @property
-#    def cwd(self):
-#        """
-#        Current working directory
-#        """
-#        ddir = self.ddir.get()
-#        if 'data' in ddir:
-#            cwd = ddir.split('data')[0]
-#        else:
-#            cwd = ddir
-#        return cwd
-        
     def load_file(self):
         """
         Loads the data file

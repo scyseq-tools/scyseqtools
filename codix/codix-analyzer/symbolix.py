@@ -1,7 +1,7 @@
 """
 Module used to serve the symbolic routines in the context of behavioral studies
 """
-import io
+# import io
 # import json
 import sys
 import typing
@@ -53,7 +53,10 @@ Data = list[dict[str, typing.Any]]
 #                'doc': 'The sequence and its alphabet'}
 
 #class File(LadonType):
-class File(object):
+class File():
+    """
+    I'm not sure this is very useful...
+    """
     pass
 #    """
 #    A file object with a name and a data buffer
@@ -111,7 +114,7 @@ def to_table(headers, rows):
         table.append(SEP.join([str(item) for item in row]) + '\n')
     return table
 
-class Symbolix(object):
+class Symbolix():
     """
     Main class for our Behavior server
     """
@@ -185,7 +188,7 @@ class Symbolix(object):
             seq = dat['sequence']
             retlist.append(A.lempel_ziv(seq))
             rows.append(retlist)
-        
+
         return (filename, to_table(headers,rows))
 
     def transition_probability(self, lod:Data, step:int) -> File :
@@ -230,7 +233,7 @@ class Symbolix(object):
         headers = ['Filename']
         seq1 = lod1[0]['sequence']
         seq2 = lod2[0]['sequence']
-        headers.extend(['%s-%s' % (sfrom.strval, sto.strval) \
+        headers.extend([f'{sfrom.strval}-{sto.strval}' \
             for sfrom, sto in itertools.product(seq1.alphabet, seq2.alphabet)])
 
         rows = []
@@ -243,7 +246,7 @@ class Symbolix(object):
             rows.append(retlist)
 
         return (filename, to_table(headers, rows))
- 
+
     def join(self, lod1:Data, lod2:Data) -> File :
         """
         Joins two sequences
@@ -274,7 +277,7 @@ class Symbolix(object):
 
             #retfile = sequence_to_file(filename, sitename, codename, retseq)
             # retlist.append(retfile)
-            retlist.append((filename, {sitename: {codename: restseq}}))
+            retlist.append((filename, {sitename: {codename: retseq}}))
 
         return retlist
 
@@ -292,7 +295,7 @@ class Symbolix(object):
         retlist = []
 
         for dat in lod:
- 
+
             seq = dat['sequence']
             # new_alphabet = S.Alphabet(dict([(n,s) for n, s in enumerate(alphabet)]))
             new_alphabet = S.Alphabet(alphabet)
@@ -307,6 +310,6 @@ class Symbolix(object):
 
 #            retfile = sequence_to_file(filename, dat.sitename, name, newseq)
 #            retlist.append(retfile)
-            retfile.append((filename, {dat['sitename']: {name: newseq}}))
+            retlist.append((filename, {dat['sitename']: {name: newseq}}))
 
         return retlist
