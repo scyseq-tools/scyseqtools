@@ -11,7 +11,7 @@ import os
 import pathlib
 
 import tkinter
-import tkinter.filedialog
+from tkinter import filedialog
 import tkinter.messagebox
 import tkinter.simpledialog
 
@@ -30,6 +30,7 @@ __version__ = '0.9'
 __author__ = 'L. Pezard'
 __licence__ = 'GPL'
 
+CWD_FILE = 'cwdfile.ini'
 DEFAULT_CWD = '~'
 # DEFAULT_CWD = "~/Documents/videos_synchrony/vidéosynchrony/"
 
@@ -45,8 +46,8 @@ class Application(tkinter.Tk):
         self['menu'] = self.menu
         # Variables
         self.state = {'media_loaded': False,
-                       'code_loaded': False,
-                       'data_loaded': False}
+                      'code_loaded': False,
+                      'data_loaded': False}
 
         self.__time_step = None
 
@@ -59,30 +60,52 @@ class Application(tkinter.Tk):
                           'version': __version__} # data
 
         self._context = "standard"
-
-        initdir = os.path.expanduser(DEFAULT_CWD)
-
-        self.cwd = ''
-        while self.cwd == '':
-            self.cwd = tkinter.filedialog.askdirectory(title="Choose working directory",
-                                              initialdir=initdir,
-                                              mustexist=True)
-# FIXME: check that subfolders 'media' and 'data' exist. If not create them
-        if not os.path.exists(os.path.join(self.cwd, 'media')):
-            pathlib.Path(os.path.join(self.cwd, 'media')).mkdir()
-        if not os.path.exists(os.path.join(self.cwd, 'data')):
-            pathlib.Path(os.path.join(self.cwd, 'data')).mkdir()
-
-#        if tmp_cwd !=  '':
-#            self.cwd = tmp_cwd
-
-        print('cwd: ', self.cwd)
+        self.cwd = self.__set_cwd()
+        print('Current working directory set to :', self.cwd)
         self.interface = True
-        self.recorded_steps = []
+        # FIXME: this is related to coding framework.
+        # self.recorded_steps = []
+        self.recorded_steps = set()
 
+# Working directory
+
+    def __set_cwd(self):
+        """
+        Reads initial cwd from file or from default value and set cwd to the one
+        provided through filedialog.
+     
+        Also make sure that the folders "media" and "data" are present. Create
+        them if they are lacking.
+        """
+        if os.path.exists(CWD_FILE):
+            with open(CWD_FILE, 'r', encoding='utf-8') as cwdfile:
+                initdir = os.path.expanduser(cwdfile.readline())
+                # print('initdir from file: ', initdir)
+        else:
+            initdir = os.path.expanduser(DEFAULT_CWD)
+            # print('initdir default: ', initdir)
+
+        cwd = ''
+        while cwd == '':
+            cwd = filedialog.askdirectory(title="Choose working directory",
+                                          initialdir=initdir, mustexist=True)
+        with open(CWD_FILE, 'w', encoding='utf-8') as cwdfile:
+            cwdfile.write(cwd)
+
+        # check that subfolders 'media' and 'data' exist. If not create them
+        if not os.path.exists(os.path.join(cwd, 'media')):
+            pathlib.Path(os.path.join(cwd, 'media')).mkdir()
+        if not os.path.exists(os.path.join(cwd, 'data')):
+            pathlib.Path(os.path.join(cwd, 'data')).mkdir()
+
+        return cwd
 
 # Interface fonction
+
     def change_interface(self):
+        """
+        Change the interface looking.
+        """
         if self.interface :
             self.change_color(['light_to_dark',self.control.elements,
                                 self.framework.elements, self.info.elements])
@@ -94,9 +117,12 @@ class Application(tkinter.Tk):
             self.framework.interface_button.config(text='Dark mode')
             self.interface = True
 
-    def change_color(self, list):
-        if list[0] == 'light_to_dark':
-            for zone in list[1:] :
+    def change_color(self, inlist):
+        """
+        Change color theme
+        """
+        if inlist[0] == 'light_to_dark':
+            for zone in inlist[1:] :
                 for elem in zone :
                     if elem == self.control.elements :
                         elem.config(background = self.control.dark_bg)
@@ -105,7 +131,7 @@ class Application(tkinter.Tk):
                     else :
                         elem.config(background = self.framework.dark_bg)
         else :
-            for zone in list[1:] :
+            for zone in inlist[1:] :
                 for elem in zone :
                     if elem == self.control.elements :
                         elem.config(background = self.control.light_bg)
@@ -125,7 +151,8 @@ class Application(tkinter.Tk):
         self.menu.disable_actions()
 
     def start_session(self):
-
+        """Starting a new coding session
+        """
         self.info = InfoFrame(parent=self,
                               states=(tkinter.NORMAL,    # load media
                                       tkinter.DISABLED,  # load code
@@ -134,6 +161,8 @@ class Application(tkinter.Tk):
         self.menu.disable_actions()
 
     def retrieve_session(self):
+        """Resume an interrupted coding session
+        """
         self.info = InfoFrame(parent=self,
                               states=(tkinter.DISABLED, # load code
                                       tkinter.DISABLED, # load media
@@ -151,9 +180,13 @@ class Application(tkinter.Tk):
 #        self.init_variables()
 
     def help_browser(self):
+        """Calls the browser and open the documentation
+        """
         self.notimplemented()
 
-    def aboutHandler(self):
+    def about_handler(self):
+        """Gives some information about codix-suite
+        """
         self.notimplemented()
 
 # Functions related to infoframe
@@ -254,22 +287,18 @@ class Application(tkinter.Tk):
             else :
                 self.control.forward_but.config(state='disabled')
 
-
-
-
             self.framework.display_codes(self.time_step)
 
         elif value == 'not_recorded':
             self.control.config_buttons({self.control.play_but : 'disabled',
-                                    self.control.back_but : 'disabled',
-                                    self.control.forward_but : 'disabled',
-                                    self.control.mode_check : 'disabled',
-                                    self.control.period_ent : 'disabled',
-                                    self.control.time_ent: 'disabled'})
+                                         self.control.back_but : 'disabled',
+                                         self.control.forward_but : 'disabled',
+                                         self.control.mode_check : 'disabled',
+                                         self.control.period_ent : 'disabled',
+                                         self.control.time_ent: 'disabled'})
             self.framework.config_processing_buttons('normal')
-
-
             # self.info.save_data()
+
         elif value == 'standard':
             if self.state['code_loaded'] :
                 if self.control.state == 'paused' :
@@ -279,7 +308,6 @@ class Application(tkinter.Tk):
                     self.framework.spec_frame.start_but.config(state='disabled')
                     # update is needed because of the timer in regular playing
                     self.framework.spec_frame.start_but.update()
-
 
         else: # FIXME: raise error?
             pass
@@ -371,6 +399,6 @@ class Application(tkinter.Tk):
 
 if __name__ == "__main__":
     app = Application()
-    app.title('Codix - The Swiss knife for coding behaviors - version: %s'\
-              % __version__)
+    app.title(\
+    f'Codix - The Swiss knife for coding behaviors - version: {__version__}')
     app.mainloop()

@@ -33,7 +33,7 @@ class ApplicationMenu(tkinter.Menu):
         help_menu = tkinter.Menu(self, tearoff=0)
         self.add_cascade(label='Help', menu=help_menu)
         help_menu.add_command(label='Help', command=master.help_browser)
-        help_menu.add_command(label='About', command=master.aboutHandler)
+        help_menu.add_command(label='About', command=master.about_handler)
 
     def disable_actions(self):
         """

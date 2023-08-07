@@ -170,28 +170,53 @@ class FrameworkFrame(tkinter.LabelFrame):
         # print(self.strdata)
 
     def display_codes(self, time_step):
+        """Display the codes and comments
+        """
         panellist = self.coding_frame.panels
-        for pan in panellist:
-            # pan.name = recording site
-            for cname, v in pan.coding.items():
-#            # cname = code_name
-                if time_step == 0 or \
-                    (time_step == self.application.times_length-1 and \
-                    len(self.application.recorded_steps) == self.application.times_length-2):
-                    local_str = '-'
-                else:
+
+        if self.application.time_step in self.application.recorded_steps:
+            comment = self.coding_comments[time_step-1]
+            self.coding_frame.comment.set(comment)
+
+            for pan in panellist:
+                # pan.name = recording site
+                for cname, v in pan.coding.items():
                     idx = self.data[pan.name][cname][time_step-1]
                     local_str = self.encoding[pan.name][cname][idx]
-                v['var'].set(local_str)
-
-        if time_step == 0 or \
-            (time_step == self.application.times_length-1 and \
-            len(self.application.recorded_steps) == self.application.times_length-2):
+                    v['var'].set(local_str)
+        else:
             comment = ''
-        else :
-            comment = self.coding_comments[time_step-1]
-       
-        self.coding_frame.comment.set(comment)
+            self.coding_frame.comment.set(comment)
+
+            for pan in panellist:
+                # pan.name = recording site
+                for cname, v in pan.coding.items():
+                    local_str = '-'
+                    v['var'].set(local_str)
+
+           
+#        panellist = self.coding_frame.panels
+#        for pan in panellist:
+#            # pan.name = recording site
+#            for cname, v in pan.coding.items():
+##            # cname = code_name
+#                if time_step == 0 or \
+#                    (time_step == self.application.times_length-1 and \
+#                    len(self.application.recorded_steps) == self.application.times_length-2):
+#                    local_str = '-'
+#                else:
+#                    idx = self.data[pan.name][cname][time_step-1]
+#                    local_str = self.encoding[pan.name][cname][idx]
+#                v['var'].set(local_str)
+#
+#        if time_step == 0 or \
+#            (time_step == self.application.times_length-1 and \
+#            len(self.application.recorded_steps) == self.application.times_length-2):
+#            comment = ''
+#        else :
+#            comment = self.coding_comments[time_step-1]
+#       
+#        self.coding_frame.comment.set(comment)
         
 
 #    def erase_codes(self):
@@ -223,22 +248,25 @@ class FrameworkFrame(tkinter.LabelFrame):
             self.config_processing_buttons('disabled')
             
             # Second passage to record the symbols
-            if self.application.time_step <= len(self.application.recorded_steps) :
+            if self.application.time_step not in self.application.recorded_steps :
+                # Append new symbol / comment
+                self.set_data(method='append')
+                # self.application.recorded_steps.append(self.application.time_step)
+                self.application.recorded_steps.add(self.application.time_step)
+            else:
                 # Replace previous symbols / comments
                 self.set_data(method='replace')
-            else :
-                # Append new symbol / comment
                 
-                self.set_data(method='append')
-            if self.application.time_step not in self.application.recorded_steps :
-                self.application.recorded_steps.append(self.application.time_step)
-
-
-
-
-#            print(self.data)
-#            print(self.strdata)
-#            print(self.coding_comments)
+#            if self.application.time_step <= len(self.application.recorded_steps) :
+#                # Replace previous symbols / comments
+#                self.set_data(method='replace')
+#            else :
+#                # Append new symbol / comment
+#                
+#                self.set_data(method='append')
+#            if self.application.time_step not in self.application.recorded_steps :
+#                # self.application.recorded_steps.append(self.application.time_step)
+#                self.application.recorded_steps.add(self.application.time_step)
 
             self.application.container['data'] = self.data
             self.application.container['comments'] = self.coding_comments
@@ -277,7 +305,6 @@ class FrameworkFrame(tkinter.LabelFrame):
         elif method == "replace":
             self.coding_comments[time_step-1] = local_comment
 
-    
 
     def change_color(self, event):
         colortuple = askcolor()

@@ -1,7 +1,11 @@
+"""
+Module that controls VLC player for codix encoder
+"""
+
 import os
-import vlc
 import time
 import configparser
+
 
 from threading import Timer
 
@@ -9,7 +13,9 @@ import tkinter
 import tkinter.messagebox
 from tkinter.colorchooser import askcolor
 
-#vlc states : 
+import vlc
+
+#vlc states :
 #{0: 'NothingSpecial',
 # 1: 'Opening',
 # 2: 'Buffering',
@@ -29,7 +35,14 @@ DTIME = 10000 # ms forward and back time period for continuous play
 CONFIG = 'config.ini'
 
 class PlayerControl(tkinter.LabelFrame):
-    
+    """
+    Defines the widgets where all the control is done with
+    - play / pause button
+    - back and forward buttons
+    - a timer
+    - a checkbox for setting regular playing
+    """
+
     def __init__(self, parent, file_name):
         """
         Creates player control buttons
@@ -42,7 +55,7 @@ class PlayerControl(tkinter.LabelFrame):
         else:
             config.read(CONFIG)
 
-        bd = config['playercontrol']['borderwidth']
+        border_width = config['playercontrol']['borderwidth']
         ctrl_bg = config['playercontrol']['background']
         relief = config['playercontrol']['relief']
         self.dark_bg = config['playercontrol']['dark_bg']
@@ -50,19 +63,17 @@ class PlayerControl(tkinter.LabelFrame):
 
         tkinter.LabelFrame.__init__(self, parent)
 
-        self.configure(background=ctrl_bg, borderwidth=bd, padx=20, pady=20,
+        self.configure(background=ctrl_bg, borderwidth=border_width, padx=20, pady=20,
                                 relief=relief, text='Control: ', font=('bold',))
 
-        
         self.grid(column=1, row=0)
-        
-        
+
         self._mode = tkinter.StringVar(value='continuous')
         self._period = tkinter.StringVar(value='5')
         self._time = tkinter.StringVar(value='0')
 
         # Control panel
-        self.back_but = tkinter.Button(self, text='Back', command=self.backward) 
+        self.back_but = tkinter.Button(self, text='Back', command=self.backward)
         self.back_but.grid(row=1, column=0, sticky=tkinter.W)
 
 
@@ -72,15 +83,13 @@ class PlayerControl(tkinter.LabelFrame):
 
         self.forward_but = tkinter.Button(self, text='Forward', command=self.forward)
         self.forward_but.grid(row=1, column=2)
-       
+
         self.mode_check = tkinter.Checkbutton(self, text='By period of ',
-                                              variable=self._mode, 
+                                              variable=self._mode,
                                               onvalue='regular', offvalue='continuous',
                                               background=ctrl_bg)
         self.mode_check.grid(column=0, row=2, sticky=tkinter.W)
 
-        
-        
         # FIXME: is it useful?
         # self.mode_check.bind('<Button>', self.change_mode)
 
@@ -89,7 +98,7 @@ class PlayerControl(tkinter.LabelFrame):
         self.period_ent.grid(column=1, row=2, sticky=tkinter.W)
         # FIXME:  is it useful?
         # self.period_ent.bind('<Return>', self.kb_set_period)
-        
+
         self.period_lab = tkinter.Label(self, text=' sec.', background=ctrl_bg)
         self.period_lab.grid(row=2, column=2, sticky=tkinter.W)
 
@@ -102,16 +111,16 @@ class PlayerControl(tkinter.LabelFrame):
 
         self.unit_lab = tkinter.Label(self, text='sec.', background=ctrl_bg)
         self.unit_lab.grid(row=1, column=8)
-        
+
         self.bind('<Button-3>', self.change_color)
 
-        # player instance 
+        # player instance
         args = ['--no-xlib']
         instance = vlc.Instance(args)
         self.player = instance.media_player_new()
 
         self.player.set_mrl(file_name)
-        # This is a hack for time initialization: reads 1s and then goes back to 0 
+        # This is a hack for time initialization: reads 1s and then goes back to 0
         self.player.play()
         time.sleep(1) # 0.1 is too short I loose sound!?
         self.player.set_pause(do_pause=1)
@@ -119,45 +128,55 @@ class PlayerControl(tkinter.LabelFrame):
         self.max_time = self.player.get_length() # a long in ms
         self.time = 0 # 'Initial time')
         if self.max_time == -1:
-            tkinter.messagebox.showinfo('Cannot get max time', 
+            tkinter.messagebox.showinfo('Cannot get max time',
                                   'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
 
         self.elements = [self, self.period_lab, self.time_lab, self.mode_check, self.unit_lab]
 
         self.times = []
-        
-    def step_play(self, dt):
+
+    def step_play(self, time_interval):
+        """
+        Plays for a time step 'time_interval'
+        """
         # if self.application.state['code_loaded'] and self.application.context != 'processing':
         #             self._root().framework.spec_frame.start_but.config(state='disabled')
         print('Start step play at: ', self.time)
         self.state = "s_playing"
-        tt = Timer(dt, self.dopause)
+        interval_timer = Timer(time_interval, self.dopause)
         self.player.play()
-        tt.start()
-        
-        
-    
+        interval_timer.start()
+
     def cont_play(self):
+        """
+        Plays continuously (until play/pause button is pressed).
+        """
         print('Start continuous play at: ', self.time)
         self.state = "c_playing"
         self.player.play()
 
     def dopause(self):
+        """
+        Pause the player.
+        """
         self.player.set_pause(do_pause=1)
         self.state = "paused"
         #### leomodif
         if self.application.context == 'processing':
             self.play_but.config(state='disabled')
 
-
     def playpause(self):
-
+        """
+        Function associated with the play/pause button:
+        - plays if the player is paused
+        - pause if the player is playing.
+        """
         if self.mode == 'regular':
             if self.period is not None :
                 itime = self.player.get_time()
-                self.step_play(self.period)         
-                
+                self.step_play(self.period)
+
                 while self.state != 'paused':
                     pass # wait for state == 'paused'
                 print('End time: ', self.time)
@@ -173,14 +192,14 @@ class PlayerControl(tkinter.LabelFrame):
                 pass
 
         elif self.mode =='continuous':
-            if self.state == "c_playing": 
+            if self.state == "c_playing":
                 self.dopause()
                 self.time = self.player.get_time()
 
             elif self.state == "paused":
-                self.cont_play()           
+                self.cont_play()
             else:
-                raise ValueError(f'Unknown player state ' + self.state)
+                raise ValueError(f'Unknown player state: {self.state}.')
         else:
 
             raise ValueError('Unknown player mode' + self.mode)
@@ -189,65 +208,78 @@ class PlayerControl(tkinter.LabelFrame):
             self.application.context = 'not_recorded'
 
         print("context :" , self.application.context)
-     
+
     def backward(self):
+        """
+        Move backward.
+        """
         self.move('back')
 
     def forward(self):
+        """
+        Move forward
+        """
         self.move('forward')
 
     def move(self, arg):
+        """
+        Generic function that move either backward or forward.
+        """
         dtmp = {'back': -1, 'forward': 1}
-        ds = dtmp[arg]
+        bck_or_fwd = dtmp[arg]
 
-        itime = self.time 
+        itime = self.time
         if self.mode == "continuous":
-            self.time = itime + ds * DTIME
+            self.time = itime + bck_or_fwd * DTIME
             # FIXME: no processing context taken into account.
 
         elif self.mode == 'regular':
             if self.period is not None:
                 if self.application.context == "processing":
-                    self.application.time_step = ds
+                    self.application.time_step = bck_or_fwd
                 else:
-                    self.time = itime + ds * int(self.period * 1000)
+                    self.time = itime + bck_or_fwd * int(self.period * 1000)
         else:
-            raise ValueError(f'Unknown player mode {self.mode}') 
+            raise ValueError(f'Unknown player mode {self.mode}')
 
     def kb_set_time(self, tkevent):
         """
         Keyboard set time i.e. when the time is changed in the time entry
         """
-        t = self._time.get()
+        loc_time = self._time.get()
         try:
-            self.time = int(float(t)*1000) # in ms
+            self.time = int(float(loc_time)*1000) # in ms
         except ValueError:
-            tkinter.messagebox.showinfo('Value Error', 
+            tkinter.messagebox.showinfo('Value Error',
                               'Time cannot be converted to float')
-            return None
+    #        return None
 
     @property
     def time(self):
+        """
+        Time comes from the player but we need more control. We set it as a
+        property to have more control.
+        """
         return self.player.get_time() # in ms
 
     @time.setter
     def time(self, value):
 
         if value < 0:
-            tkinter.messagebox.showinfo('Value Error', 
+            tkinter.messagebox.showinfo('Value Error',
                               'cannot set time before beginning sets to zero')
             tval = 0
         elif value > self.max_time:
-            tkinter.messagebox.showinfo('Value Error', 
+            tkinter.messagebox.showinfo('Value Error',
                               'cannot set time after end sets to max time')
             tval = self.max_time
         else:
             tval = value
 
         self.player.set_time(tval)
-        time_sec = '%10.3f' % (tval/1000.)
+        time_sec = '{:10.3f}'.format(tval/1000.)
         self._time.set(time_sec)
-        print('Player time setter: %s' % self.time)
+        print('Player time setter: {self.time}.')
 
 #    def kb_set_period(self, tkevent):
 #        """
@@ -262,69 +294,72 @@ class PlayerControl(tkinter.LabelFrame):
 #        mode = self._root().player_mode.get()
 #        if mode == 'continuous': # ie regular play...
 #            print('change mode: regular')
-#            
+#
 #        else:
 #            print('change mode: continuous')
 
     @property
     def state(self):
+        """
+        The state of the player has consequences on the interface according to
+        application context, etc. so we control it with a property.
+        """
         return self._state
 
     @state.setter
     def state(self, value):
+        """
+        State of the widget according to player state
+        """
         if value == "s_playing" :
             self._state = "s_playing"
             print('State: step playing')
-            self.config_buttons({self.play_but : 'disabled', 
+            self.config_buttons({self.play_but : 'disabled',
                                  self.back_but : 'disabled',
-                                 self.forward_but : 'disabled', 
+                                 self.forward_but : 'disabled',
                                  self.mode_check : 'disabled',
                                  self.period_ent : 'disabled'})
-           
-            tmp_context = self.application.context 
+
+            tmp_context = self.application.context
             self.application.context = tmp_context
-            
 
         elif value == "c_playing" :
             self._state = "c_playing"
             print('State: continuous playing')
-            self.config_buttons({self.play_but : 'normal', 
+            self.config_buttons({self.play_but : 'normal',
                                  self.back_but : 'disabled',
-                                 self.forward_but : 'disabled', 
+                                 self.forward_but : 'disabled',
                                  self.mode_check : 'disabled',
                                  self.period_ent : 'disabled'})
-                        
-            tmp_context = self.application.context 
+
+            tmp_context = self.application.context
             self.application.context = tmp_context
-            
 
         elif value == "paused":
             self._state = "paused"
             print('State: paused')
 
             if self.application.context != 'processing':
-                self.config_buttons({self.play_but : 'normal', 
+                self.config_buttons({self.play_but : 'normal',
                                      self.back_but : 'normal',
-                                     self.forward_but : 'normal', 
+                                     self.forward_but : 'normal',
                                      self.mode_check : 'normal',
                                      self.period_ent : 'normal'})
 # FIXME: why do we need to deal with framework state here!?
-                
 
-            # processing => code_loaded    
-            
+            # processing => code_loaded
             elif self.application.context == 'processing':
                 self.config_buttons({self.play_but :'disabled',
                                      self.back_but : 'disabled',
                                      self.forward_but : 'disabled'})
-            tmp_context = self.application.context 
+            tmp_context = self.application.context
             self.application.context = tmp_context
 
 # *** From dopause ***
 ## FIXME: maybe should be in state.setter ^^^
 #            if self.application.state['code_loaded'] and self.application.context != 'processing':
 #                self._root().framework.spec_frame.start_but.config(state='normal')
-#                
+#
 #            if self.application.state['code_loaded'] and self.application.context == 'processing':
 #                self.config_buttons({self.play_but :'disabled',
 #                                     self.back_but : 'disabled',
@@ -334,24 +369,30 @@ class PlayerControl(tkinter.LabelFrame):
 
 ## FIXME: Not sure processing is useful -> done in application.context setter?
 #            if self.application.context == "processing":
-#                self.config_buttons({self.play_but : 'normal', 
+#                self.config_buttons({self.play_but : 'normal',
 #                                     self.back_but : 'normal',
-#                                     self.forward_but : 'normal', 
+#                                     self.forward_but : 'normal',
 #                                     self.mode_check : 'disabled',
 #                                     self.period_ent : 'disabled'})
 #            else:
-#                self.config_buttons({self.play_but : 'normal', 
+#                self.config_buttons({self.play_but : 'normal',
 #                                     self.back_but : 'normal',
-#                                     self.forward_but : 'normal', 
+#                                     self.forward_but : 'normal',
 #                                     self.mode_check : 'normal',
 #                                     self.period_ent : 'normal'})
 
     @property
     def mode(self):
+        """
+        The player's mode: regular or continuous
+        """
         return self._mode.get()
 
     @mode.setter
     def mode(self, value):
+        """
+        Sets the mode
+        """
         if value == "regular":
             self._mode.set(value)
             print('Mode: regular')
@@ -363,16 +404,22 @@ class PlayerControl(tkinter.LabelFrame):
 
     @property
     def period(self):
-        pp = self._period.get()
+        """
+        Time period for regular playing
+        """
+        tmp_period = self._period.get()
         try:
-            return float(pp)
+            return float(tmp_period)
         except ValueError:
-            tkinter.messagebox.showinfo('Value Error', 
+            tkinter.messagebox.showinfo('Value Error',
                               'Period cannot be converted to float')
             return None
-    
+
     @period.setter
     def period(self, value):
+        """
+        Sets period
+        """
         self._period.set(value)
 
     def config_buttons(self, dico):
@@ -380,7 +427,7 @@ class PlayerControl(tkinter.LabelFrame):
             b.update()
             b.config(state=s)
             b.update()
-                
+
     #        # FIXME: does the first test useful. Tackle this more elegantly?
     #        if self._root().data_loaded:
     #            pass
@@ -402,8 +449,8 @@ class PlayerControl(tkinter.LabelFrame):
 
     def change_color(self, event):
         colortuple = askcolor()
-        self.configure(background=colortuple[1]) 
+        self.configure(background=colortuple[1])
         self.mode_check.configure(background=colortuple[1])
-        self.mode_lab.configure(background=colortuple[1])
+        # self.mode_lab.configure(background=colortuple[1])
         self.time_lab.configure(background=colortuple[1])
         self.unit_lab.configure(background=colortuple[1])

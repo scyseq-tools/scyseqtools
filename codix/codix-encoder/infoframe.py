@@ -211,10 +211,11 @@ class InfoFrame(tkinter.LabelFrame):
             # soit on crée une liste de la longueur des temps déja visionnés (donc enregistrés) pour éviter de surcharger le container
 
         #self.application.recorded_steps = data['recorded_steps']
-        list = []
-        for i in range(1,len(data['times'])):
-            list.append(i)
-        self.application.recorded_steps = list 
+#        list = []
+#        for i in range(1,len(data['times'])):
+#            list.append(i)
+        self.application.recorded_steps = set(range(1, len(data['times'])))
+        print(self.application.recorded_steps)
         print(self.application.container)
         
 

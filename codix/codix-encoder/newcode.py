@@ -1,3 +1,9 @@
+"""
+Module / application to produce a .jod/.cod file which specifies
+- codes with associated symbols
+- recording sites with associated codes
+"""
+
 import re
 import os
 import json
@@ -13,9 +19,13 @@ import htmlreport as H
 
 VERSION = '0.9'
 
-ITEMSEP = ' |,|-|;|:|/'
+ITEMSEP = " |,|-|;|:|/|'|\"" 
+# Caution: «'» is very important to parse the code associated with site.
 
 class NewCode(tkinter.LabelFrame):
+    """
+    The main frame for coding framework definition.
+    """
 
     def __init__(self, parent):
         tkinter.LabelFrame.__init__(self, parent)
@@ -31,7 +41,7 @@ class NewCode(tkinter.LabelFrame):
         name_label.grid(row=0, column=0)
         name_entry = tkinter.Entry(projectframe, textvariable=self.project_name)
         name_entry.grid(row=0, column=2)
-        
+
         description_label = tkinter.Label(projectframe, text='Description: ')
         description_label.grid(row=1, column=0)
         self.description_text = tkinter.Text(projectframe, height=5)
@@ -53,7 +63,7 @@ class NewCode(tkinter.LabelFrame):
         reg_check.grid(row=0, column=0)
         period_label = tkinter.Label(specframe, text='Interval: ')
         period_label.grid(row=0, column=2)
-        self.period_entry = tkinter.Entry(specframe, 
+        self.period_entry = tkinter.Entry(specframe,
                                        textvariable=self.period,
                                        state=tkinter.DISABLED)
         self.period_entry.grid(row=0, column=3)
@@ -86,7 +96,7 @@ class NewCode(tkinter.LabelFrame):
         # sites
         siteframe = tkinter.LabelFrame(self, text='Recording sites')
         siteframe.grid(sticky=U.sticky_all)
-     
+
         self.listcode = tkinter.StringVar()
         self.tmpsite = tkinter.StringVar()
         self.sites_container = {}
@@ -98,14 +108,14 @@ class NewCode(tkinter.LabelFrame):
         codelabel = tkinter.Label(siteframe, text='Available codes : ')
         codelabel.grid(row=0, column=2, sticky=(tkinter.N, tkinter.W))
         yscroll = tkinter.Scrollbar(siteframe, orient=tkinter.VERTICAL)
-        yscroll.grid(row=0, column=4, 
+        yscroll.grid(row=0, column=4,
                      sticky=(tkinter.N, tkinter.S, tkinter.W))
         self.codelist = tkinter.Listbox(siteframe, listvariable=self.listcode,
                                         selectmode=tkinter.MULTIPLE,
                                         height=5, # nb of lines
                                         width=15, # default=20
                                         yscrollcommand=yscroll.set)
-        self.codelist.grid(row=0, column=3, sticky=(tkinter.N, tkinter.E)) 
+        self.codelist.grid(row=0, column=3, sticky=(tkinter.N, tkinter.E))
         yscroll['command'] = self.codelist.yview
         site_button = tkinter.Button(siteframe, text='Record',
                                                 command=self.record_site)
@@ -119,6 +129,9 @@ class NewCode(tkinter.LabelFrame):
         savebutton.grid(sticky=U.sticky_all)
 
     def toggle_specs(self):
+        """
+        Toggle the specifications between regular and continuous coding
+        """
         if self.regular.get():
             self.period_entry.configure(state=tkinter.NORMAL)
         else:
@@ -126,20 +139,25 @@ class NewCode(tkinter.LabelFrame):
             self.period_entry.configure(state=tkinter.DISABLED)
 
     def record_code(self):
+        """
+        Saves the code name with its associated symbols
+        """
         name = self.tmpcode.get().strip()
         items = self.tmpitems.get().strip()
 
         if name == '' or items == '':
-            tkinter.messagebox.showinfo('Bad code', 
+            tkinter.messagebox.showinfo('Bad code',
                                         'You cannot record empty codes')
-        elif name in self.codes_container.keys():
-            tkinter.messagebox.showinfo('Bad code', 
+        elif name in self.codes_container:
+            tkinter.messagebox.showinfo('Bad code',
                                         'Code name already exists')
         else:
             # split items according to chars in ITEMSEP
             listofitems = [s for s in re.split(ITEMSEP, items) if s != '']
             self.codes_container.update({name: listofitems})
-            rec = RecordedCode(self,  # application
+# pylint / unused variable 'rec'
+#            rec = RecordedCode(self,  # application
+            RecordedCode(self,  # application
                                name, listofitems,
                                len(self.codes_container))
             self.tmpcode.set('')
@@ -147,44 +165,54 @@ class NewCode(tkinter.LabelFrame):
             self.listcode.set(' '.join(list(self.codes_container.keys())))
 
     def record_site(self):
+        """
+        Record the site name and its associated codes
+        """
         site_name = self.tmpsite.get()
         selected_codes = self.codelist.curselection()
         list_of_codes = self.listcode.get()
+        print('list of codes 1:', list_of_codes, type(list_of_codes))
         if len(selected_codes) == 0:
-            tkinter.messagebox.showinfo('Bad selection', 
+            tkinter.messagebox.showinfo('Bad selection',
                                         'You should select at least one code.')
         elif site_name == '':
-            tkinter.messagebox.showinfo('Bad selection', 
+            tkinter.messagebox.showinfo('Bad selection',
                                         'You should give a site name.')
         else:
             # list_of_codes = [c for c in re.split("\(|,|'| |\)", list_of_codes) if c!='']
-            list_of_codes = [c for c in re.split(ITEMSEP, list_of_codes) if c!='']
+            list_of_codes = [c for c in re.split(ITEMSEP, list_of_codes[1:-1]) if c!='']
+            print('list of codes 2:', list_of_codes)
             list_of_selected_codes = [list_of_codes[i] for i in selected_codes]
             self.sites_container.update({site_name: list_of_selected_codes})
-            site_rec = RecordedSite(self, 
-                                    site_name, list_of_selected_codes, len(self.sites_container))
+# pylint / unused variable 'site_rec'
+#            site_rec = RecordedSite(self,
+            RecordedSite(self, site_name, list_of_selected_codes,
+                         len(self.sites_container))
             self.tmpsite.set('')
-            for line in selected_codes: 
+            for line in selected_codes:
                 self.codelist.selection_clear(line)
 
     def record_all(self):
-
+        """
+        Save the complete encoding specification to a file along with an html
+        report.
+        """
         all_specs = {'date': datetime.now().strftime('%c')}
         all_specs.update({'version': VERSION})
 
         pname = self.project_name.get()
         if pname == '':
-            tkinter.messagebox.showerror('You forgot something...', 
+            tkinter.messagebox.showerror('You forgot something...',
                              'Enter the name of the project.')
-            pass
+            # pass
         else:
             all_specs.update({"project": pname})
 
         description = self.description_text.get("1.0", "end-1c")
         if description == '':
-            tkinter.messagebox.showerror('You forgot something...', 
+            tkinter.messagebox.showerror('You forgot something...',
                              'Enter the description of the project.')
-            pass
+            # pass
         else:
             all_specs.update({"description": description})
 
@@ -192,35 +220,34 @@ class NewCode(tkinter.LabelFrame):
         if regular:
             period = self.period.get()
             if period == '':
-                tkinter.messagebox.showerror('You forgot something...', 
+                tkinter.messagebox.showerror('You forgot something...',
                                  'Enter the period of regular coding.')
-                pass
+                # pass
             else:
                 try:
                     period = float(period)
                 except:
-                    tkinter.messagebox.showerror('Something went wrong...', 
+                    raise ValueError
+                    tkinter.messagebox.showerror('Something went wrong...',
                                      'Interval is wrong.')
-                    pass
+                    # pass
             all_specs.update({'period': period})
         else:
             all_specs.update({'period': None})
 
         if len(self.codes_container) == 0:
-            tkinter.messagebox.showerror('You forgot something...', 
+            tkinter.messagebox.showerror('You forgot something...',
                              'Enter at least one code.')
-            pass
+            # pass
         else:
             all_specs.update({'codes': self.codes_container})
-       
+
         if len(self.sites_container) == 0:
-            tkinter.messagebox.showerror('You forgot something...', 
+            tkinter.messagebox.showerror('You forgot something...',
                              'Enter at least one recording site.')
-            pass
+            # pass
         else:
             all_specs.update({'sites': self.sites_container})
-
-        
 
         code_folder = os.path.expanduser(self.application.cwd)
         filename = tkinter.filedialog.asksaveasfilename(
@@ -233,27 +260,32 @@ class NewCode(tkinter.LabelFrame):
                 filename += '.jod'
             all_specs['filename'] = filename
             print(all_specs)
-            
+
             html_report = H.to_html_report(all_specs)
             print(html_report)
 
-            datafile = open(filename, 'w')
-            json.dump(all_specs, datafile)
-            datafile.close()
+#            datafile = open(filename, 'w')
+#            json.dump(all_specs, datafile)
+#            datafile.close()
+            with open(filename, 'w', encoding='utf-8') as datafile:
+                json.dump(all_specs, datafile)
 
             dirname, fname = os.path.split(filename)
             html_file = os.path.join(dirname, fname.replace('.jod', '.html'))
-            htmlfile = open(html_file, 'w')
-            htmlfile.write(html_report)
-            htmlfile.close()
-            
+
+#            htmlfile = open(html_file, 'w')
+#            htmlfile.write(html_report)
+#            htmlfile.close()
+            with open(html_file, 'w', encoding='utf-8') as htmlfile:
+                htmlfile.write(html_report)
+
             print('data: ', all_specs)
-            print('Saved in %s and %s' % (filename, html_file))
+            print(f'Saved in {filename} and {html_file}')
             self.saved = True
             self.destroy()
         else:
             tkinter.messagebox.showinfo('File not saved', 'File has not been saved')
-            pass
+            # pass
 
 class RecordedCode(tkinter.Label):
 
@@ -271,7 +303,7 @@ class RecordedCode(tkinter.Label):
         self.but.grid(sticky=U.sticky_all, row=index)
 
     def delete(self, app):
-        app.codes_container = {key:val 
+        app.codes_container = {key:val
                         for key, val in app.codes_container.items() if key != self.name}
         app.listcode.set(' '.join(list(app.codes_container.keys())))
         self.label.destroy()
@@ -292,11 +324,11 @@ class RecordedSite(tkinter.Label):
         self.but.grid(sticky=U.sticky_all, row=index)
 
     def delete(self, app):
-        app.sites_container = {key:val 
+        app.sites_container = {key:val
                         for key, val in app.sites_container.items() if key != self.name}
         self.label.destroy()
         self.but.destroy()
 
 if __name__ == '__main__':
-    
+
     NewCode().mainloop()
