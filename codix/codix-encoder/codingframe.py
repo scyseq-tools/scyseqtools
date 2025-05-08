@@ -1,12 +1,19 @@
+"""
+This module deals with all the encoding procedure:
+- builds the interface according to the coding framework
+- displays the codes
+- records the codes and pass it to the application.
+"""
+
 import os
 import json
-import tkinter
 import configparser
+from datetime import datetime
+
+import tkinter
 import tkinter.simpledialog
 import tkinter.messagebox
-from datetime import datetime
 from tkinter.colorchooser import askcolor
-
 
 import utils as U
 
@@ -18,7 +25,7 @@ disabled_bg = 'light gray' # disabled background
 relief = 'groove' # ['flat', 'raised', 'sunken', 'solid', 'ridge', 'groove']
 panel_max = 5
 CONFIG = 'config.ini'
- 
+
 
 class FrameworkFrame(tkinter.LabelFrame):
 
@@ -45,25 +52,26 @@ class FrameworkFrame(tkinter.LabelFrame):
 
 
         tkinter.LabelFrame.__init__(self, parent)
-        self.configure(background=coding_bg, 
-                       borderwidth=bd, 
-                       padx=20, pady=20, 
+        self.configure(background=coding_bg,
+                       borderwidth=bd,
+                       padx=20, pady=20,
                        relief=relief,
                        text='Coding framework: ', font=('bold',))
         self.grid(columnspan=2, row=2)
 
         # Interface color
-        self.interface_button = tkinter.Button(self, text = "Dark mode", command = self.application.change_interface)
-        self.interface_button.grid(row=3, column = 1, sticky = 'w')
+        self.interface_button = tkinter.Button(self, text = "Dark mode",
+                                               command = self.application.change_interface)
+        self.interface_button.grid(row=3, column = 0, sticky = 'w')
 
 #FIXME: Not sure this is the best place...
         self.application.container['code'] = rawcode
-        
+
         # variables related to player BUT ***taken from coding file***
         self.player_mode = tkinter.StringVar(value=player['mode'])
         self.period_display = tkinter.StringVar(value=str(player['period']))
 
-        self.spec_frame = SpecificationFrame(self)  
+        self.spec_frame = SpecificationFrame(self)
         self.spec_frame.grid(sticky=U.sticky_all)
 
         self.coding_frame = CodingFrame(parent=self, encoding=self.encoding)
@@ -74,11 +82,8 @@ class FrameworkFrame(tkinter.LabelFrame):
         self.dark_bg = dark_bg
         self.light_bg = light_bg
         self.data = {}
-        # self.strdata = {}
         self.coding_comments = []
         self.elements = [self]
-        #self.nb_records = 0
-
 
     def load_code(self, fname):
 
@@ -91,7 +96,7 @@ class FrameworkFrame(tkinter.LabelFrame):
         else:
             mode = "regular"
 
-        sites = rawcode['sites']
+        # sites = rawcode['sites']
         codes = rawcode['codes']
         codeframe = {}
         for site, scodes in rawcode['sites'].items():
@@ -99,7 +104,7 @@ class FrameworkFrame(tkinter.LabelFrame):
             for lcode in scodes:
                 code_site.update({lcode: codes[lcode]})
             codeframe[site] = code_site
-       
+
         outcode = {'code': codeframe, 'player': {'mode': mode, 'period': period}}
 
         return rawcode, outcode
@@ -110,9 +115,9 @@ class FrameworkFrame(tkinter.LabelFrame):
         - observer, date, comments
         - start time
         - code and media file names => INFOFRAME!!!
-        - encoding specifications 
+        - encoding specifications
         """
-        
+
         self.spec_frame.start_but.config(state='disabled')
         # ----
         # Get and set specifications before disabling entries
@@ -121,7 +126,7 @@ class FrameworkFrame(tkinter.LabelFrame):
             name = tkinter.simpledialog.askstring('Please identify', 'Please identify yourself')
             observer = name
         self.spec_frame.person.set(observer)
-        
+
         date = datetime.now().strftime('%c')
         self.spec_frame.timestamp.set(date)
         comment = self.spec_frame.comment.get()
@@ -137,40 +142,22 @@ class FrameworkFrame(tkinter.LabelFrame):
         if self.application.state['data_loaded']: # resume session
             self.application.context = "resume"
 
-#            # Coding frame imposes the mode and period of player Control
-#            self.application.control.mode = self.player_mode.get()
-#            self.application.control.period = self.period_display.get()
-            
-            # get times and steps lists for data
-            # raise NotImplementedError # FIXME: resume session not implemented yet
-
-#            self.control.set_time(self.container['times'][0], msg='Start processing')
-#            self.current_step = 0
-#            self.max_step = len(self.container['times'])
-#            
         else: # starts a new session
             self.application.context = "initial"
-#            # Coding frame imposes the mode and period of player Control
-#            self.application.control.mode = self.player_mode.get()
-#            self.application.control.period = self.period_display.get()
-            # Set initial time
             self.init_data()
-
 
     def init_data(self):
         panellist = self.coding_frame.panels
         for pan in panellist:
             self.data[pan.name] = {}
-            # self.strdata[pan.name] = {}
-            for cname, v in pan.coding.items():
-                # self.strdata[pan.name][cname] = []
+            #for cname, v in pan.coding.items():
+            for cname in pan.coding.keys():
                 self.data[pan.name][cname] = []
-
         print(self.data)
-        # print(self.strdata)
 
     def display_codes(self, time_step):
-        """Display the codes and comments
+        """
+        Displays the codes and comments
         """
         panellist = self.coding_frame.panels
 
@@ -194,88 +181,42 @@ class FrameworkFrame(tkinter.LabelFrame):
                     local_str = '-'
                     v['var'].set(local_str)
 
-           
-#        panellist = self.coding_frame.panels
-#        for pan in panellist:
-#            # pan.name = recording site
-#            for cname, v in pan.coding.items():
-##            # cname = code_name
-#                if time_step == 0 or \
-#                    (time_step == self.application.times_length-1 and \
-#                    len(self.application.recorded_steps) == self.application.times_length-2):
-#                    local_str = '-'
-#                else:
-#                    idx = self.data[pan.name][cname][time_step-1]
-#                    local_str = self.encoding[pan.name][cname][idx]
-#                v['var'].set(local_str)
-#
-#        if time_step == 0 or \
-#            (time_step == self.application.times_length-1 and \
-#            len(self.application.recorded_steps) == self.application.times_length-2):
-#            comment = ''
-#        else :
-#            comment = self.coding_comments[time_step-1]
-#       
-#        self.coding_frame.comment.set(comment)
-        
-
-#    def erase_codes(self):
-#        panellist = self.framework.coding_frame.panels
-#        for pan in panellist:
-#            # pan.name = recording site
-#            for cname, v in pan.coding.items():
-#            # cname = code_name
-#                v['var'].set('')
-#        self.framework.coding_frame.comment.set('')
-
     def record_state(self):
         """
         Record a step
         """
         panellist = self.coding_frame.panels
-        comments = self.application.container['comments']
+        # comments = self.application.container['comments']
         mode = self.application.control.mode
 
         if mode == 'regular': # regular sampling
             # First passage for checking presence of all symbols
-            tmp_symbols = [v['var'].get() for pan in panellist 
+            tmp_symbols = [v['var'].get() for pan in panellist
                                           for v in pan.coding.values()]
 
-            if not all([s != '-' for s in tmp_symbols]): 
+            if not all([s != '-' for s in tmp_symbols]):
                 tkinter.messagebox.showinfo('Code missing', 'A code is missing')
                 return
-            
+
             self.config_processing_buttons('disabled')
-            
+
             # Second passage to record the symbols
             if self.application.time_step not in self.application.recorded_steps :
                 # Append new symbol / comment
                 self.set_data(method='append')
-                # self.application.recorded_steps.append(self.application.time_step)
-                self.application.recorded_steps.add(self.application.time_step)
             else:
                 # Replace previous symbols / comments
                 self.set_data(method='replace')
-                
-#            if self.application.time_step <= len(self.application.recorded_steps) :
-#                # Replace previous symbols / comments
-#                self.set_data(method='replace')
-#            else :
-#                # Append new symbol / comment
-#                
-#                self.set_data(method='append')
-#            if self.application.time_step not in self.application.recorded_steps :
-#                # self.application.recorded_steps.append(self.application.time_step)
-#                self.application.recorded_steps.add(self.application.time_step)
 
+            # Since recorded_steps is a set, duplicated time_step are not taken
+            # into account.
+            self.application.recorded_steps.add(self.application.time_step)
             self.application.container['data'] = self.data
             self.application.container['comments'] = self.coding_comments
             print(self.application.container)
-            
+
             self.application.info.save_data()
-            
             self.application.context = 'processing'
-            
 
         else: # continuous coding
             raise NotImplementedError
@@ -289,12 +230,10 @@ class FrameworkFrame(tkinter.LabelFrame):
                 intval = self.encoding[pan.name][cname].index(symbol)
                 if method == "append":
                     # Append new symbol
-                    # self.strdata[pan.name][cname].append(symbol) # FIXME
-                    self.data[pan.name][cname].append(intval) # FIXME
+                    self.data[pan.name][cname].append(intval)
                 elif method == "replace":
                     # Replace previous symbols
-                    # self.strdata[pan.name][cname][time_step-1] = symbol # FIXME
-                    self.data[pan.name][cname][time_step-1] = intval # FIXME
+                    self.data[pan.name][cname][time_step-1] = intval
                 else: # raise error?
                     pass
 
@@ -309,13 +248,14 @@ class FrameworkFrame(tkinter.LabelFrame):
     def change_color(self, event):
         colortuple = askcolor()
         # print colortuple
-        self.configure(background=colortuple[1]) 
+        self.configure(background=colortuple[1])
 
     def config_processing_buttons(self,st):
         self.coding_frame.record_but.configure(state=st)
         self.coding_frame.comment_ent.configure(state=st)
         for panel in self.coding_frame.panels:
-            for k, v in panel.coding.items():
+            # for k, v in panel.coding.items():
+            for v in panel.coding.values():
                 for button in v['buttons']:
                     button.configure(state=st)
 
@@ -330,15 +270,14 @@ class CodingFrame(tkinter.LabelFrame):
     def __init__(self, parent, encoding): # coding is a dict
         tkinter.LabelFrame.__init__(self, parent)
         self.configure(text='Codes', padx=10, pady=10)
-        # application = parent.application
         self.parent = parent
-        
+
         sites = list(encoding.keys())
         sites.sort()
         self.panels = [Panel(parent=self, name=site, codes=encoding[site]) for site in sites]
 
         # Set the panels on several rows and columns according to panel_max
-        # panels per row. Better ergonomy when ther is a lot of recording sites. 
+        # panels per row. Better ergonomy when there is a lot of recording sites.
         for no_col, panel in enumerate(self.panels):
             col = no_col % panel_max
             row = no_col // panel_max
@@ -347,18 +286,17 @@ class CodingFrame(tkinter.LabelFrame):
             panel.grid(row=row, column=col, sticky=U.sticky_all)
 
         comment_frame = tkinter.LabelFrame(self, text='Comment: ')
-        comment_frame.grid(row=col+1, column=0, columnspan=len(self.panels), 
+        comment_frame.grid(row=col+1, column=0, columnspan=len(self.panels),
                                             sticky=U.sticky_all)
         self.comment = tkinter.StringVar()
-        self.comment_ent = tkinter.Entry(comment_frame, 
+        self.comment_ent = tkinter.Entry(comment_frame,
                                          textvariable=self.comment,
                                          disabledbackground=disabled_bg,
                                          width=60)
         self.comment_ent.grid(sticky=U.sticky_all)
 
-        self.record_but = tkinter.Button(self, text="Record", 
+        self.record_but = tkinter.Button(self, text="Record",
                                                height=2,
-                                               # command=application.record_state)
                                                command=parent.record_state)
         self.record_but.grid(column=panel_max+1, row=0, rowspan=2, sticky=U.sticky_all)
 
@@ -368,32 +306,32 @@ class Panel(tkinter.LabelFrame):
         tkinter.LabelFrame.__init__(self, parent)
         self.name = name
         self.configure(text=name, padx=10, pady=10, labelanchor='n')
-        
+
         max_symbols = max([len(codes[k]) for k in codes.keys()])
-        nb_code = len(codes)
+        # nb_code = len(codes)
         code_names = list(codes.keys())
         code_names.sort()
 
         local_col = 0
         self.coding = {}
-        
+
         for code_name in code_names:
             self.coding[code_name] = {}
             self.coding[code_name]['var'] = tkinter.StringVar()
-            
+
             label = tkinter.Label(self, text=code_name, padx=10, pady=10)
             label.grid(row=0, column=local_col, sticky=U.sticky_all)
-            
+
             symbols = codes[code_name]
-            self.coding[code_name]['buttons'] = [tkinter.Button(self, text=symbol, 
+            self.coding[code_name]['buttons'] = [tkinter.Button(self, text=symbol,
                    command=lambda s=self, n=code_name, kk=symbol: s.set_msg(kk,n))
                                                  for symbol in symbols]
             for nb_symbols, sbut in enumerate(self.coding[code_name]['buttons']):
                 sbut.grid(row=nb_symbols+1, column=local_col, sticky=U.sticky_all)
-                
-            
+
+
             msg = tkinter.Entry(self, state=tkinter.DISABLED,
-                                      width=10, 
+                                      width=10,
                                       disabledbackground=disabled_bg,
                                       disabledforeground='black',
                                       textvariable=self.coding[code_name]['var'])
@@ -409,12 +347,11 @@ class SpecificationFrame(tkinter.LabelFrame):
 
     def __init__(self, parent):
 
+        # self.parent = parent
         tkinter.LabelFrame.__init__(self, parent)
 
         self.configure(text='Specifications', padx=10, pady=10)
-        
-        # application = parent.application
-        self.parent = parent
+
 
         # date in local format
         self.timestamp = tkinter.StringVar()
@@ -428,13 +365,13 @@ class SpecificationFrame(tkinter.LabelFrame):
                                       disabledbackground=disabled_bg,
                                       width=21)
         self.date_ent.grid(column=1, row=0, sticky=tkinter.W)
-        
+
         # observer name
         self.person = tkinter.StringVar()
-        
+
         person_lab = tkinter.Label(self, text='Observer: ')
         person_lab.grid(row=0, column=2, sticky=tkinter.E)
-        self.person_ent = tkinter.Entry(self, 
+        self.person_ent = tkinter.Entry(self,
                                         textvariable=self.person,
                                         disabledbackground=disabled_bg,
                                         width=15)
@@ -444,22 +381,21 @@ class SpecificationFrame(tkinter.LabelFrame):
         mode_lab = tkinter.Label(self, text='Coding mode: ')
         mode_lab.grid(column=0, row=1, sticky=tkinter.W)
 
-        self.mode_ent = tkinter.Entry(self, 
-                                      textvariable=parent.player_mode, 
+        mode_ent = tkinter.Entry(self,
+                                      textvariable=parent.player_mode,
                                       disabledbackground=disabled_bg,
                                       state=tkinter.DISABLED,
                                       width=21)
-        self.mode_ent.grid(column=1, row=1, sticky=tkinter.W)
+        mode_ent.grid(column=1, row=1, sticky=tkinter.W)
 
         period_lab = tkinter.Label(self, text='Step: ')
         period_lab.grid(column=2, row=1)
-        self.period_ent = tkinter.Entry(self, 
-                                      # textvariable=application.period_display,
+        period_ent = tkinter.Entry(self,
                                       textvariable=parent.period_display,
                                       disabledbackground=disabled_bg,
                                       state=tkinter.DISABLED,
                                       width=5)
-        self.period_ent.grid(column=3, row=1, sticky=tkinter.W)
+        period_ent.grid(column=3, row=1, sticky=tkinter.W)
         # time units is given in seconds - mandatory
         unit_lab = tkinter.Label(self, text='second(s)')
         unit_lab.grid(column=4, row=1, sticky=tkinter.W)
@@ -469,12 +405,13 @@ class SpecificationFrame(tkinter.LabelFrame):
         comment_lab = tkinter.Label(self, text='Comment: ')
         comment_lab.grid(row=3, column=0, sticky=tkinter.W)
         self.comment_ent = tkinter.Entry(self, textvariable=self.comment,
-                                         disabledbackground=disabled_bg, 
+                                         disabledbackground=disabled_bg,
                                          width=45)
         self.comment_ent.grid(row=3, column=1, columnspan=4, sticky=tkinter.W)
 
         # Start processing / coding / recording button...
 # FIXME: place this button in a better way.
         self.start_but = tkinter.Button(self, text='Start\nprocessing',
-                                         command=self.parent.start_processing)
+                                         # command=self.parent.start_processing)
+                                         command=parent.start_processing)
         self.start_but.grid(row=0, column=5, rowspan=4, sticky=U.sticky_all)

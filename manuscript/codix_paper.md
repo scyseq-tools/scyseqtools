@@ -39,6 +39,10 @@ were not present at that time (such as the naming of the encoded behaviors).
 
 - Simple video coder [@BartoEtAl17]
 
+- datavyu https://datavyu.org/
+
+- ELAN https://sites.bu.edu/elsa/elan-coding/
+
 and there are also commercial software such as Noldus™ Observer XT$^®$ software.
 
 In this article, we present a software suite that we have used in a series of
@@ -215,11 +219,26 @@ Data are stored in a json file according to the illustrated file in FigXX.
 ### Resume a session
 
 In case 2, since all the information are present in the data file (names of the
-code file and of the video file), all the files are loaded at once (if they
-exist).
+code file and of the video file), the media file is loaded automatically (if it
+exists on the disk) and all the other informations are retrieved from the `.cdx`
+file.
+
 
 
 ## `codix-analyzer`
+
+The analysis of behavioral sequences (or any other type of sequence as long as
+they are saved in the `.cdx` json format) is performed using `codix-anayzed`,
+the second utility provided by the codix software suite.
+
+The interface of the analyzer is composed of a set of notebooks which provide
+specific functions: the first one allows the user to choose the working
+directory and the data files for the analysis and each of the other ones is
+related to a specific analysis.
+
+When the user chooses the folder where the data are recorded, the program
+assumes that the files produced by the analyzer will be saved in the parent
+directory under a folder named `analyzer_files`.
 
 
 # Example: mother-infant interactions

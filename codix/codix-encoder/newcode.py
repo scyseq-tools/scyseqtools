@@ -331,4 +331,6 @@ class RecordedSite(tkinter.Label):
 
 if __name__ == '__main__':
 
-    NewCode().mainloop()
+    win = tkinter.Tk()
+    nc = NewCode(parent=win)
+    win.mainloop()

@@ -88,19 +88,19 @@ class PlayerControl(tkinter.LabelFrame):
                                               variable=self._mode,
                                               onvalue='regular', offvalue='continuous',
                                               background=ctrl_bg)
-        self.mode_check.grid(column=0, row=2, sticky=tkinter.W)
+        self.mode_check.grid(row=2, column=1, sticky=tkinter.W)
 
         # FIXME: is it useful?
         # self.mode_check.bind('<Button>', self.change_mode)
 
         self.period_ent = tkinter.Entry(self, width=4,
                                         textvariable=self._period)
-        self.period_ent.grid(column=1, row=2, sticky=tkinter.W)
+        self.period_ent.grid(column=2, row=2, sticky=tkinter.W)
         # FIXME:  is it useful?
         # self.period_ent.bind('<Return>', self.kb_set_period)
 
         self.period_lab = tkinter.Label(self, text=' sec.', background=ctrl_bg)
-        self.period_lab.grid(row=2, column=2, sticky=tkinter.W)
+        self.period_lab.grid(row=2, column=3, sticky=tkinter.W)
 
         self.time_lab = tkinter.Label(self, text='Time', background=ctrl_bg)
         self.time_lab.grid(row=1, column=6)
@@ -162,9 +162,10 @@ class PlayerControl(tkinter.LabelFrame):
         """
         self.player.set_pause(do_pause=1)
         self.state = "paused"
-        #### leomodif
-        if self.application.context == 'processing':
-            self.play_but.config(state='disabled')
+#        #### leomodif
+#        LP: passé dans fonction playpause.
+#        if self.application.context == 'processing':
+#            self.play_but.config(state='disabled')
 
     def playpause(self):
         """
@@ -185,6 +186,7 @@ class PlayerControl(tkinter.LabelFrame):
                 self.time = ftime #, 'Synchronized time')
 
                 if self.application.context == "processing":
+                    self.play_but.config(state='disabled')
                     self.application.time_step = '1p'
 
                     print('End PP time step: ', self.application.time_step)
@@ -279,7 +281,7 @@ class PlayerControl(tkinter.LabelFrame):
         self.player.set_time(tval)
         time_sec = '{:10.3f}'.format(tval/1000.)
         self._time.set(time_sec)
-        print('Player time setter: {self.time}.')
+        print(f'Player time setter: {self.time}.')
 
 #    def kb_set_period(self, tkevent):
 #        """

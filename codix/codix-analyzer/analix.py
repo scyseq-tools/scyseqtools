@@ -97,19 +97,15 @@ class Application(tkinter.Tk):
 
         outdir = tkinter.filedialog.askdirectory(initialdir=initialdir)
         self.ddir.set(outdir)
-        # ddir = self.ddir.get()
-        if 'data' in outdir:
-            wdy = outdir.split('data')[0]
-        else:
-            wdy = outdir
+        wdy = os.path.split(outdir)[0]
         cwd = os.path.join(wdy, ANALYZERDIR)
         if not os.path.exists(cwd):
             if tkinter.messagebox.askokcancel(\
                        title='Create working directory?',
                        message=f'Create {cwd}?'):
                 pathlib.Path(cwd).mkdir()
-            else:
-                cwd = wdy
+#            else:
+#                cwd = wdy
         tkinter.messagebox.showinfo(title='Current working directory',
                        message=f'Files will be saved in folders of {cwd}')
         self.cwd = cwd
