@@ -16,8 +16,8 @@ import tkinter.messagebox
 
 import Pmw
 
-sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
-import iosymb as IO
+# sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
+from scyseq import iosymb as IO
 
 __version__ = '0.1'
 __author__ = 'L. Pezard'

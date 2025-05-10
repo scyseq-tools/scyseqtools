@@ -9,11 +9,11 @@ import itertools
 
 import numpy as np
 
-sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
-import sequence as S
-import information as I
-import algorithmic as A
-import stochastic as T
+# sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
+from scyseq import sequence as S
+from scyseq import information as I
+from scyseq import algorithmic as A
+from scyseq import stochastic as T
 
 SEQ_EXT = '.cdx'
 TABLE_EXT = '.csv'

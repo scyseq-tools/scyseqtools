@@ -13,8 +13,8 @@ from parameters import Parameter
 # import utils as U
 # import symbolix
 
-sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
-import iosymb as IO
+# sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
+from scyseq import iosymb as IO
 
 # SEQ_EXT = '.json'
 TABLE_EXT = '.csv'

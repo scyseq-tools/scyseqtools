@@ -13,7 +13,7 @@ license = {text = "MIT"}
 # On dépend de la librairie locale (à modifier selon ton chemin exact)
 dependencies = [
   "scyseq @ file:///../../scyseq",  # chemin relatif vers ta lib locale
-  "python-vlc"
+  "python-vlc", "numpy", "Pmw", "pymediainfo"
 ]
 
 #[tool.hatch.dependencies]
