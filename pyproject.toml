@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "codix"
+version = "0.1.0"
+description = "Codix is a suite of softwares: encoder and analyser"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+
+# On dépend de la librairie locale (à modifier selon ton chemin exact)
+dependencies = [
+  "ma-librairie @ ../ma-librairie",  # chemin relatif vers ta lib locale
+]
+
+[tool.hatch.envs.default]
+# Ici tu peux préciser des options pour ton env (comme pytest, etc.)
+dependencies = [
+  "pytest", "python-vlc"
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/encoder", "src/analyser"]
