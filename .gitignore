@@ -4,3 +4,4 @@ gpt*
 _Trash
 build/
 *.py[cod]
+cwdfile.ini
