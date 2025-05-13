@@ -18,7 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
-docs = ["sphinx", "myst-parser", "sphinxcontrib-bibtex"]
+docs = ["sphinx", "myst-parser", "sphinxcontrib-bibtex", "sphinxcontrib-mermaid"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/analyser", "src/encoder"]

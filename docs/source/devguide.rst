@@ -150,3 +150,15 @@ written in reStructuredText format have the ``.rst`` extension.
 
 If you are more comfortable with ``markdown`` format you can also use this
 format and save your files with the ``.md`` extension.
+
+Making diagrams
+^^^^^^^^^^^^^^^
+
+Best solution: use the ``mermaid`` directive in the reStructuredText files
+
+See the doc: 
+
+* `sphinxcontrib-mermaid
+<https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest/>`_
+
+* `mermaid website <http://mermaid.js.org/>`_
