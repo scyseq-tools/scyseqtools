@@ -14,13 +14,21 @@ release = '0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["myst_parser", "sphinxcontrib.mermaid"]
+import sys
+sys.path.append('../src/')
+print(sys.path)
 
-html_static_path = ['_static']
+extensions = ["myst_parser", # allow .md files
+              "sphinxcontrib.mermaid", 
+              "sphinx.ext.autodoc",
+              'sphinx.ext.todo'
+              # 'sphinxcontrib.bibtex' not used yet
+              ]
 
 templates_path = ['_templates']
 exclude_patterns = []
 
+todo_include_todos = True
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -6,6 +6,13 @@ This is the user's guide
 Installation
 ------------
 
-Codix needs Python and vlc
+The common requirements are `Python <https://www.python.org>`_ and 
+`vlc <https://www.videolan.org/vlc/>`_
 
-1. 
+Then, *when avalaible on pypi*, the installation should reduce to:
+
+.. code-block:: bash
+
+   pip install codix
+
+

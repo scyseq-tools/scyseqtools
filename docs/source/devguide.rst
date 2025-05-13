@@ -13,17 +13,17 @@ feel comfortable with the CLI.
 
 The theory of the process is the following:
 
-1. "Install" the files from GitHub to your computer i.e. `clone` the GitHub
-repository.
+1. Install the requirements and the files from GitHub to your computer i.e.
+   `clone` the GitHub repository.
 
 2. Get used to the main concepts of git to be able to contribute either to the
-documentation or the code. The concepts are the same in both cases. The main
-difference is that in the former case you will write either reStructuredText or
-markdown files (more on that later) and in the latter you will write Python
-code.
+   documentation or the code. The concepts are the same in both cases. The main
+   difference is that in the former case you will write either reStructuredText
+   or markdown files (more on that later) and in the latter you will write
+   Python code.
 
 3. Decide whether you want to contribute to the documentation or to the code and
-read the corresponding section below.
+   read the corresponding section below.
 
 Installation
 ------------
@@ -31,7 +31,19 @@ Installation
 The process is explained in CLI but the operations are the same using the
 desktop application. Just find the right buttons, menus, etc.
 
-1. Clone the Repository
+1. Install requirements
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The common requirements are `Python <https://www.python.org>`_ and 
+`vlc <https://www.videolan.org/vlc/>`_
+
+Then in a shell:
+
+.. code-block:: bash
+
+   pip install hatch
+
+2. Clone the Repository
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you haven’t already, clone the repository to your local machine:
@@ -151,14 +163,76 @@ written in reStructuredText format have the ``.rst`` extension.
 If you are more comfortable with ``markdown`` format you can also use this
 format and save your files with the ``.md`` extension.
 
+To build the documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+   hatch shell
+   cd docs
+   make html
+
 Making diagrams
 ^^^^^^^^^^^^^^^
 
-Best solution: use the ``mermaid`` directive in the reStructuredText files
+The solution chosen here is to use the ``mermaid`` directive in the
+reStructuredText files
 
 See the doc: 
 
-* `sphinxcontrib-mermaid
-<https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest/>`_
+* `sphinxcontrib-mermaid <https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest/>`_
 
-* `mermaid website <http://mermaid.js.org/>`_
+* `mermaid website <http://mermaid.js.org/>`_ (there is a mermaid live editor
+   online)
+
+For flowcharts see: `mermaid doc for flowcharts
+<http://mermaid.js.org/syntax/flowchart.html>`_
+
+**BUT** it does not produce the diagram after ``make latexpdf``.
+
+Possible solutions:
+
+1. See the `building pdf on readthedoc.io
+   <https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest/index.html#building-pdfs-on-readthedocs-io>`_
+
+2. Include a ``.mmd`` file in a ``.rst`` file
+
+.. code-block:: rst
+
+    .. mermaid::
+       :caption: Login flowchart
+       :align: center
+       :file: ../diagrams/flowchart_login.mmd
+
+(The path is relative to the ``.rst`` file) 
+
+But only works for html. So can try the following for both html and pdf:
+
+.. code-block:: rst
+
+    .. only:: html
+
+       .. mermaid::
+          :file: ../diagrams/flowchart_login.mmd
+
+    .. only:: latex
+
+       .. image:: ../images/flowchart_login.png
+          :alt: Flowchart for pdf
+          :align: center
+          :width: 80%
+
+The ``.png`` file is created using the `mermaid CLI
+<https://github.com/mermaid-js/mermaid-cli>`_ and add a small script to convert
+automatically the mmd files to png in the respective directories.
+
+.. todo::
+   Test the last solution since might be the preferred solution.
+   1. install mermaid-cli
+   2. test
+   3. edit the makefile latexpdf to add the automatic conversion of mmd to
+   png/pdf
+
+.. todo::
+   When public repository, use the extension githubpages to publish the doc
+   using a branch gh-pages.
