@@ -151,6 +151,30 @@ Then update your feature branch:
 Writing documentation
 ---------------------
 
+summary:
+
+1. Check repository using Githb desktop
+2. edit local files using VS code
+3. Local Commit in GitHub desktop
+4. Push to reporsitory
+
+To build the doc:
+
+1. open terminal
+2. enter:
+
+.. code-block:: bash
+
+   cd Documents/GitHub/codix-suite
+   hatch shell
+   cd docs
+   make html
+
+3. In firefox open file: 
+
+file:///Users/maissanemecellem/Documents/GitHub/codix-suite/docs/build/html/index.html
+
+
 The documentation of ``codix`` uses the `sphinx documentation system
 <https://www.sphinx-doc.org/en/master/index.html>`_.
 
