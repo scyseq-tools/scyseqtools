@@ -77,6 +77,8 @@ Launch codix encoder using the icon? or the command
 Analyser guide
 --------------
 
+Editing test from Elisa
+
 Launch codix analyser using the icon? or the command
 
 .. code-block:: bash
