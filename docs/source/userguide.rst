@@ -42,6 +42,8 @@ asks the following questions:
 Encoder guide
 -------------
 
+Editing test from Maissane
+
 Launch codix encoder using the icon? or the command
 
 .. code-block:: bash
