@@ -125,7 +125,7 @@ class Symbolix():
 
         @param lod: list of data
         @rtype: a file with a table with the length of the sequences and 
-         the frequency of each symbol.
+        the frequency of each symbol.
         """
         # assume that site, code and alphabet are the same for all the sequences
         filename = '_'.join([lod[0]['sitename'], lod[0]['codename'], \
@@ -152,7 +152,7 @@ class Symbolix():
         @param lod1: First list of data
         @param lod2: Second list of data
         @rtype: Table with mutual information between sequences in lod1 and 
-                sequences in lod2
+        sequences in lod2
         """
 #        # assume that site, code and alphabet are the same for all the sequences
         filename = '_'.join([lod1[0]['sitename'], lod1[0]['codename'], \
