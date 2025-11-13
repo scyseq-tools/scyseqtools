@@ -75,11 +75,6 @@ Analix
 .. automodule:: analyser.analix
    :members:
 
-Analyzer
-^^^^^^^^
-.. automodule:: analyser.analyzer
-   :members:
-
 Methods
 ^^^^^^^
 .. automodule:: analyser.methods

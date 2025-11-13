@@ -9,12 +9,12 @@ import pathlib
 import os
 # import inspect
 import sys
-from parameters import Parameter
+from .parameters import Parameter
 # import utils as U
 # import symbolix
 
 # sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
-from scyseq import iosymb as IO
+from scyseq import io as IO
 
 # SEQ_EXT = '.json'
 TABLE_EXT = '.csv'

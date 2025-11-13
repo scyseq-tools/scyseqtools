@@ -6,7 +6,7 @@ import os
 import tkinter
 import utils as U
 
-import symbolix
+from . import symbolix
 
 ITEMSEP = ' |,|-|;|:|/'
 

@@ -16,6 +16,8 @@ release = '0.1'
 
 import sys
 sys.path.append('../src/')
+#sys.path.append('../../src/encoder/')
+#sys.path.append('../../src/analyzer/')
 print(sys.path)
 
 extensions = ["myst_parser", # allow .md files

@@ -2,8 +2,8 @@
 A Tk client for symbolic analysis
 """
 
-from methods import Method
-from symbolix import Symbolix
+from .methods import Method
+from .symbolix import Symbolix
 
 import os
 import sys
@@ -17,7 +17,7 @@ import tkinter.messagebox
 import Pmw
 
 # sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
-from scyseq import iosymb as IO
+from scyseq import io as IO
 
 __version__ = '0.1'
 __author__ = 'L. Pezard'

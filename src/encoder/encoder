@@ -1,7 +1,7 @@
 """
 Main application module
 """
-from truecodix import Application, __version__
+from .truecodix import Application, __version__
 
 app = Application()
 app.title(\
