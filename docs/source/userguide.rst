@@ -18,9 +18,6 @@ Then, *when avalaible on pypi*, the installation should reduce to:
 Initialisation (TODO)
 ---------------------
 
-Test de subsubsection
-^^^^^^^^^^^^^^^^^^^^^
-
 Before using the encoder or the analyser, codix configuration has to be
 initialised using:
 
@@ -71,6 +68,15 @@ Launch codix encoder using the icon? or the command
 
             * Define session location in the project structure?
             * Define media (and save media in correct place **TODO**)
+
+New code
+^^^^^^^^
+
+New session
+^^^^^^^^^^^
+
+Resume session
+^^^^^^^^^^^^^^
 
 
 

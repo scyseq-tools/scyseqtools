@@ -188,50 +188,23 @@ See the doc:
 For flowcharts see: `mermaid doc for flowcharts
 <http://mermaid.js.org/syntax/flowchart.html>`_
 
-**BUT** it does not produce the diagram after ``make latexpdf``.
+_But_, it does not produce the diagram after ``make latexpdf``.
 
-Possible solutions:
+So ``.png`` file are generated using the `mermaid CLI
+<https://github.com/mermaid-js/mermaid-cli>`_ 
 
-1. See the `building pdf on readthedoc.io
-   <https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest/index.html#building-pdfs-on-readthedocs-io>`_
+In `conf.py` the `mermaid_output_format` is set to `png`.
 
-2. Include a ``.mmd`` file in a ``.rst`` file
+`mermaid-cli` is installed using:
 
-.. code-block:: rst
+.. code-block::
 
-    .. mermaid::
-       :caption: Login flowchart
-       :align: center
-       :file: ../diagrams/flowchart_login.mmd
+   npm install --prefix ~/mermaid-cli @mermaid-js/mermaid-cli
 
-(The path is relative to the ``.rst`` file) 
-
-But only works for html. So can try the following for both html and pdf:
-
-.. code-block:: rst
-
-    .. only:: html
-
-       .. mermaid::
-          :file: ../diagrams/flowchart_login.mmd
-
-    .. only:: latex
-
-       .. image:: ../images/flowchart_login.png
-          :alt: Flowchart for pdf
-          :align: center
-          :width: 80%
-
-The ``.png`` file is created using the `mermaid CLI
-<https://github.com/mermaid-js/mermaid-cli>`_ and add a small script to convert
-automatically the mmd files to png in the respective directories.
-
-.. todo::
-   Test the last solution since might be the preferred solution.
-   1. install mermaid-cli
-   2. test
-   3. edit the makefile latexpdf to add the automatic conversion of mmd to
-   png/pdf
+Since the global installation (using `-g` as on the github page) did not work
+for me. It leads to set the `mermaid_cmd` in the `conf.py` of Sphinx. The `.mmd`
+files in `_static` are converted and inserted in both `html` and `latexpdf` as
+png images.
 
 .. todo::
    When public repository, use the extension githubpages to publish the doc
