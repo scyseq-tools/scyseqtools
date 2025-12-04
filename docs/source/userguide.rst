@@ -86,3 +86,39 @@ Launch codix analyser using the icon? or the command
 .. code-block:: bash
 
    codix-analyser
+
+   Statistics
+==========
+
+1. Organiser vos dossiers en amont.  
+   - Si vous avez plusieurs temps de mesure, créez les dossiers correspondants avant de commencer.
+2. Cliquer sur **Choose directory** pour sélectionner le dossier contenant les données à analyser.
+3. Dans chaque fenêtre, les variables mesurées ou codées apparaissent.
+4. Sélectionner les variables d’intérêt.
+5. Cliquer sur **Launch** pour lancer l’analyse.
+6. Choisir le dossier où les résultats calculés seront enregistrés.
+
+Mutual Information
+=================
+
+1. Organiser vos dossiers en amont.  
+   - Si plusieurs temps de mesure sont présents, créez les dossiers correspondants.
+2. Cliquer sur **Choose directory** pour sélectionner le dossier contenant les données à analyser.
+3. Dans chaque fenêtre, les variables mesurées ou codées apparaissent.
+4. Sélectionner les variables d’intérêt.
+5. Cliquer sur **Launch** pour lancer le calcul.
+6. Choisir le dossier de destination pour les résultats.
+
+Probabilités de Transitions
+===========================
+
+1. Organiser vos dossiers en amont.  
+   - Créez les dossiers correspondants si plusieurs temps de mesure sont présents.
+2. Cliquer sur **Choose directory** pour sélectionner le dossier contenant les données.
+3. Dans chaque fenêtre, les variables mesurées ou codées apparaissent.
+4. Sélectionner les variables d’intérêt.
+5. Définir l’intervalle de temps (en secondes) pour lequel les probabilités seront calculées.
+6. Cliquer sur **Launch** pour démarrer le calcul.
+7. Choisir le dossier où les résultats seront enregistrés.
+
+
