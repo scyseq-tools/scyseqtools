@@ -79,6 +79,8 @@ Analyser guide
 
 Editing test from Elisa
 
+New test for other pc
+
 Launch codix analyser using the icon? or the command
 
 .. code-block:: bash
