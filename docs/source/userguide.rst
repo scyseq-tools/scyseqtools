@@ -143,6 +143,34 @@ Steps
 
 ---
 
+Analysis Workflow
+=================
+
+.. graphviz::
+
+   digraph workflow {
+       rankdir=TB;
+       node [shape=box, style=rounded];
+
+       step1 [label="Organize folders"];
+       step2 [label="Choose directory"];
+       step3 [label="Select variables of interest"];
+       step4 [label="Set additional options"];
+       step5 [label="Launch analysis"];
+       step6 [label="Save results"];
+
+       step1 -> step2 -> step3 -> step4 -> step5 -> step6;
+
+       # Conditional notes
+       note1 [shape=note, label="Statistics: just select variables"];
+       note2 [shape=note, label="Mutual Information: prepare folders carefully to avoid errors"];
+       note3 [shape=note, label="Transition Probabilities: set correct time interval"];
+
+       step4 -> note1 [style=dashed, color=blue];
+       step4 -> note2 [style=dashed, color=green];
+       step4 -> note3 [style=dashed, color=red];
+   }
+
 Pratical Tips
 
 ------------------
