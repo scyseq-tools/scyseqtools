@@ -158,29 +158,32 @@ Analysis Workflow
 +-------------------------------+
 | Select variables of interest  |
 +---------------+---------------+
-                |
-                v
+          |
+          v
 +---------------------------+
 | Set additional options    |
-+-------+----+----+---------+
-        |    |    |
-        |    |    |
-        v    v    v
-   [Statistics]   [Mutual Info]   [Transition Prob.]
-   just select     prepare dirs     set time interval
-   variables       carefully         correctly
-                (to avoid errors)
-
++-----------+---------------+
+    |           |          |
+    v           v          v
++---------+ +------------+ +----------------+
+| 📊 Stats | | 🔍 Mutual | | ⏱ Transition |
+| just    | | Information| | Probabilities |
+| select  | | prepare    | | set correct  |
+| variables| | folders   | | time interval|
++---------+ +------------+ +----------------+
+    |           |           |
+    +-----------+-----------+
                 |
                 v
 +---------------------------+
 |     Launch analysis       |
 +-------------+-------------+
-              |
-              v
+          |
+          v
 +---------------------------+
 |       Save results        |
 +---------------------------+
+
 
 
 Pratical Tips
