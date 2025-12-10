@@ -145,45 +145,24 @@ Steps
 Analysis Workflow
 =================
 
-+-------------------+
-|  Organize folders |
-+---------+---------+
-          |
-          v
-+-------------------+
-|  Choose directory |
-+---------+---------+
-          |
-          v
-+-------------------------------+
-| Select variables of interest  |
-+---------------+---------------+
-          |
-          v
-+---------------------------+
-| Set additional options    |
-+-----------+---------------+
-    |           |          |
-    v           v          v
-+---------+ +------------+ +----------------+
-| 📊 Stats | | 🔍 Mutual | | ⏱ Transition |
-| just    | | Information| | Probabilities |
-| select  | | prepare    | | set correct  |
-| variables| | folders   | | time interval|
-+---------+ +------------+ +----------------+
-    |           |           |
-    +-----------+-----------+
-                |
-                v
-+---------------------------+
-|     Launch analysis       |
-+-------------+-------------+
-          |
-          v
-+---------------------------+
-|       Save results        |
-+---------------------------+
-
+Organize folders
+      |
+      v
+Choose directory
+      |
+      v
+Select variables of interest
+      |
+      v
+Set additional options --> [Statistics]
+                        --> [Mutual Info]
+                        --> [Transition Probabilities]
+      |
+      v
+Launch analysis
+      |
+      v
+Save results
 
 
 Pratical Tips
