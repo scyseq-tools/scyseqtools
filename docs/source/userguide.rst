@@ -77,8 +77,96 @@ Launch codix encoder using the icon? or the command
 Analyser guide
 --------------
 
-Launch codix analyser using the icon? or the command
-
 .. code-block:: bash
 
    codix-analyser
+
+Window Statistics
+=================
+
+Analyze your data simply and efficiently.
+
+.. note::
+Before you begin, make sure your folders are properly organized.
+If you have multiple measurement times, create one folder per time point.
+
+Steps
+-----
+
+1. **Organize your folders**.  
+2. Click **Choose directory** 📂 to select the folder containing your data.
+3. The measured or coded variables will automatically appear in the window.
+4. Select the **variables of interest** 🎯.
+5. Click **Launch** ▶️ to run the analysis.
+6. Choose the folder where the **results will be saved** 💾.
+
+---
+
+Window Mutual Information
+==================
+
+Compute relationships between your variables using mutual information.
+
+.. Advice::
+   Good folder preparation will save you time and help prevent errors.
+
+Steps
+-----
+
+1. **Prepare your folders**.  
+2. Click **Choose directory** 📂 to select the data folder.
+3. The measured or coded variables will appear in the window.
+4. Select the **variables of interest** 🎯.
+5. Click **Launch** ▶️ to start the computation.
+6. Choose the folder where the **results will be saved** 💾.
+
+---
+
+Window Transition Probabilities
+========================
+
+Compute the probabilities that one state transitions into another.
+
+.. important::
+Check the time interval for which you want to calculate the probabilities.
+
+Steps
+-----
+
+1. **Organize your folders** (one folder per measurement time if needed).
+2. Click **Choose directory** 📂 to select your data.
+3. The measured or coded variables will appear in the window.
+4. Select the **variables of interest** 🎯.
+5. Set the **time interval** (in seconds) ⏱️.
+6. Click **Launch** ▶️ to start the computation.
+7. Choose the folder where the **results wiil be saved** 💾.
+
+---
+Analysis Workflow
+=================
+
+Organize folders
+      |
+      v
+Choose directory
+      |
+      v
+Select variables of interest
+      |
+      v
+Set additional options --> [Statistics]
+                        --> [Mutual Info]
+                        --> [Transition Probabilities]
+      |
+      v
+Launch analysis
+      |
+      v
+Save results
+
+
+Pratical Tips
+------------------
+- Always verify your folder organization before running an analysis.
+- Use consistent file names to make results easier to read.
+- Regularly back up your original data.
