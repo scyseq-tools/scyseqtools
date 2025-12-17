@@ -142,27 +142,35 @@ Steps
 7. Choose the folder where the **results wiil be saved** 💾.
 
 ---
+
 Analysis Workflow
 =================
 
-Organize folders
-      |
-      v
-Choose directory
-      |
-      v
-Select variables of interest
-      |
-      v
-Set additional options --> [Statistics]
-                        --> [Mutual Info]
-                        --> [Transition Probabilities]
-      |
-      v
-Launch analysis
-      |
-      v
-Save results
+.. code-block:: text
+
++---------------------------+                       
+| Principal steps           |
++===========================+
+| 1. Organize folders       |
++---------------------------+
+| 2. Choose directory       |
++---------------------------+
+| 3. Select variables       |
+|    or participants of     |
+|    interest               |
++---------------------------+
+
+.. code-block:: text
+         
++--------------------------+---------------------------+---------------------------------+
+| 📊 Statistics           |  Mutual Information       | Transitions Probabilities        |
++========================================================================================+
+| Just select variables    | Prepare folders carefully | Set correct time interval       |
++--------------------------+---------------------------+---------------------------------+
+| Launch analysis          | Launch analysis           | Launch analysis                 |
++--------------------------+---------------------------+---------------------------------+
+| Save results             | Save results              | Save results                    |
++--------------------------+---------------------------+---------------------------------+
 
 
 Pratical Tips
