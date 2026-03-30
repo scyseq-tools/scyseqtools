@@ -103,7 +103,7 @@ Creating a Code File
 • In **List of items**, enter the items associated with the code (example: *small*, *large*) and click **Record**.
 ..
 • In **Recording site**, enter the name of the site (example: *mother*). 
-   * Select the codes to assign to the site and click **Record**.
+   - Select the codes to assign to the site and click **Record**.
 
 • Once the code file is complete, click **Save all specifications and quit**.
 ..
@@ -115,13 +115,13 @@ Starting a New Coding Session
 • In the menu bar: **Actions → Start a new session**  
 ..
 • **Load the video:**  
-   * Click **Load** in the **Media file** section.
-   * In the corresponding folder, select the video to code.
+   - Click **Load** in the **Media file** section.
+   - In the corresponding folder, select the video to code.
 ..
 • **Load the code file:**  
-   * Click **Load** in the **Code file** section.
-   * In **File type**, select **Code file (*.cod)** or **New code (*.jod)** depending on the code.
-   * In the corresponding folder, select the desired code file.
+   - Click **Load** in the **Code file** section.
+   - In **File type**, select **Code file (*.cod)** or **New code (*.jod)** depending on the code.
+   - In the corresponding folder, select the desired code file.
 
 Analyser guide
 --------------
