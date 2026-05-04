@@ -11,7 +11,7 @@ import tkinter.filedialog
 import tkinter.messagebox
 from tkinter.colorchooser import askcolor
 
-import utils as U
+import codix.encoder.utils as U
 
 #### leomodif : on met ces variables dans config.ini directement
 

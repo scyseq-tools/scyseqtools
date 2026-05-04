@@ -6,7 +6,6 @@ import os
 import time
 import configparser
 
-
 from threading import Timer
 
 import tkinter

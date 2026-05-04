@@ -20,8 +20,12 @@ dependencies = [
 dev = ["pytest"]
 docs = ["sphinx", "myst-parser", "sphinxcontrib-bibtex", "sphinxcontrib-mermaid"]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/analyser", "src/encoder"]
+[project.scripts]
+codix-analyser = "codix.analyser.main:main"
+codix-encoder = "codix.encoder.main:main"
+
+#[tool.hatch.build.targets.wheel]
+#packages = ["src/analyser", "src/encoder"]
 
 [tool.hatch.envs.default]
 features = ["dev", "docs"]

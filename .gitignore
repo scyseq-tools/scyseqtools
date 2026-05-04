@@ -8,3 +8,4 @@ cwdfile.ini
 .DS_Store
 **/.DS_Store
 src/encoder/videotest.mp4
+*.bak

@@ -15,7 +15,7 @@ import tkinter.simpledialog
 import tkinter.messagebox
 from tkinter.colorchooser import askcolor
 
-import utils as U
+import codix.encoder.utils as U
 
 bd = 2 # borderwidth
 coding_bg = 'lightsteelblue' # information background

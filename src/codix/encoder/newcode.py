@@ -14,8 +14,8 @@ import tkinter.filedialog
 from functools import partial
 from datetime import datetime
 
-import utils as U
-import htmlreport as H
+import codix.encoder.utils as U
+import codix.encoder.htmlreport as H
 
 VERSION = '0.9'
 
