@@ -39,6 +39,19 @@ asks the following questions:
 Encoder guide
 -------------
 
+Launch Codix
+^^^^^^^^^^^^^^
+
+• Open the Terminal.
+• Type the following command:
+
+.. code-block:: bash
+
+   ./codix
+
+• A small window opens: Check that the displayed directory matches the desired folder.
+• Click **OK**.
+
 Launch codix encoder using the icon? or the command
 
 .. code-block:: bash
@@ -72,27 +85,7 @@ Launch codix encoder using the icon? or the command
 New code
 ^^^^^^^^
 
-New session
-^^^^^^^^^^^
-
-Resume session
-^^^^^^^^^^^^^^
-
-Launch Codix
-^^^^^^^^^^^^^^
-
-• Open the Terminal.
-• Type the following command:
-
-.. code-block:: bash
-
-   ./codix
-
-• A small window opens: Check that the displayed directory matches the desired folder.
-• Click **OK**.  
-
 Create a code file
-~~~~~~~~~~~~~~~~~~~~
 
 • In the menu bar: **Actions → Create a new code**
 
@@ -105,60 +98,58 @@ Create a code file
    * *Recording site*: name of the site (e.g., *mother*).
       - Select the codes to assign to the site.
       - Click **Record**.
-..
+
 • Repeat the operation for as many codes, items, and recording sites as needed.
-..
+
 • Once the code file is complete: 
    * Click **Save all specifications and quit**.
    * Save the code file in the desired folder.
 
+New session
+^^^^^^^^^^^
+
 Start a new coding session
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-..
+
 • In the menu bar: **Actions → Start a new session**  
-..
+
 • Load the video:  
 
    - Click **Load** in the *Media file* section.
 
    - In the corresponding folder, select the video to code.
-..
-• Load the code file:  
+
+• Load the code file:
 
    - Click **Load** in the *Code file* section.
- 
 
    - In *File type*, select **Code file (*.cod)** or **New code (*.jod)** depending on the code.
- 
 
    - In the corresponding folder, select the desired code file.
 
 • The Codix window opens. Click **Play/Pause** to start the video.
-..  
+
 • Click **Play/Pause** again to stop the video as soon as coding can begin  
   (e.g., once the participants start speaking).
-..
-   
+
    ⚙️ Settings: 
 
       - In the field *By period of (..) sec.*, enter the coding interval (e.g., **2 sec** → the video will stop every 2 seconds).  
-  
+
       - Tick the box to activate the interval.  
-  
+
       - Click **Start processing**.  
-  
+
       - Enter the coder’s first name.  
-  
+
       - Restart the video using **Play/Pause**.
-..
-   
+
    🧩 Coding procedure: 
 
       - Code the first video segment.  
       - Click **Record**.  
       - A window opens: name the file.  
       - Repeat the following cycle: **Play/Pause → coding → Record**.
-..
+
 
    ✏️ Edit previous codes:
 
@@ -166,16 +157,17 @@ Start a new coding session
       - Click **Play/Pause** to restart the video.  
       - Correct the items if necessary.
       - Click **Record**.
-..
-   
+
    🔚 Exit session:  
 
       - In the menu bar: **Actions → Quit**.
-..
-   ..
+
+
+Resume session
+^^^^^^^^^^^^^^
+
 Resume an unfinished coding session
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-..
+
 After launching Codix:  
 
    - In the menu bar: **Actions → Retrieve a session**.  
