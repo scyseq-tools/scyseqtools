@@ -4,9 +4,9 @@ Module to deal with parameters
 import re
 import os
 import tkinter
-import utils as U
 
-from . import symbolix
+import codix.analyser.utils as U
+from codix.analyser import symbolix
 
 ITEMSEP = ' |,|-|;|:|/'
 

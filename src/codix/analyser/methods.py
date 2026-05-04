@@ -9,7 +9,8 @@ import pathlib
 import os
 # import inspect
 import sys
-from .parameters import Parameter
+
+from codix.analyser.parameters import Parameter
 # import utils as U
 # import symbolix
 

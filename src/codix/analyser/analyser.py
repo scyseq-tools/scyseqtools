@@ -2,8 +2,8 @@
 A Tk client for symbolic analysis
 """
 
-from .methods import Method
-from .symbolix import Symbolix
+from codix.analyser.methods import Method
+from codix.analyser.symbolix import Symbolix
 
 import os
 import sys

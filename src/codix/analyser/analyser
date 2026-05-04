@@ -1,4 +1,0 @@
-from .analix import Application
-
-application = Application()
-application.mainloop()
