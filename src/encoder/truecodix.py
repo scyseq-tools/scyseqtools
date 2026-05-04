@@ -21,11 +21,11 @@ import tkinter.simpledialog
 # from datetime import datetime # datetime.now().strftime('%c')
 
 import utils as U
-from .infoframe import InfoFrame
-from .playercontrol import PlayerControl
-from .applicationmenu import ApplicationMenu
-from .codingframe import FrameworkFrame
-from .newcode import NewCode
+from infoframe import InfoFrame
+from playercontrol import PlayerControl
+from applicationmenu import ApplicationMenu
+from codingframe import FrameworkFrame
+from newcode import NewCode
 
 __version__ = '0.9'
 __author__ = 'L. Pezard'

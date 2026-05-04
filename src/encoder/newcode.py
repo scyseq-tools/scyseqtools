@@ -14,8 +14,8 @@ import tkinter.filedialog
 from functools import partial
 from datetime import datetime
 
-from . import utils as U
-from . import htmlreport as H
+import utils as U
+import htmlreport as H
 
 VERSION = '0.9'
 
