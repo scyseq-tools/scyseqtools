@@ -87,74 +87,14 @@ Analyser guide
 
    codix-analyser
 
-Window Statistics
-=================
-
-Analyze your data simply and efficiently.
-
-.. note::
-Before you begin, make sure your folders are properly organized.
-If you have multiple measurement times, create one folder per time point.
-
-Steps
------
-
-1. **Organize your folders**.  
-2. Click **Choose directory** 📂 to select the folder containing your data.
-3. The measured or coded variables will automatically appear in the window.
-4. Select the **variables of interest** 🎯.
-5. Click **Launch** ▶️ to run the analysis.
-6. Choose the folder where the **results will be saved** 💾.
-
----
-
-Window Mutual Information
-==================
-
-Compute relationships between your variables using mutual information.
-
-.. Advice::
-   Good folder preparation will save you time and help prevent errors.
-
-Steps
------
-
-1. **Prepare your folders**.  
-2. Click **Choose directory** 📂 to select the data folder.
-3. The measured or coded variables will appear in the window.
-4. Select the **variables of interest** 🎯.
-5. Click **Launch** ▶️ to start the computation.
-6. Choose the folder where the **results will be saved** 💾.
-
----
-
-Window Transition Probabilities
-========================
-
-Compute the probabilities that one state transitions into another.
-
-.. important::
-Check the time interval for which you want to calculate the probabilities.
-
-Steps
------
-
-1. **Organize your folders** (one folder per measurement time if needed).
-2. Click **Choose directory** 📂 to select your data.
-3. The measured or coded variables will appear in the window.
-4. Select the **variables of interest** 🎯.
-5. Set the **time interval** (in seconds) ⏱️.
-6. Click **Launch** ▶️ to start the computation.
-7. Choose the folder where the **results wiil be saved** 💾.
-
----
-
 Analysis Workflow
-=================
+^^^^^^^^^^^^^^^^^
 
-.. code-block:: text
+.. image:: ../images/diagramme.svg
+   :align: center
+   :width: 80%
 
-+---------------------------+                       
++---------------------------+
 | Principal steps           |
 +===========================+
 | 1. Organize folders       |
@@ -166,11 +106,10 @@ Analysis Workflow
 |    interest               |
 +---------------------------+
 
-.. code-block:: text
-         
+
 +--------------------------+---------------------------+---------------------------------+
-| 📊 Statistics           |  Mutual Information       | Transitions Probabilities        |
-+========================================================================================+
+|  Statistics              |  Mutual Information       | Transitions Probabilities       |
++==========================+===========================+=================================+
 | Just select variables    | Prepare folders carefully | Set correct time interval       |
 +--------------------------+---------------------------+---------------------------------+
 | Launch analysis          | Launch analysis           | Launch analysis                 |
@@ -179,8 +118,73 @@ Analysis Workflow
 +--------------------------+---------------------------+---------------------------------+
 
 
+Window Statistics
+^^^^^^^^^^^^^^^^^
+
+Analyze your data simply and efficiently.
+
+.. note::
+
+   Before you begin, make sure your folders are properly organized.  If you have
+   multiple measurement times, create one folder per time point.
+
+Steps
+"""""
+
+1. **Organize your folders**.  
+2. Click **Choose directory** 📂 to select the folder containing your data.
+3. The measured or coded variables will automatically appear in the window.
+4. Select the **variables of interest** 🎯.
+5. Click **Launch** ▶️ to run the analysis.
+6. Choose the folder where the **results will be saved** 💾.
+
+
+Window Mutual Information
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Compute relationships between your variables using mutual information.
+
+.. tip::
+
+   Good folder preparation will save you time and help prevent errors.
+
+Steps
+"""""
+
+1. **Prepare your folders**.  
+2. Click **Choose directory** 📂 to select the data folder.
+3. The measured or coded variables will appear in the window.
+4. Select the **variables of interest** 🎯.
+5. Click **Launch** ▶️ to start the computation.
+6. Choose the folder where the **results will be saved** 💾.
+
+
+Window Transition Probabilities
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Compute the probabilities that one state transitions into another.
+
+.. important::
+
+   Check the time interval for which you want to calculate the probabilities.
+
+Steps
+"""""
+
+1. **Organize your folders** (one folder per measurement time if needed).
+2. Click **Choose directory** 📂 to select your data.
+3. The measured or coded variables will appear in the window.
+4. Select the **variables of interest** 🎯.
+5. Set the **time interval** (in seconds) ⏱️.
+6. Click **Launch** ▶️ to start the computation.
+7. Choose the folder where the **results wiil be saved** 💾.
+
+
+
 Pratical Tips
-------------------
+"""""""""""""
+
 - Always verify your folder organization before running an analysis.
 - Use consistent file names to make results easier to read.
 - Regularly back up your original data.
+
