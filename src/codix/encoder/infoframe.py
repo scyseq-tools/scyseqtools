@@ -23,6 +23,56 @@ import codix.encoder.utils as U
 # relief in ['flat', 'raised', 'sunken', 'solid', 'ridge', 'groove']
 
 
+def coded_sample_lengths(data):
+    """
+    Return the lengths of all coded sequences in a Codix data container.
+    """
+    lengths = []
+    for site_data in data.values():
+        if not isinstance(site_data, dict):
+            continue
+        for sequence in site_data.values():
+            if hasattr(sequence, "__len__"):
+                lengths.append(len(sequence))
+    return lengths
+
+
+def resume_step_count(data, comments=None):
+    """
+    Infer how many regular-coding steps can safely be resumed.
+    """
+    lengths = coded_sample_lengths(data)
+    if lengths:
+        return min(lengths)
+    if comments:
+        return len(comments)
+    return 0
+
+
+def normalize_resume_data(record):
+    """
+    Normalize loaded session state without relying on the number of times.
+    """
+    data = record.get("data", {})
+    comments = list(record.get("comments", []))
+    times = list(record.get("times", []))
+    count = resume_step_count(data, comments)
+
+    if len(comments) < count:
+        comments.extend([""] * (count - len(comments)))
+    elif len(comments) > count:
+        comments = comments[:count]
+
+    if not times and count:
+        period = record.get("code", {}).get("period")
+        step = int(float(period) * 1000) if period else 0
+        times = [step * index for index in range(count + 1)]
+
+    return {
+        "times": times,
+        "comments": comments,
+        "recorded_steps": set(range(1, count + 1)),
+    }
 
 class InfoFrame(tkinter.LabelFrame):
 
@@ -195,8 +245,11 @@ class InfoFrame(tkinter.LabelFrame):
         else :
             tkinter.messagebox.showinfo('Cannot load code file', " Code file doesn't exist or not in directory %s "  % code)
 # lpcomment: everything at the good place in the container
+        resume_state = normalize_resume_data(data)
+        data['times'] = resume_state['times']
+        data['comments'] = resume_state['comments']
         self.application.container.update(data)
-        self.application.recorded_steps = set(range(1, len(data['times'])))
+        self.application.recorded_steps = resume_state['recorded_steps']
         print(self.application.recorded_steps)
         print(self.application.container)
 

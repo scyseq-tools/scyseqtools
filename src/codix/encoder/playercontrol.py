@@ -33,6 +33,18 @@ import vlc
 DTIME = 10000 # ms forward and back time period for continuous play
 
 
+def bound_time_to_media(value, max_time):
+    """Return a media time inside known bounds.
+
+    VLC reports non-positive durations while the media length is not available
+    yet. In that case only the lower bound can be enforced.
+    """
+    if value < 0:
+        return 0, "before_start"
+    if max_time > 0 and value > max_time:
+        return max_time, "after_end"
+    return value, None
+
 
 class PlayerControl(tkinter.LabelFrame):
     """
@@ -118,17 +130,26 @@ class PlayerControl(tkinter.LabelFrame):
         time.sleep(1) # 0.1 is too short I loose sound!?
         self.player.set_pause(do_pause=1)
         self._state = "paused"
-        self.max_time = self.player.get_length() # a long in ms
+        self.max_time = self.refresh_max_time() # a long in ms
         self.time = 0 # 'Initial time')
-        if self.max_time == -1:
-            tkinter.messagebox.showinfo('Cannot get max time',
-                                  'Cannot get max time; this may cause problems')
         print('Length of media file: ', self.max_time, ' ms.')
 
         self.elements = [self, self.period_lab, self.time_lab, self.mode_check, self.unit_lab]
 
         self.times = []
 
+    def refresh_max_time(self, attempts=5, delay=0.1):
+        """
+        Ask VLC for the media length, allowing a short warm-up window.
+        """
+        max_time = self.player.get_length()
+        for _ in range(attempts):
+            if max_time > 0:
+                break
+            time.sleep(delay)
+            max_time = self.player.get_length()
+        self.max_time = max_time
+        return max_time
 
     def step_play(self, time_interval):
         """
@@ -261,16 +282,15 @@ class PlayerControl(tkinter.LabelFrame):
     @time.setter
     def time(self, value):
 
-        if value < 0:
+        if value > 0 and self.max_time <= 0:
+            self.refresh_max_time()
+        tval, bound = bound_time_to_media(value, self.max_time)
+        if bound == "before_start":
             tkinter.messagebox.showinfo('Value Error',
                               'cannot set time before beginning sets to zero')
-            tval = 0
-        elif value > self.max_time:
+        elif bound == "after_end":
             tkinter.messagebox.showinfo('Value Error',
                               'cannot set time after end sets to max time')
-            tval = self.max_time
-        else:
-            tval = value
 
         self.player.set_time(tval)
         time_sec = '{:10.3f}'.format(tval/1000.)

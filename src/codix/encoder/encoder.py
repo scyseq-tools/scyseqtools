@@ -270,7 +270,7 @@ class Application(tkinter.Tk):
             self.framework.coding_comments = self.container['comments']
             # self.container['media'] = self.info.media_file.get()
 
-            self.time_step = 'last'
+            self.time_step = 'last_recorded'
             print('TIME_STEP: ', self.time_step)
 
         elif value == "processing":
@@ -355,7 +355,16 @@ class Application(tkinter.Tk):
 
         elif value == 'last':
             self.__time_step = self.times_length - 1
-            self.control.time = self.control.times[-1]
+            if self.control.times:
+                self.control.time = self.control.times[-1]
+        elif value == 'last_recorded':
+            if self.recorded_steps:
+                self.__time_step = max(self.recorded_steps)
+            else:
+                self.__time_step = max(0, self.times_length - 1)
+            if self.control.times:
+                time_index = min(self.__time_step, self.times_length - 1)
+                self.control.time = self.control.times[time_index]
         else:
             # raise error ?
             pass
