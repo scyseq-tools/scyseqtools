@@ -19,6 +19,7 @@ def test_load_encoder_config_uses_bundled_defaults():
     assert config["application"]["default_cwd"] == "~"
     assert config["application"]["required_subfolders"] == "media,data"
     assert config["infoframe"]["background"] == "lightsteelblue"
+    assert config["playercontrol"]["backend"] == "vlc"
     assert config["playercontrol"]["relief"] == "groove"
     assert config["codingframework"]["background"] == "palegoldenrod"
 

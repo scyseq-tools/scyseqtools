@@ -1,5 +1,5 @@
 """
-Module that controls VLC player for codix encoder
+Module that controls media playback for codix encoder
 """
 
 import time
@@ -9,8 +9,11 @@ import tkinter.messagebox
 from tkinter.colorchooser import askcolor
 
 from codix.encoder.config import load_encoder_config
-
-import vlc
+from codix.encoder.playerbackends import (
+    PlayerBackendError,
+    configured_backend_name,
+    create_player_backend,
+)
 
 #vlc states :
 #{0: 'NothingSpecial',
@@ -69,9 +72,11 @@ class PlayerControl(tkinter.LabelFrame):
             self.application.cwd, required_sections=("playercontrol",)
         )
 
-        border_width = config['playercontrol'].getint('borderwidth')
-        ctrl_bg = config['playercontrol']['background']
-        relief = config['playercontrol']['relief']
+        player_config = config['playercontrol']
+        border_width = player_config.getint('borderwidth')
+        ctrl_bg = player_config['background']
+        relief = player_config['relief']
+        backend_name = configured_backend_name(player_config)
         tkinter.LabelFrame.__init__(self, parent)
 
         self.configure(background=ctrl_bg, borderwidth=border_width, padx=20, pady=20,
@@ -124,15 +129,12 @@ class PlayerControl(tkinter.LabelFrame):
         self.bind('<Button-3>', self.change_color)
 
         # player instance
-        args = ['--no-xlib']
-        instance = vlc.Instance(args)
-        self.player = instance.media_player_new()
+        try:
+            self.player = create_player_backend(backend_name, file_name)
+        except PlayerBackendError as exc:
+            tkinter.messagebox.showinfo('Media player backend error', str(exc))
+            raise
 
-        self.player.set_mrl(file_name)
-        # This is a hack for time initialization: reads 1s and then goes back to 0
-        self.player.play()
-        time.sleep(1) # 0.1 is too short I loose sound!?
-        self.player.set_pause(do_pause=1)
         self._state = "paused"
         self._current_time = 0
         self._step_after_id = None
@@ -146,7 +148,7 @@ class PlayerControl(tkinter.LabelFrame):
 
     def refresh_max_time(self, attempts=5, delay=0.1):
         """
-        Ask VLC for the media length, allowing a short warm-up window.
+        Ask the media backend for the media length, allowing a short warm-up window.
         """
         max_time = self.player.get_length()
         for _ in range(attempts):
@@ -207,7 +209,7 @@ class PlayerControl(tkinter.LabelFrame):
         """
         Pause the player.
         """
-        self.player.set_pause(do_pause=1)
+        self.player.pause()
         self.state = "paused"
 #        #### leomodif
 #        LP: passé dans fonction playpause.

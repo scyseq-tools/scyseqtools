@@ -19,6 +19,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest"]
 docs = ["sphinx", "myst-parser", "sphinxcontrib-bibtex", "sphinxcontrib-mermaid"]
+mpv = ["mpv"]
 
 [project.scripts]
 codix-analyser = "codix.analyser.main:main"
