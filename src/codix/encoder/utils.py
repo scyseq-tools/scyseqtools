@@ -6,6 +6,16 @@ sticky_all = (tkinter.W, tkinter.N, tkinter.S, tkinter.E)
 
 # sec_abbrev = ('seconde', 'secondes', 'sec.', 'sec', 'second', 'seconds', 's', 's.')
 
+def focus_widget(widget):
+    """
+    Give keyboard focus to a widget and bring its window to the front.
+    """
+    top_level = widget.winfo_toplevel()
+    top_level.update_idletasks()
+    top_level.lift()
+    top_level.focus_force()
+    widget.focus_set()
+
 def is_valid_media(fname):
     if is_valid_filename(fname):
         fileInfo = MediaInfo.parse(fname)

@@ -39,8 +39,8 @@ class NewCode(tkinter.LabelFrame):
 
         name_label = tkinter.Label(projectframe, text='Name: ')
         name_label.grid(row=0, column=0)
-        name_entry = tkinter.Entry(projectframe, textvariable=self.project_name)
-        name_entry.grid(row=0, column=2)
+        self.name_entry = tkinter.Entry(projectframe, textvariable=self.project_name)
+        self.name_entry.grid(row=0, column=2)
 
         description_label = tkinter.Label(projectframe, text='Description: ')
         description_label.grid(row=1, column=0)
@@ -127,6 +127,12 @@ class NewCode(tkinter.LabelFrame):
         savebutton = tkinter.Button(self, text='Save all specifications and quit',
                                           command = self.record_all )
         savebutton.grid(sticky=U.sticky_all)
+
+    def focus_first_field(self):
+        """
+        Put keyboard focus on the first editable field in the form.
+        """
+        U.focus_widget(self.name_entry)
 
     def toggle_specs(self):
         """

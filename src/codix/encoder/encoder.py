@@ -114,6 +114,7 @@ class Application(tkinter.Tk):
         self.newcode = NewCode(parent=self)
         self.newcode.grid(row=1, column=1, sticky=U.sticky_all)
         self.menu.disable_actions()
+        self.after_idle(self.newcode.focus_first_field)
 
     def start_session(self):
         """Starting a new coding session
