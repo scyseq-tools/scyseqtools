@@ -119,6 +119,17 @@ The encoder opens a graphical interface and asks you to choose a working
 directory. Codix expects or creates `media` and `data` folders inside that
 working directory.
 
+### Encoder Window Layout
+
+By default, the encoder opens with the classic single-window layout. To split
+the encoder into separate Information, Control, and Coding framework windows,
+add this to the `config.ini` file in your Codix working directory:
+
+```ini
+[application]
+encoder_layout = detached
+```
+
 
 ## Run Tests
 

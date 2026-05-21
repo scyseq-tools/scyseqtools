@@ -26,7 +26,7 @@ class ApplicationMenu(tkinter.Menu):
                                      command=master.reset,
                                      state=tkinter.NORMAL)
         self.action_menu.add_separator()
-        self.action_menu.add_command(label='Quit', command=master.quit)
+        self.action_menu.add_command(label='Quit', command=master.quit_session)
 
         # Help Menu
         # FIXME: not implemented...

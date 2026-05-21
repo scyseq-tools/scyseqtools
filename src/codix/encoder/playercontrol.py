@@ -159,6 +159,21 @@ class PlayerControl(tkinter.LabelFrame):
         self.max_time = max_time
         return max_time
 
+    def shutdown(self):
+        """Pause playback and cancel delayed callbacks before the UI closes."""
+        if self._step_after_id is not None:
+            try:
+                self.after_cancel(self._step_after_id)
+            except tkinter.TclError:
+                pass
+            self._step_after_id = None
+
+        try:
+            self.player.pause()
+        except Exception:
+            pass
+        self._state = "paused"
+
     def step_play(self, time_interval, target_time=None):
         """
         Plays for a time step 'time_interval'

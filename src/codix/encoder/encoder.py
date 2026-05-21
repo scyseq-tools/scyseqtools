@@ -24,7 +24,7 @@ from codix.encoder.infoframe import InfoFrame
 from codix.encoder.playercontrol import PlayerControl
 from codix.encoder.applicationmenu import ApplicationMenu
 from codix.encoder.codingframe import FrameworkFrame
-from codix.encoder.config import load_encoder_config
+from codix.encoder.config import get_encoder_layout, load_encoder_config
 from codix.encoder.newcode import NewCode
 
 __version__ = '0.9'
@@ -57,8 +57,16 @@ class Application(tkinter.Tk):
                           'version': __version__} # data
 
         self._context = "standard"
+        self.info = None
+        self.control = None
+        self.framework = None
+        self._control_window = None
+        self._coding_window = None
         self.cwd = self.__set_cwd()
+        self.encoder_layout = get_encoder_layout(self.cwd)
         print('Current working directory set to :', self.cwd)
+        print('Encoder layout set to :', self.encoder_layout)
+        self.protocol("WM_DELETE_WINDOW", self.quit_session)
         # FIXME: this is related to coding framework.
         # self.recorded_steps = []
         self.recorded_steps = set()
@@ -121,8 +129,9 @@ class Application(tkinter.Tk):
                               states=(tkinter.NORMAL,    # load media
                                       tkinter.DISABLED,  # load code
                                       tkinter.DISABLED)) # load data
-        self.info.grid(row=1, column=1, sticky=U.sticky_all)
-        self.__make_coding_workspace()
+        self.__grid_information_frame()
+        if not self.detached_layout:
+            self.__make_coding_workspace()
         self.menu.disable_actions()
 
     def retrieve_session(self):
@@ -132,8 +141,9 @@ class Application(tkinter.Tk):
                               states=(tkinter.DISABLED, # load code
                                       tkinter.DISABLED, # load media
                                       tkinter.NORMAL))  # load data
-        self.info.grid(row=1, column=1, sticky=U.sticky_all)
-        self.__make_coding_workspace()
+        self.__grid_information_frame()
+        if not self.detached_layout:
+            self.__make_coding_workspace()
         self.menu.disable_actions()
 
     def reset(self):
@@ -155,6 +165,76 @@ class Application(tkinter.Tk):
         """
         self.notimplemented()
 
+    @property
+    def detached_layout(self):
+        """Whether encoder content should be split into separate windows."""
+        return self.encoder_layout == "detached"
+
+    def __grid_information_frame(self):
+        """
+        Put the information frame in the root window.
+        """
+        if self.detached_layout:
+            self.title(f'Codix - Information - version: {__version__}')
+            self.grid_columnconfigure(0, weight=1)
+            self.grid_rowconfigure(0, weight=1)
+            self.info.grid(row=0, column=0, sticky=U.sticky_all)
+        else:
+            self.info.grid(row=1, column=1, sticky=U.sticky_all)
+
+    def __detached_window(self, attr_name, title):
+        """
+        Return an application-managed detached content window.
+        """
+        window = getattr(self, attr_name)
+        if window is not None and window.winfo_exists():
+            window.deiconify()
+            window.lift()
+            return window
+
+        window = tkinter.Toplevel(self)
+        window.title(f'Codix - {title} - version: {__version__}')
+        window.resizable(tkinter.TRUE, tkinter.TRUE)
+        window.protocol("WM_DELETE_WINDOW", self.__refocus_information_window)
+        window.grid_columnconfigure(0, weight=1)
+        window.grid_rowconfigure(0, weight=1)
+        setattr(self, attr_name, window)
+        return window
+
+    def __refocus_information_window(self):
+        """
+        Keep detached content windows open and return focus to Information.
+        """
+        try:
+            self.deiconify()
+            self.lift()
+            self.focus_force()
+        except tkinter.TclError:
+            pass
+
+    def __control_parent(self):
+        if self.detached_layout:
+            return self.__detached_window("_control_window", "Control")
+        return self
+
+    def __coding_parent(self):
+        if self.detached_layout:
+            return self.__detached_window("_coding_window", "Coding framework")
+        return self
+
+    def quit_session(self):
+        """
+        Close the encoder session and shut down playback cleanly.
+        """
+        if self.control is not None and self.control.winfo_exists():
+            self.control.shutdown()
+
+        for window in (self._control_window, self._coding_window):
+            if window is not None and window.winfo_exists():
+                window.destroy()
+
+        self.destroy()
+
 # Functions related to infoframe
 #-------------------------------
 
@@ -162,12 +242,17 @@ class Application(tkinter.Tk):
         """
         create a player control frame
         """
+        parent = self.__control_parent()
         self.control = PlayerControl(
-            parent=self,
+            parent=parent,
             file_name=fname,
             application=self,
         )
-        self.control.grid(row=1, column=0, sticky=U.sticky_all)
+        if self.detached_layout:
+            self.control.grid(row=0, column=0, sticky=U.sticky_all)
+            parent.lift()
+        else:
+            self.control.grid(row=1, column=0, sticky=U.sticky_all)
         self.state['media_loaded'] = True
 
     def make_coding_frame(self, fname):
@@ -195,12 +280,17 @@ class Application(tkinter.Tk):
             self.cwd, required_sections=("codingframework",)
         )
         coding_config = config["codingframework"]
+        parent = self.__coding_parent()
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=1)
+        if self.detached_layout:
+            parent.grid_columnconfigure(0, weight=1)
+            parent.grid_rowconfigure(0, weight=1)
+        else:
+            self.grid_columnconfigure(0, weight=1)
+            self.grid_columnconfigure(1, weight=1)
+            self.grid_rowconfigure(2, weight=1)
 
-        self.coding_workspace = tkinter.LabelFrame(self)
+        self.coding_workspace = tkinter.LabelFrame(parent)
         self.coding_workspace.configure(
             background=coding_config["background"],
             borderwidth=coding_config.getint("borderwidth"),
@@ -210,8 +300,12 @@ class Application(tkinter.Tk):
             text='Coding framework: ',
             font=('bold',),
         )
-        self.coding_workspace.grid(row=2, column=0, columnspan=2,
-                                   sticky=U.sticky_all)
+        if self.detached_layout:
+            self.coding_workspace.grid(row=0, column=0, sticky=U.sticky_all)
+            parent.lift()
+        else:
+            self.coding_workspace.grid(row=2, column=0, columnspan=2,
+                                       sticky=U.sticky_all)
         self.coding_workspace.grid_columnconfigure(0, weight=1)
         self.coding_workspace.grid_columnconfigure(1, weight=1)
         self.coding_workspace.grid_rowconfigure(0, weight=1)

@@ -6,6 +6,7 @@ from importlib.resources import files
 
 
 CONFIG_FILENAME = "config.ini"
+VALID_ENCODER_LAYOUTS = ("embedded", "detached")
 
 
 def load_encoder_config(cwd=None, required_sections=()):
@@ -31,3 +32,18 @@ def load_encoder_config(cwd=None, required_sections=()):
         raise ValueError(f"Missing encoder config section: {names}")
 
     return config
+
+
+def get_encoder_layout(cwd=None):
+    """Return the configured encoder window layout."""
+    config = load_encoder_config(cwd, required_sections=("application",))
+    layout = config["application"].get("encoder_layout", "embedded").strip().lower()
+
+    if layout not in VALID_ENCODER_LAYOUTS:
+        valid_layouts = ", ".join(VALID_ENCODER_LAYOUTS)
+        raise ValueError(
+            f"Invalid encoder_layout: {layout!r}. "
+            f"Use one of: {valid_layouts}."
+        )
+
+    return layout
