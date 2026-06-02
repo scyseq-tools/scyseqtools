@@ -26,6 +26,50 @@ __licence__ = 'GPL'
 # PLATFORM = sys.platform
 ANALYZERDIR = 'analyzer_files'
 
+
+def _analyzer_dir_for(data_dir):
+    """
+    Return the analyser working directory for a selected data directory.
+    """
+    parent_dir = os.path.split(data_dir)[0]
+    return os.path.join(parent_dir, ANALYZERDIR)
+
+
+def _load_codix_appstate(data_dir, file_tuple):
+    """
+    Load selected Codix files and build the application state.
+    """
+    data = {}
+    sites = []
+    codes = {}
+
+    for fname in file_tuple:
+
+        fid = os.path.join(data_dir, fname)
+        candidates = IO.read_codix(fid) # data only = True
+        csites = list(candidates.keys())
+        ccodes = {site: list(candidates[site].keys()) for site in csites}
+
+        # FIXME: Check that files are compatible
+        if sites == [] or csites == sites:
+            sites = csites
+            if codes == {}:
+                codes = ccodes
+            elif any(c1.lower() != c2.lower() \
+                     for c1, c2 in zip(ccodes, codes)):
+                # FIXME: make a message box
+                raise ValueError('Incompatible codes')
+        elif any(c1.lower() != c2.lower() \
+                 for c1, c2 in zip(csites, sites)):
+                # FIXME: make a message box
+            raise ValueError('Incompatible sites')
+
+        data[fname] = candidates
+
+    return {'files': list(file_tuple), 'sites': sites, 'codes': codes,
+            'data': data}
+
+
 class Application(tkinter.Tk):
     """
     The main frame for the analyzer application
@@ -96,26 +140,21 @@ class Application(tkinter.Tk):
         initialdir = "/home/zarpe/Documents/tests_scyseqtools/data"
 
         outdir = tkinter.filedialog.askdirectory(initialdir=initialdir)
-        self.ddir.set(outdir)
-        wdy = os.path.split(outdir)[0]
-        cwd = os.path.join(wdy, ANALYZERDIR)
-        if not os.path.exists(cwd):
-            if tkinter.messagebox.askokcancel(\
-                       title='Create working directory?',
-                       message=f'Create {cwd}?'):
-                pathlib.Path(cwd).mkdir()
-#            else:
-#                cwd = wdy
-        tkinter.messagebox.showinfo(title='Current working directory',
-                       message=f'Files will be saved in folders of {cwd}')
-        self.cwd = cwd
+        if not outdir:
+            return
 
         #self.filelist = os.listdir(self.ddir.get())
         # self.available.setlist(self.filelist)
-        filelist = os.listdir(self.ddir.get())
+        try:
+            filelist = os.listdir(outdir)
+        except OSError as exc:
+            tkinter.messagebox.showerror(title='Could not list directory',
+                                         message=str(exc))
+            return
+
+        self.ddir.set(outdir)
         self.available.setlist(filelist)
         self.selected.setvalue('')
-        self.dir_but.config(state='disabled')
 
     def load_file(self):
         """
@@ -123,40 +162,36 @@ class Application(tkinter.Tk):
 
         Puts all the data in memory maybe this is not a good idea...
         """
+        data_dir = self.ddir.get()
+        if not data_dir:
+            tkinter.messagebox.showwarning(title='No directory selected',
+                    message='Choose a data directory before selecting files.')
+            return
+
         file_tuple = self.available.getcurselection()
+        if not file_tuple:
+            tkinter.messagebox.showwarning(title='No file selected',
+                    message='Select at least one data file to load.')
+            return
+
+        try:
+            appstate = _load_codix_appstate(data_dir, file_tuple)
+        except Exception as exc:
+            tkinter.messagebox.showerror(title='Could not load data file',
+                                         message=str(exc))
+            return
+
+        cwd = _analyzer_dir_for(data_dir)
+        try:
+            pathlib.Path(cwd).mkdir(exist_ok=True)
+        except OSError as exc:
+            tkinter.messagebox.showerror(title='Could not create working directory',
+                                         message=str(exc))
+            return
+
+        self.cwd = cwd
+        self.data = appstate['data']
         self.selected.setvalue('\n'.join(file_tuple))
-
-        self.data = {} # clear previous data
-        sites = []
-        codes = {}
-
-        for fname in file_tuple:
-
-            fid = os.path.join(self.ddir.get(), fname)
-            candidates = IO.read_codix(fid) # data only = True
-            csites = list(candidates.keys())
-            ccodes = {site: list(candidates[site].keys()) for site in csites}
-
-            # FIXME: Check that files are compatible
-            if sites == [] or csites == sites:
-                sites = csites
-                if codes == {}:
-                    codes = ccodes
-                elif any(c1.lower() != c2.lower() \
-                         for c1, c2 in zip(ccodes, codes)):
-                    # FIXME: make a message box
-                    raise ValueError('Incompatible codes')
-            elif any(c1.lower() != c2.lower() \
-                     for c1, c2 in zip(csites, sites)):
-                    # FIXME: make a message box
-                raise ValueError('Incompatible sites')
-
-            self.data[fname] = candidates
-
-        appstate = {'files': list(file_tuple), 'sites': sites, 'codes': codes,
-                    'data': self.data}
-
-        self.file_but.config(state='disabled')
 
         for method in self.methods:
             method.update_state(appstate)
