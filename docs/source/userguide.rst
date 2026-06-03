@@ -1,191 +1,116 @@
-User's guide
-============
+User Guide
+==========
 
-This is the user's guide
+ScySeqTools provides tools for coding behaviours from media and analysing the
+resulting coded data. The public commands are ``scyseq-encoder`` and
+``scyseq-analyser``.
 
 Installation
 ------------
 
-The common requirements are `Python <https://www.python.org>`_ and 
-`vlc <https://www.videolan.org/vlc/>`_
+The common requirements are `Python <https://www.python.org>`_ and
+`VLC <https://www.videolan.org/vlc/>`_. VLC is required by the encoder through
+``python-vlc``.
 
-Then, *when avalaible on pypi*, the installation should reduce to:
-
-.. code-block:: bash
-
-   pip install codix
-
-Initialisation (TODO)
----------------------
-
-Before using the encoder or the analyser, codix configuration has to be
-initialised using:
+Install ScySeqTools with:
 
 .. code-block:: bash
 
-   codix init
+   python -m pip install scyseqtools
 
-asks the following questions:
+For local development from a cloned repository, install the project in editable
+mode instead:
 
-- Choose codix working directory (default: USER/codix_projects or
-  USER/codix_wd):
+.. code-block:: bash
 
-- Choose theme (default: XXX)
+   python -m pip install -e .
 
-  The themes are provided by the ttk-themes url?
-
-- Other configurations?
-
-Encoder guide
+Encoder Guide
 -------------
 
-Launch Codix
-^^^^^^^^^^^^^^
-
-• Open the Terminal.
-• Type the following command:
+Launch the encoder from a terminal with:
 
 .. code-block:: bash
 
-   ./codix
+   scyseq-encoder
 
-• A small window opens: Check that the displayed directory matches the desired folder.
-• Click **OK**.
+The encoder opens a graphical interface and asks you to choose a working
+directory. ScySeqTools expects or creates ``media`` and ``data`` folders inside
+that working directory.
 
-Launch codix encoder using the icon? or the command
+Project Setup
+^^^^^^^^^^^^^
 
-.. code-block:: bash
+When starting work, decide whether you are creating a new project or continuing
+an existing one.
 
-   codix-encoder
+For a new project:
 
-1. Is it a new project?
+* Define the project structure.
+* Define the coding frame with the new-code workflow.
 
-   - if "Yes":
+For an existing project:
 
-      * Define the structure of the project (**TODO**)
-      * Define the coding frame of the project (newcode)
+* Load the project structure and coding frame.
+* Start a new coding session or retrieve an unfinished session.
 
-   - if "No":
-
-      * Get project definitions: structure (**TODO**), coding frame
-      * Start a new session?
-
-        - if "No": resume session
-
-            * Get session name and location in the project structure?
-            * Get media from the defined place
-            * Get metadata
-            * Get data
-
-        - if "Yes": start new session
-
-            * Define session location in the project structure?
-            * Define media (and save media in correct place **TODO**)
-
-New code
+New Code
 ^^^^^^^^
 
-Create a code file
+Create a code file from **Actions > Create a new code**.
 
-• In the menu bar: **Actions → Create a new code**
+Fill in the requested fields:
 
-• Fill in the following fields:
-   * *Name*: name of the code file.
-   * *Description*: description of the code file.
-   * *Code name*: name of the code (e.g., *movement*).
-   * *List of items*: items associated with the code (e.g., *small*, *large*) 
-      - Click **Record**.
-   * *Recording site*: name of the site (e.g., *mother*).
-      - Select the codes to assign to the site.
-      - Click **Record**.
+* *Name*: name of the code file.
+* *Description*: description of the code file.
+* *Code name*: name of the code, for example ``movement``.
+* *List of items*: items associated with the code, for example ``small`` and
+  ``large``.
+* *Recording site*: name of the site, for example ``mother``.
 
-• Repeat the operation for as many codes, items, and recording sites as needed.
+Record each code, item list, and recording site. When the code file is complete,
+choose **Save all specifications and quit**, then save the code file in the
+desired folder.
 
-• Once the code file is complete: 
-   * Click **Save all specifications and quit**.
-   * Save the code file in the desired folder.
-
-New session
+New Session
 ^^^^^^^^^^^
 
-Start a new coding session
+Start a new coding session from **Actions > Start a new session**.
 
-• In the menu bar: **Actions → Start a new session**  
+1. Click **Load** in the *Media file* section and select the video to code.
+2. Click **Load** in the *Code file* section and select the code file.
+3. Use **Play/Pause** to start and stop the video.
+4. Set the coding interval in *By period of (..) sec.* if interval-based coding
+   is needed.
+5. Click **Start processing** and enter the coder name.
+6. Code the segment, click **Record**, and repeat the play, code, record cycle.
 
-• Load the video:  
+To edit previous codes, click **Back** to reach the desired segment, restart the
+video if needed, correct the selected items, and click **Record**.
 
-   - Click **Load** in the *Media file* section.
+To exit the session, use **Actions > Quit**.
 
-   - In the corresponding folder, select the video to code.
-
-• Load the code file:
-
-   - Click **Load** in the *Code file* section.
-
-   - In *File type*, select **Code file (*.cod)** or **New code (*.jod)** depending on the code.
-
-   - In the corresponding folder, select the desired code file.
-
-• The Codix window opens. Click **Play/Pause** to start the video.
-
-• Click **Play/Pause** again to stop the video as soon as coding can begin  
-  (e.g., once the participants start speaking).
-
-   ⚙️ Settings: 
-
-      - In the field *By period of (..) sec.*, enter the coding interval (e.g., **2 sec** → the video will stop every 2 seconds).  
-
-      - Tick the box to activate the interval.  
-
-      - Click **Start processing**.  
-
-      - Enter the coder’s first name.  
-
-      - Restart the video using **Play/Pause**.
-
-   🧩 Coding procedure: 
-
-      - Code the first video segment.  
-      - Click **Record**.  
-      - A window opens: name the file.  
-      - Repeat the following cycle: **Play/Pause → coding → Record**.
-
-
-   ✏️ Edit previous codes:
-
-      - Click **Back** as many times as needed to reach the desired segment.  
-      - Click **Play/Pause** to restart the video.  
-      - Correct the items if necessary.
-      - Click **Record**.
-
-   🔚 Exit session:  
-
-      - In the menu bar: **Actions → Quit**.
-
-
-Resume session
+Resume Session
 ^^^^^^^^^^^^^^
 
-Resume an unfinished coding session
+Resume an unfinished coding session from **Actions > Retrieve a session**.
 
-After launching Codix:  
+1. Click **Load** in *Data file*.
+2. Select the desired coding file.
+3. Click **Start processing**.
+4. Enter the coder name used for the original session.
 
-   - In the menu bar: **Actions → Retrieve a session**.  
+The video and coding window reopen and the session resumes from the last saved
+position.
 
-   - Click **Load** in *Data file*.  
-
-   - In the corresponding folder, select the desired coding file: the video and coding window will open.  
-
-   - Click **Start processing**.
-
-   - Enter the first name of the coder who started coding the video: coding will resume from where it was left off.
-
-Analyser guide
+Analysis Guide
 --------------
+
+Launch the analysis interface from a terminal with:
 
 .. code-block:: bash
 
-   codix-analyser
+   scyseq-analyser
 
 Analysis Workflow
 ^^^^^^^^^^^^^^^^^
@@ -208,9 +133,9 @@ Analysis Workflow
 
 
 +--------------------------+---------------------------+---------------------------------+
-|  Statistics              |  Mutual Information       | Transitions Probabilities       |
+| Statistics               | Mutual Information        | Transition Probabilities        |
 +==========================+===========================+=================================+
-| Just select variables    | Prepare folders carefully | Set correct time interval       |
+| Select variables         | Prepare folders carefully | Set correct time interval       |
 +--------------------------+---------------------------+---------------------------------+
 | Launch analysis          | Launch analysis           | Launch analysis                 |
 +--------------------------+---------------------------+---------------------------------+
@@ -221,70 +146,69 @@ Analysis Workflow
 Window Statistics
 ^^^^^^^^^^^^^^^^^
 
-Analyze your data simply and efficiently.
+Use the statistics workflow to summarize coded variables.
 
 .. note::
 
-   Before you begin, make sure your folders are properly organized.  If you have
+   Before you begin, make sure your folders are properly organized. If you have
    multiple measurement times, create one folder per time point.
 
 Steps
 """""
 
-1. **Organize your folders**.  
-2. Click **Choose directory** 📂 to select the folder containing your data.
-3. The measured or coded variables will automatically appear in the window.
-4. Select the **variables of interest** 🎯.
-5. Click **Launch** ▶️ to run the analysis.
-6. Choose the folder where the **results will be saved** 💾.
+1. Organize your folders.
+2. Click **Choose directory** to select the folder containing your data.
+3. Let ScySeqTools list the measured or coded variables.
+4. Select the variables of interest.
+5. Click **Launch** to run the analysis.
+6. Choose the folder where results will be saved.
 
 
 Window Mutual Information
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Compute relationships between your variables using mutual information.
+Use mutual information to compute relationships between variables.
 
 .. tip::
 
-   Good folder preparation will save you time and help prevent errors.
+   Careful folder preparation saves time and helps prevent analysis errors.
 
 Steps
 """""
 
-1. **Prepare your folders**.  
-2. Click **Choose directory** 📂 to select the data folder.
-3. The measured or coded variables will appear in the window.
-4. Select the **variables of interest** 🎯.
-5. Click **Launch** ▶️ to start the computation.
-6. Choose the folder where the **results will be saved** 💾.
+1. Prepare your folders.
+2. Click **Choose directory** to select the data folder.
+3. Let ScySeqTools list the measured or coded variables.
+4. Select the variables of interest.
+5. Click **Launch** to start the computation.
+6. Choose the folder where results will be saved.
 
 
 Window Transition Probabilities
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Compute the probabilities that one state transitions into another.
+Use transition probabilities to compute how often one state transitions into
+another.
 
 .. important::
 
-   Check the time interval for which you want to calculate the probabilities.
+   Check the time interval before calculating transition probabilities.
 
 Steps
 """""
 
-1. **Organize your folders** (one folder per measurement time if needed).
-2. Click **Choose directory** 📂 to select your data.
-3. The measured or coded variables will appear in the window.
-4. Select the **variables of interest** 🎯.
-5. Set the **time interval** (in seconds) ⏱️.
-6. Click **Launch** ▶️ to start the computation.
-7. Choose the folder where the **results wiil be saved** 💾.
+1. Organize your folders, with one folder per measurement time if needed.
+2. Click **Choose directory** to select your data.
+3. Let ScySeqTools list the measured or coded variables.
+4. Select the variables of interest.
+5. Set the time interval in seconds.
+6. Click **Launch** to start the computation.
+7. Choose the folder where results will be saved.
 
 
+Practical Tips
+^^^^^^^^^^^^^^
 
-Pratical Tips
-"""""""""""""
-
-- Always verify your folder organization before running an analysis.
-- Use consistent file names to make results easier to read.
-- Regularly back up your original data.
-
+* Always verify your folder organization before running an analysis.
+* Use consistent file names to make results easier to read.
+* Regularly back up your original data.

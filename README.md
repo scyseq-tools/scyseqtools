@@ -242,6 +242,17 @@ make html
 
 The generated HTML documentation will be available in `docs/build/html/`. Open `docs/build/html/index.html` in your browser to view the documentation.
 
+## Contributing
+
+Contributions to ScySeqTools are welcome!
+
+To contribute:
+
+1. Fork the official repository: [github.com/scyseq-tools/scyseqtools](https://github.com/scyseq-tools/scyseqtools).
+2. Create a branch for your feature or bug fix.
+3. Submit a pull request with a clear description of changes.
+4. Ensure tests pass.
+
 
 # Tools used in this package:
 
