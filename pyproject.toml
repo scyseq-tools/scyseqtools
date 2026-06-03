@@ -33,6 +33,12 @@ force-include = { "src/scyseqtools/encoder/config.ini" = "scyseqtools/encoder/co
 [tool.hatch.envs.default]
 features = ["dev", "docs", "build"]
 
+[tool.hatch.envs.docs]
+features = ["docs"]
+
+[tool.hatch.envs.docs.scripts]
+build = "python -m sphinx -b html docs/source docs/build/html"
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]

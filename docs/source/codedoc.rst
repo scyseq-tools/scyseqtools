@@ -6,57 +6,55 @@ Encoder
 
 File list:
 
-applicationmenu.py  cwdfile.ini    ib.py         newcode.py        truecodix.py
-codingframe.py      encoder        infoframe.py  playercontrol.py  utils.py
-config.ini          htmlreport.py  __init__.py   
+applicationmenu.py  codingframe.py   encoder.py   htmlreport.py
+ib.py               infoframe.py     newcode.py   playerbackends.py
+playercontrol.py    utils.py         config.py    __init__.py
 
-.. todo:: Move the config.ini and cwdfile.ini files to codix/config directory
-
-.. todo:: document encoder.encoder and other not available right now
+.. todo:: document scyseqtools.encoder.encoder and other not available right now
 
 ApplicationMenu
 ^^^^^^^^^^^^^^^
-.. automodule:: encoder.applicationmenu
+.. automodule:: scyseqtools.encoder.applicationmenu
    :members:
 
 CodingFrame
 ^^^^^^^^^^^
-.. automodule:: encoder.codingframe
+.. automodule:: scyseqtools.encoder.codingframe
    :members:
 
 HTMLReport
 ^^^^^^^^^^
-.. automodule:: encoder.htmlreport
+.. automodule:: scyseqtools.encoder.htmlreport
    :members:
 
 Interactive behavior
 ^^^^^^^^^^^^^^^^^^^^
-.. automodule:: encoder.ib
+.. automodule:: scyseqtools.encoder.ib
    :members:
 
 InfoFrame
 ^^^^^^^^^
-.. automodule:: encoder.infoframe
+.. automodule:: scyseqtools.encoder.infoframe
    :members:
 
 NewCode
 ^^^^^^^
-.. automodule:: encoder.newcode
+.. automodule:: scyseqtools.encoder.newcode
    :members:
 
 Playercontrol
 ^^^^^^^^^^^^^
-.. automodule:: encoder.playercontrol
+.. automodule:: scyseqtools.encoder.playercontrol
    :members:
 
-TrueCodix
-^^^^^^^^^
-.. automodule:: encoder.truecodix
+Playerbackends
+^^^^^^^^^^^^^^
+.. automodule:: scyseqtools.encoder.playerbackends
    :members:
 
 Utils
 ^^^^^
-.. automodule:: encoder.utils
+.. automodule:: scyseqtools.encoder.utils
    :members:
 
 
@@ -65,32 +63,29 @@ Analyser
 
 File list:
 
-analix.py  analyzer_files  methods.py     __pycache__  _Trash
-analyzer   __init__.py     parameters.py  symbolix.py  utils.py
+analyser.py  methods.py  parameters.py  symbolix.py  utils.py  __init__.py
 
-.. todo:: Remove analyzer_files, _Trash
-
-Analix
-^^^^^^
-.. automodule:: analyser.analix
+Analyser
+^^^^^^^^
+.. automodule:: scyseqtools.analyser.analyser
    :members:
 
 Methods
 ^^^^^^^
-.. automodule:: analyser.methods
+.. automodule:: scyseqtools.analyser.methods
    :members:
 
 Parameters
 ^^^^^^^^^^
-.. automodule:: analyser.parameters
+.. automodule:: scyseqtools.analyser.parameters
    :members:
 
 Symbolix
 ^^^^^^^^
-.. automodule:: analyser.symbolix
+.. automodule:: scyseqtools.analyser.symbolix
    :members:
 
 Utils
 ^^^^^
-.. automodule:: analyser.utils
+.. automodule:: scyseqtools.analyser.utils
    :members:

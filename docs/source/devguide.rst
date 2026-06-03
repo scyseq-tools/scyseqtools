@@ -200,7 +200,7 @@ Making diagrams
 ^^^^^^^^^^^^^^^
 
 The solution chosen here is to use the ``mermaid`` directive in the
-reStructuredText files
+reStructuredText files.
 
 See the doc: 
 
@@ -212,24 +212,21 @@ See the doc:
 For flowcharts see: `mermaid doc for flowcharts
 <http://mermaid.js.org/syntax/flowchart.html>`_
 
-_But_, it does not produce the diagram after ``make latexpdf``.
+For the HTML documentation, Mermaid is rendered in the browser by
+``sphinxcontrib-mermaid``. In ``conf.py``, ``mermaid_output_format`` is set to
+``raw`` so the Sphinx build does not need Node, Chromium, ``mmdc`` or the
+Mermaid CLI. This is the format used by the GitHub Pages workflow.
 
-So ``.png`` file are generated using the `mermaid CLI
-<https://github.com/mermaid-js/mermaid-cli>`_ 
+Existing ``.mmd`` files can be included directly:
 
-In `conf.py` the `mermaid_output_format` is set to `png`.
+.. code-block:: rst
 
-`mermaid-cli` is installed using:
+   .. mermaid::
+      _static/fig1.mmd
 
-.. code-block::
-
-   npm install --prefix ~/mermaid-cli @mermaid-js/mermaid-cli
-
-Since the global installation (using `-g` as on the github page) did not work
-for me. It leads to set the `mermaid_cmd` in the `conf.py` of Sphinx. The `.mmd`
-files in `_static` are converted and inserted in both `html` and `latexpdf` as
-png images.
+Browser-rendered Mermaid is meant for HTML output. If PDF or static image
+outputs are needed later, add a separate Mermaid CLI rendering path and switch
+that build to ``png`` or ``svg`` output.
 
 .. todo::
-   When public repository, use the extension githubpages to publish the doc
-   using a branch gh-pages.
+   Confirm the repository settings use GitHub Actions as the Pages source.
