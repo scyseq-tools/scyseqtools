@@ -11,10 +11,13 @@ requires-python = ">=3.9"
 license = {text = "MIT"}
 
 dependencies = [
- # "scyseq @ file://../../scyseq",  # local scyseq for now
-  "python-vlc", "numpy", "Pmw", "pymediainfo", "platformdirs"
+  "scyseq",
+  "python-vlc",
+  "numpy",
+  "Pmw",
+  "pymediainfo",
+  "platformdirs"
 ]
-
 
 [project.optional-dependencies]
 dev = ["pytest"]
@@ -45,17 +48,3 @@ testpaths = ["tests"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
-#name = "mon-appli"
-#version = "0.1.0"
-
-
-#[tool.hatch.envs]
-## Configuration de l'environnement de développement (facultatif)
-#default = { dependencies = ["malib"] }
-#
-#[tool.hatch.scripts]
-## Si tu as des scripts que l'utilisateur peut lancer directement avec `hatch run`
-#start-appli1 = "src.appli1.main:main"  # Exemple, change selon ta structure
-#start-appli2 = "src.appli2.main:main"  # Exemple, change selon ta structure
-
-
