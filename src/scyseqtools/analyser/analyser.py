@@ -131,7 +131,22 @@ class Application(tkinter.Tk):
         self.notebook.setnaturalsize()
 
         available_meth = inspect.getmembers(Symbolix, predicate=inspect.isfunction)
-        self.methods = [Method(*m, self) for m in available_meth]
+        self.methods = [self.kappa_tool]
+        self.methods.extend([Method(*m, self) for m in available_meth])
+        self._set_startup_window_size()
+
+    def _set_startup_window_size(self):
+        """
+        Size the startup window from the largest fully-built notebook page.
+        """
+        self.notebook.setnaturalsize()
+        self.update_idletasks()
+
+        width = min(self.winfo_reqwidth(), self.winfo_screenwidth())
+        height = min(self.winfo_reqheight(), self.winfo_screenheight())
+
+        self.geometry(f'{width}x{height}')
+        self.minsize(width, height)
 
     def get_directory(self):
         """
