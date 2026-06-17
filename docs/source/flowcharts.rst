@@ -1,29 +1,28 @@
 Flowcharts
 ==========
 
-.. figure:: illustrations/flowchart.png
-   :align: center
-   :width: 80%
+These diagrams summarize the main user workflows for the two ScySeqTools
+applications.
 
-   Flowchart of the encoder
+.. _encoder-workflow-flowchart:
+
+Encoder Workflow
+----------------
+
+Use this flowchart when preparing a coding scheme, starting a new coding
+session, or resuming unfinished coding work.
 
 .. mermaid::
-
-   sequenceDiagram
-      participant Alice
-      participant Bob
-      Alice->John: Hello John, how are you?
-      loop Healthcheck
-          John->John: Fight against hypochondria
-      end
-      Note right of John: Rational thoughts <br/>prevail...
-      John-->Alice: Great!
-      John->Bob: How about you?
-      Bob-->John: Jolly good!
+   _static/encoder_workflow.mmd
 
 
-.. mermaid:: 
-   _static/fig1.mmd
+.. _analyser-workflow-flowchart:
 
-.. mermaid:: 
-   _static/fig2.mmd
+Analyser Workflow
+-----------------
+
+Use this flowchart when loading coded data and choosing which analysis output
+to generate.
+
+.. mermaid::
+   _static/analyser_workflow.mmd

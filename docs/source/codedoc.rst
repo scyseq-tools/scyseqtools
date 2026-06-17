@@ -10,11 +10,14 @@ applicationmenu.py  codingframe.py   encoder.py   htmlreport.py
 ib.py               infoframe.py     newcode.py   playerbackends.py
 playercontrol.py    utils.py         config.py    __init__.py
 
-.. todo:: document scyseqtools.encoder.encoder and other not available right now
-
 ApplicationMenu
 ^^^^^^^^^^^^^^^
 .. automodule:: scyseqtools.encoder.applicationmenu
+   :members:
+
+Config
+^^^^^^
+.. automodule:: scyseqtools.encoder.config
    :members:
 
 CodingFrame
@@ -63,11 +66,16 @@ Analyser
 
 File list:
 
-analyser.py  methods.py  parameters.py  symbolix.py  utils.py  __init__.py
+analyser.py  kappa.py  methods.py  parameters.py  symbolix.py  utils.py  __init__.py
 
 Analyser
 ^^^^^^^^
 .. automodule:: scyseqtools.analyser.analyser
+   :members:
+
+Kappa
+^^^^^
+.. automodule:: scyseqtools.analyser.kappa
    :members:
 
 Methods

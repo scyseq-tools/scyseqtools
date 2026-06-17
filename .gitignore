@@ -10,3 +10,4 @@ cwdfile.ini
 **/.DS_Store
 src/scyseqtools/encoder/videotest.mp4
 *.bak
+.venv/

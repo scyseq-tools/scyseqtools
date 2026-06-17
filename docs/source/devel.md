@@ -114,7 +114,7 @@ Existing `.mmd` files can be included directly:
 
 ```rst
 .. mermaid::
-   _static/fig1.mmd
+   _static/encoder_workflow.mmd
 ```
 
 Browser-rendered Mermaid is meant for HTML output. If PDF or static image

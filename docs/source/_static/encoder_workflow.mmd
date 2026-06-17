@@ -1,0 +1,33 @@
+flowchart TD
+    start["Launch scyseq-encoder"] --> workdir["Choose a working directory"]
+    workdir --> folders["Use the project folders: media/ for source media and data/ for code/data files"]
+    folders --> task{"What do you need to do?"}
+
+    task -->|Define coding scheme| code_start["Actions > Define a new code"]
+    code_start --> project["Enter project name and description"]
+    project --> sampling{"Regular sampling?"}
+    sampling -->|Yes| interval["Enter interval in seconds"]
+    sampling -->|No| continuous["Leave interval disabled for continuous coding"]
+    interval --> codes["Record each code name and item list"]
+    continuous --> codes
+    codes --> sites["Record each recording site and select its codes"]
+    sites --> save_code["Save code in data/"]
+    save_code --> code_outputs["Outputs: .jod code file and .html report"]
+
+    task -->|Start new coding session| session_start["Actions > Start a new session"]
+    session_start --> load_media["Load media file from media/"]
+    load_media --> load_code["Load .jod code file from data/"]
+    load_code --> start_processing["Click Start processing and identify the coder"]
+    start_processing --> play["Play or step through the media"]
+    play --> choose_codes["Select one item for each displayed code"]
+    choose_codes --> record["Click Record"]
+    record --> save_data["Encoder saves or updates a .cdx data file"]
+    save_data --> more{"More media to code?"}
+    more -->|Yes| play
+    more -->|No| quit["Quit session"]
+
+    task -->|Resume unfinished session| resume_start["Actions > Retrieve a session"]
+    resume_start --> load_data["Load existing .cdx data file"]
+    load_data --> restore["Encoder restores media, code file, comments, and recorded steps"]
+    restore --> resume_processing["Click Start processing with the original coder name"]
+    resume_processing --> play

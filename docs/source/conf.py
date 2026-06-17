@@ -25,13 +25,10 @@ extensions = [
     "myst_parser",
     "sphinxcontrib.mermaid",
     "sphinx.ext.autodoc",
-    "sphinx.ext.todo",
 ]
 
 templates_path = ['_templates']
 exclude_patterns = []
-
-todo_include_todos = True
 
 autodoc_mock_imports = ["scyseq"]
 mermaid_output_format = "raw"

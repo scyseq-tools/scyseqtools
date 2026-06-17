@@ -19,4 +19,3 @@ the current Python modules exposed by the package.
    flowcharts
    devel
    codedoc
-   todo
