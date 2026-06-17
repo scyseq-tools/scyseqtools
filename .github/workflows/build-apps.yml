@@ -23,21 +23,57 @@ jobs:
             archive_name: ScySeqTools-Encoder-windows-x64.zip
             spec: packaging/pyinstaller/scyseq-encoder-windows.spec
             platform: windows
+            archive_source: ScySeq Encoder.exe
+            requires_media_info: true
           - os: ubuntu-22.04
             artifact_name: ScySeqTools-Encoder-ubuntu-22.04-x64
             archive_name: ScySeqTools-Encoder-ubuntu-22.04-x64.tar.gz
             spec: packaging/pyinstaller/scyseq-encoder-linux.spec
             platform: linux
+            archive_source: scyseq-encoder
+            requires_media_info: true
           - os: macos-15-intel
             artifact_name: ScySeqTools-Encoder-macos-x64
             archive_name: ScySeqTools-Encoder-macos-x64.zip
             spec: packaging/pyinstaller/scyseq-encoder-macos.spec
             platform: macos
+            archive_source: ScySeq Encoder.app
+            requires_media_info: true
           - os: macos-15
             artifact_name: ScySeqTools-Encoder-macos-arm64
             archive_name: ScySeqTools-Encoder-macos-arm64.zip
             spec: packaging/pyinstaller/scyseq-encoder-macos.spec
             platform: macos
+            archive_source: ScySeq Encoder.app
+            requires_media_info: true
+          - os: windows-2022
+            artifact_name: ScySeqTools-Analyser-windows-x64
+            archive_name: ScySeqTools-Analyser-windows-x64.zip
+            spec: packaging/pyinstaller/scyseq-analyser-windows.spec
+            platform: windows
+            archive_source: ScySeq Analyser.exe
+            requires_media_info: false
+          - os: ubuntu-22.04
+            artifact_name: ScySeqTools-Analyser-ubuntu-22.04-x64
+            archive_name: ScySeqTools-Analyser-ubuntu-22.04-x64.tar.gz
+            spec: packaging/pyinstaller/scyseq-analyser-linux.spec
+            platform: linux
+            archive_source: scyseq-analyser
+            requires_media_info: false
+          - os: macos-15-intel
+            artifact_name: ScySeqTools-Analyser-macos-x64
+            archive_name: ScySeqTools-Analyser-macos-x64.zip
+            spec: packaging/pyinstaller/scyseq-analyser-macos.spec
+            platform: macos
+            archive_source: ScySeq Analyser.app
+            requires_media_info: false
+          - os: macos-15
+            artifact_name: ScySeqTools-Analyser-macos-arm64
+            archive_name: ScySeqTools-Analyser-macos-arm64.zip
+            spec: packaging/pyinstaller/scyseq-analyser-macos.spec
+            platform: macos
+            archive_source: ScySeq Analyser.app
+            requires_media_info: false
 
     steps:
       - name: Checkout repository
@@ -50,13 +86,13 @@ jobs:
           cache: pip
 
       - name: Install Linux system libraries
-        if: matrix.platform == 'linux'
+        if: matrix.platform == 'linux' && matrix.requires_media_info
         run: |
           sudo apt-get update
           sudo apt-get install -y libmediainfo0v5
 
       - name: Install macOS system libraries
-        if: matrix.platform == 'macos'
+        if: matrix.platform == 'macos' && matrix.requires_media_info
         run: brew install media-info
 
       - name: Install Python dependencies
@@ -73,28 +109,35 @@ jobs:
           python -c "import scyseqtools.encoder.main; print('encoder ok')"
           python -c "import scyseqtools.analyser.main; print('analyser ok')"
 
-      - name: Build encoder app
+      - name: Build app
         run: pyinstaller --clean --noconfirm "${{ matrix.spec }}"
+
+      - name: Sign macOS app (ad-hoc)
+        if: matrix.platform == 'macos'
+        run: |
+          codesign --force --deep --sign - "dist/${{ matrix.archive_source }}"
+          codesign --verify --deep --strict --verbose=2 "dist/${{ matrix.archive_source }}"
+          codesign --display --verbose=4 "dist/${{ matrix.archive_source }}"
 
       - name: Archive Windows app
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path release | Out-Null
-          Compress-Archive -Path "dist\ScySeq Encoder.exe" -DestinationPath "release\${{ matrix.archive_name }}" -Force
+          Compress-Archive -Path "dist\${{ matrix.archive_source }}" -DestinationPath "release\${{ matrix.archive_name }}" -Force
 
       - name: Archive Linux app
         if: matrix.platform == 'linux'
         run: |
           mkdir -p release
-          tar -czf "release/${{ matrix.archive_name }}" -C dist scyseq-encoder
+          tar -czf "release/${{ matrix.archive_name }}" -C dist "${{ matrix.archive_source }}"
 
       - name: Archive macOS app
         if: matrix.platform == 'macos'
         run: |
           mkdir -p release
           cd dist
-          ditto -c -k --sequesterRsrc --keepParent "ScySeq Encoder.app" "../release/${{ matrix.archive_name }}"
+          ditto -c -k --sequesterRsrc --keepParent "${{ matrix.archive_source }}" "../release/${{ matrix.archive_name }}"
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v4
@@ -127,7 +170,7 @@ jobs:
       - name: Upload checksum artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ScySeqTools-Encoder-SHA256SUMS
+          name: ScySeqTools-SHA256SUMS
           path: SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 14

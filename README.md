@@ -159,28 +159,32 @@ encoder_layout = detached
 
 ## Download Applications
 
-GitHub Actions builds downloadable encoder applications for Windows, Ubuntu,
-macOS Intel, and macOS Apple Silicon. Each workflow run uploads temporary build
-artifacts. Version tags matching `v*` also publish the same files as GitHub
-Release assets:
+GitHub Actions builds downloadable encoder and analyser applications for
+Windows, Ubuntu, macOS Intel, and macOS Apple Silicon. Each workflow run uploads
+temporary build artifacts:
 
 ```text
 ScySeqTools-Encoder-windows-x64.zip
 ScySeqTools-Encoder-ubuntu-22.04-x64.tar.gz
 ScySeqTools-Encoder-macos-x64.zip
 ScySeqTools-Encoder-macos-arm64.zip
+ScySeqTools-Analyser-windows-x64.zip
+ScySeqTools-Analyser-ubuntu-22.04-x64.tar.gz
+ScySeqTools-Analyser-macos-x64.zip
+ScySeqTools-Analyser-macos-arm64.zip
 SHA256SUMS.txt
 ```
 
-The packaged apps do not bundle VLC. Install VLC on the target machine before
-running the encoder. On Windows, confirm this file exists:
+The packaged encoder apps do not bundle VLC. Install VLC on the target machine
+before running the encoder. On Windows, confirm this file exists:
 
 ```powershell
 Test-Path "C:\Program Files\VideoLAN\VLC\libvlc.dll"
 ```
 
-macOS builds are not signed or notarized yet, so users may need to right-click
-the app and choose **Open**, or allow it from macOS Privacy & Security settings.
+macOS builds are not Developer ID signed or notarized yet, so users may need to
+right-click the app and choose **Open**, or allow it from macOS Privacy &
+Security settings.
 
 ## Build Applications Locally
 
@@ -195,16 +199,19 @@ Then run the spec for your OS:
 ```powershell
 # Windows
 pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-encoder-windows.spec
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-analyser-windows.spec
 ```
 
 ```sh
 # Ubuntu/Linux
 pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-encoder-linux.spec
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-analyser-linux.spec
 ```
 
 ```sh
 # macOS
 pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-encoder-macos.spec
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-analyser-macos.spec
 ```
 
 
