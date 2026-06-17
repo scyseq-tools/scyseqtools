@@ -1,0 +1,182 @@
+name: Build ScySeq Encoder
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "[0-9]*.[0-9]*.[0-9]*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.artifact_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            artifact_name: ScySeqTools-Encoder-windows-x64
+            archive_base: ScySeqTools-Encoder-windows-x64
+            archive_extension: .zip
+            spec: packaging/pyinstaller/scyseq-encoder-windows.spec
+            platform: windows
+            archive_source: ScySeq Encoder.exe
+          - os: ubuntu-22.04
+            artifact_name: ScySeqTools-Encoder-ubuntu-22.04-x64
+            archive_base: ScySeqTools-Encoder-ubuntu-22.04-x64
+            archive_extension: .tar.gz
+            spec: packaging/pyinstaller/scyseq-encoder-linux.spec
+            platform: linux
+            archive_source: scyseq-encoder
+          - os: macos-15-intel
+            artifact_name: ScySeqTools-Encoder-macos-x64
+            archive_base: ScySeqTools-Encoder-macos-x64
+            archive_extension: .zip
+            spec: packaging/pyinstaller/scyseq-encoder-macos.spec
+            platform: macos
+            archive_source: ScySeq Encoder.app
+          - os: macos-15
+            artifact_name: ScySeqTools-Encoder-macos-arm64
+            archive_base: ScySeqTools-Encoder-macos-arm64
+            archive_extension: .zip
+            spec: packaging/pyinstaller/scyseq-encoder-macos.spec
+            platform: macos
+            archive_source: ScySeq Encoder.app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Install Linux system libraries
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libmediainfo0v5
+
+      - name: Install macOS system libraries
+        if: matrix.platform == 'macos'
+        run: brew install media-info
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,build]"
+          python -m pip install scyseq
+
+      - name: Run tests
+        run: python -m pytest
+
+      - name: Import smoke check
+        run: python -c "import scyseqtools.encoder.main; print('encoder ok')"
+
+      - name: Build app
+        run: pyinstaller --clean --noconfirm "${{ matrix.spec }}"
+
+      - name: Name Windows app with tag version
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}"
+          $source = "dist\${{ matrix.archive_source }}"
+          $sourceName = [System.IO.Path]::GetFileNameWithoutExtension("${{ matrix.archive_source }}")
+          $sourceExtension = [System.IO.Path]::GetExtension("${{ matrix.archive_source }}")
+          $targetName = "$sourceName $version$sourceExtension"
+          Rename-Item -LiteralPath $source -NewName $targetName
+
+      - name: Name Unix app with tag version
+        if: matrix.platform != 'windows'
+        run: |
+          version="${GITHUB_REF_NAME}"
+          source="${{ matrix.archive_source }}"
+          if [ "${{ matrix.platform }}" = "macos" ]; then
+            base="${source%.app}"
+            target="${base} ${version}.app"
+          else
+            target="${source}-${version}"
+          fi
+          mv "dist/${source}" "dist/${target}"
+
+      - name: Sign macOS app (ad-hoc)
+        if: matrix.platform == 'macos'
+        run: |
+          source="${{ matrix.archive_source }}"
+          base="${source%.app}"
+          versioned_app="${base} ${GITHUB_REF_NAME}.app"
+          codesign --force --deep --sign - "dist/${versioned_app}"
+          codesign --verify --deep --strict --verbose=2 "dist/${versioned_app}"
+          codesign --display --verbose=4 "dist/${versioned_app}"
+
+      - name: Archive Windows app
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}"
+          $sourceName = [System.IO.Path]::GetFileNameWithoutExtension("${{ matrix.archive_source }}")
+          $sourceExtension = [System.IO.Path]::GetExtension("${{ matrix.archive_source }}")
+          $targetName = "$sourceName $version$sourceExtension"
+          $archiveName = "${{ matrix.archive_base }}-$version${{ matrix.archive_extension }}"
+          New-Item -ItemType Directory -Force -Path release | Out-Null
+          Compress-Archive -Path "dist\$targetName" -DestinationPath "release\$archiveName" -Force
+
+      - name: Archive Linux app
+        if: matrix.platform == 'linux'
+        run: |
+          version="${GITHUB_REF_NAME}"
+          target="${{ matrix.archive_source }}-${version}"
+          mkdir -p release
+          tar -czf "release/${{ matrix.archive_base }}-${version}${{ matrix.archive_extension }}" -C dist "${target}"
+
+      - name: Archive macOS app
+        if: matrix.platform == 'macos'
+        run: |
+          source="${{ matrix.archive_source }}"
+          base="${source%.app}"
+          versioned_app="${base} ${GITHUB_REF_NAME}.app"
+          mkdir -p release
+          cd dist
+          ditto -c -k --sequesterRsrc --keepParent "${versioned_app}" "../release/${{ matrix.archive_base }}-${GITHUB_REF_NAME}${{ matrix.archive_extension }}"
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}-${{ github.ref_name }}
+          path: release/${{ matrix.archive_base }}-${{ github.ref_name }}${{ matrix.archive_extension }}
+          if-no-files-found: error
+          retention-days: 14
+
+  checksums:
+    name: Generate checksums
+    needs: build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Download app artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: release-assets
+
+      - name: Generate SHA256SUMS.txt
+        shell: bash
+        run: |
+          find release-assets -type f -print0 \
+            | sort -z \
+            | while IFS= read -r -d '' file; do
+                sha256sum "$file"
+              done > SHA256SUMS.txt
+
+      - name: Upload checksum artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScySeqTools-Encoder-SHA256SUMS-${{ github.ref_name }}
+          path: SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14
