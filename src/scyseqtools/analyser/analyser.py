@@ -113,7 +113,8 @@ class Application(tkinter.Tk):
                                              # items=self.filelist,
                                              items=filelist,
                                              labelpos='nw',
-                                             label_text='Available files')
+                                             label_text='Available files',
+                                             listbox_width=50)
         self.available.configure(listbox_selectmode='multiple',
                                  listbox_exportselection=False)
         self.available.grid(row=2, column=1)
