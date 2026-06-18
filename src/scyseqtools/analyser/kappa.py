@@ -164,7 +164,7 @@ def build_kappa_table(files, data, site_codes):
         raise ValueError("Select at least one site/code for kappa.")
 
     headers = ["comparison"]
-    headers.extend([f"K {site}{code}" for site, code in site_codes])
+    headers.extend([f"K {site}-{code}" for site, code in site_codes])
     rows = []
 
     for file1, file2 in iter_file_pairs(files):
@@ -180,6 +180,19 @@ def build_kappa_table(files, data, site_codes):
         rows.append(row)
 
     return headers, rows
+
+
+def kappa_filename(site_codes):
+    """
+    Return the kappa CSV filename for the selected site/code pairs.
+    """
+    parts = [
+        part
+        for site, code in site_codes
+        for part in (str(site), str(code))
+    ]
+    parts.append("kappa")
+    return "_".join(parts) + TABLE_EXT
 
 
 def to_csv_lines(headers, rows):
@@ -379,7 +392,7 @@ class KappaTool:
         if not outdir:
             return
 
-        outfile = os.path.join(outdir, "kappa" + TABLE_EXT)
+        outfile = os.path.join(outdir, kappa_filename(site_codes))
         try:
             with open(outfile, "w", encoding="utf-8", newline="") as datafile:
                 datafile.writelines(to_csv_lines(headers, rows))
