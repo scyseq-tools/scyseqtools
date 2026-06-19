@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -38,7 +38,7 @@ force-include = { "src/scyseqtools/encoder/config.ini" = "scyseqtools/encoder/co
 source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/scyseq/_version.py"
+version-file = "src/scyseqtools/_version.py"
 
 [tool.hatch.envs.default]
 features = ["dev", "docs", "build"]
