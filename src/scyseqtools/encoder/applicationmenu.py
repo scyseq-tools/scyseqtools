@@ -1,5 +1,5 @@
 """
-Menu for codix encoder
+Menu for ScySeqTools encoder
 """
 import tkinter
 

@@ -3,9 +3,11 @@ doc/.~*#
 gpt*
 _Trash
 build/
+dist/
 *.py[cod]
 cwdfile.ini
 .DS_Store
 **/.DS_Store
-src/encoder/videotest.mp4
+src/scyseqtools/encoder/videotest.mp4
 *.bak
+.venv/

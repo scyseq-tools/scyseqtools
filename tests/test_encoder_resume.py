@@ -1,4 +1,4 @@
-from codix.encoder.infoframe import normalize_resume_data
+from scyseqtools.encoder.infoframe import normalize_resume_data
 
 
 def test_normalize_resume_data_uses_coded_samples_not_time_count():

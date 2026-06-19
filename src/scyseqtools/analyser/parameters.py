@@ -5,8 +5,8 @@ import re
 import os
 import tkinter
 
-import codix.analyser.utils as U
-from codix.analyser import symbolix
+import scyseqtools.analyser.utils as U
+from scyseqtools.analyser import symbolix
 
 ITEMSEP = ' |,|-|;|:|/'
 

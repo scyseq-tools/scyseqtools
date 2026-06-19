@@ -86,7 +86,7 @@ class MpvPlayerBackend:
         except ImportError as exc:
             raise PlayerBackendError(
                 "The MPV backend requires the optional 'mpv' Python package "
-                "and system libmpv. Install with 'pip install codix[mpv]' "
+                "and system libmpv. Install with 'pip install scyseqtools[mpv]' "
                 "or 'pip install mpv', and make sure libmpv is available."
             ) from exc
 

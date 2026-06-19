@@ -10,8 +10,8 @@ import tkinter.filedialog
 import tkinter.messagebox
 from tkinter.colorchooser import askcolor
 
-from codix.encoder.config import load_encoder_config
-import codix.encoder.utils as U
+from scyseqtools.encoder.config import load_encoder_config
+import scyseqtools.encoder.utils as U
 
 #### leomodif : on met ces variables dans config.ini directement
 
@@ -25,7 +25,7 @@ import codix.encoder.utils as U
 
 def coded_sample_lengths(data):
     """
-    Return the lengths of all coded sequences in a Codix data container.
+    Return the lengths of all coded sequences in a ScySeqTools data container.
     """
     lengths = []
     for site_data in data.values():
@@ -207,10 +207,10 @@ class InfoFrame(tkinter.LabelFrame):
 
     def ask_data(self):
 
-        #fname = "/home/leo/codix-suite/codix/codix-encoder/new_record"
+        #fname = "/home/leo/scyseqtools/scyseqtools/scyseq-encoder/new_record"
 
         data_folder = self.data_folder()
-        data_filetypes = [('Codix data file', '*.cdx'), ('All files', '*.*')]
+        data_filetypes = [('ScySeqTools data file', '*.cdx'), ('All files', '*.*')]
 
         fname = tkinter.filedialog.askopenfilename(filetypes= data_filetypes,
                                                    initialdir= data_folder)

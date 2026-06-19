@@ -3,51 +3,48 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "codix"
+name = "scyseqtools"
 version = "0.1.0"
-description = "Codix is a suite of softwares: encoder and analyser"
+description = "ScySeqTools is a suite of software: encoder and analyser"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 
 dependencies = [
- # "scyseq @ file://../../scyseq",  # local scyseq for now
-  "python-vlc", "numpy", "Pmw", "pymediainfo"
+  "scyseq",
+  "python-vlc",
+  "numpy",
+  "Pmw",
+  "pymediainfo",
+  "platformdirs"
 ]
-
 
 [project.optional-dependencies]
 dev = ["pytest"]
+build = ["pyinstaller"]
 docs = ["sphinx", "myst-parser", "sphinxcontrib-bibtex", "sphinxcontrib-mermaid"]
 mpv = ["mpv"]
 
 [project.scripts]
-codix-analyser = "codix.analyser.main:main"
-codix-encoder = "codix.encoder.main:main"
+scyseq-analyser = "scyseqtools.analyser.main:main"
+scyseq-encoder = "scyseqtools.encoder.main:main"
 
-#[tool.hatch.build.targets.wheel]
-#packages = ["src/analyser", "src/encoder"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/scyseqtools"]
+force-include = { "src/scyseqtools/encoder/config.ini" = "scyseqtools/encoder/config.ini" }
 
 [tool.hatch.envs.default]
-features = ["dev", "docs"]
+features = ["dev", "docs", "build"]
 
-#[tool.hatch.build.targets.wheel]
-#packages = ["src/encoder", "src/analyser"]
+[tool.hatch.envs.docs]
+features = ["docs"]
 
+[tool.hatch.envs.docs.scripts]
+build = "python -m sphinx -b html docs/source docs/build/html"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
-#name = "mon-appli"
-#version = "0.1.0"
-
-
-#[tool.hatch.envs]
-## Configuration de l'environnement de développement (facultatif)
-#default = { dependencies = ["malib"] }
-#
-#[tool.hatch.scripts]
-## Si tu as des scripts que l'utilisateur peut lancer directement avec `hatch run`
-#start-appli1 = "src.appli1.main:main"  # Exemple, change selon ta structure
-#start-appli2 = "src.appli2.main:main"  # Exemple, change selon ta structure
-
-

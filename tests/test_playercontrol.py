@@ -1,4 +1,4 @@
-from codix.encoder.playercontrol import bound_time_to_media, regular_step_target
+from scyseqtools.encoder.playercontrol import bound_time_to_media, regular_step_target
 
 
 def test_bound_time_to_media_allows_zero_when_duration_unknown():

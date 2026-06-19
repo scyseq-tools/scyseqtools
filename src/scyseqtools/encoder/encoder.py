@@ -19,13 +19,17 @@ import tkinter.simpledialog
 
 # from datetime import datetime # datetime.now().strftime('%c')
 
-import codix.encoder.utils as U
-from codix.encoder.infoframe import InfoFrame
-from codix.encoder.playercontrol import PlayerControl
-from codix.encoder.applicationmenu import ApplicationMenu
-from codix.encoder.codingframe import FrameworkFrame
-from codix.encoder.config import get_encoder_layout, load_encoder_config
-from codix.encoder.newcode import NewCode
+import scyseqtools.encoder.utils as U
+from scyseqtools.encoder.infoframe import InfoFrame
+from scyseqtools.encoder.playercontrol import PlayerControl
+from scyseqtools.encoder.applicationmenu import ApplicationMenu
+from scyseqtools.encoder.codingframe import FrameworkFrame
+from scyseqtools.encoder.config import (
+    get_cwd_file_path,
+    get_encoder_layout,
+    load_encoder_config,
+)
+from scyseqtools.encoder.newcode import NewCode
 
 __version__ = '0.9'
 __author__ = 'L. Pezard'
@@ -33,7 +37,7 @@ __licence__ = 'GPL'
 
 class Application(tkinter.Tk):
     """
-    Main codix application class
+    Main ScySeqTools application class
     """
     def __init__(self):
         tkinter.Tk.__init__(self)
@@ -83,11 +87,11 @@ class Application(tkinter.Tk):
         lacking.
         """
         config = load_encoder_config(required_sections=("application",))
-        cwd_filename = config["application"]["cwd_file"]
+        cwd_filename = get_cwd_file_path(config)
         default_cwd = config["application"]["default_cwd"]
 
-        if os.path.exists(cwd_filename):
-            with open(cwd_filename, 'r', encoding='utf-8') as cwdfile:
+        if cwd_filename.exists():
+            with cwd_filename.open('r', encoding='utf-8') as cwdfile:
                 initdir = os.path.expanduser(cwdfile.readline())
                 # print('initdir from file: ', initdir)
         else:
@@ -98,7 +102,7 @@ class Application(tkinter.Tk):
         while cwd == '':
             cwd = filedialog.askdirectory(title="Choose working directory",
                                           initialdir=initdir, mustexist=True)
-        with open(cwd_filename, 'w', encoding='utf-8') as cwdfile:
+        with cwd_filename.open('w', encoding='utf-8') as cwdfile:
             cwdfile.write(cwd)
 
         U.ensure_subdirectory(cwd, "data")
@@ -161,7 +165,7 @@ class Application(tkinter.Tk):
         self.notimplemented()
 
     def about_handler(self):
-        """Gives some information about codix-suite
+        """Gives some information about ScySeqTools
         """
         self.notimplemented()
 
@@ -175,7 +179,7 @@ class Application(tkinter.Tk):
         Put the information frame in the root window.
         """
         if self.detached_layout:
-            self.title(f'Codix - Information - version: {__version__}')
+            self.title(f'ScySeqTools - Information - version: {__version__}')
             self.grid_columnconfigure(0, weight=1)
             self.grid_rowconfigure(0, weight=1)
             self.info.grid(row=0, column=0, sticky=U.sticky_all)
@@ -193,7 +197,7 @@ class Application(tkinter.Tk):
             return window
 
         window = tkinter.Toplevel(self)
-        window.title(f'Codix - {title} - version: {__version__}')
+        window.title(f'ScySeqTools - {title} - version: {__version__}')
         window.resizable(tkinter.TRUE, tkinter.TRUE)
         window.protocol("WM_DELETE_WINDOW", self.__refocus_information_window)
         window.grid_columnconfigure(0, weight=1)
@@ -511,5 +515,5 @@ class Application(tkinter.Tk):
 if __name__ == "__main__":
     app = Application()
     app.title(\
-    f'Codix - The Swiss knife for coding behaviors - version: {__version__}')
+    f'ScySeqTools - The Swiss knife for coding behaviors - version: {__version__}')
     app.mainloop()

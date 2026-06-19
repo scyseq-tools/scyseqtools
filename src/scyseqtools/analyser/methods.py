@@ -6,20 +6,80 @@ import tkinter.filedialog
 
 import pathlib
 
+import copy
+from datetime import datetime
+import json
 import os
 # import inspect
 import sys
 
-from codix.analyser.parameters import Parameter
+from scyseqtools.analyser.parameters import Parameter
 # import utils as U
 # import symbolix
-
-# sys.path.append('/home/zarpe/scikits-symbolic/symbolic')
-from scyseq import io as IO
 
 # SEQ_EXT = '.json'
 TABLE_EXT = '.csv'
 SEP = ';'
+
+
+def _as_codix_writer_sequences(dico_seqs):
+    """
+    Adapt analyser sequence mappings to the shape accepted by write_codix.
+    """
+    return {
+        site: list(codes.items()) if hasattr(codes, 'items') else codes
+        for site, codes in dico_seqs.items()
+    }
+
+
+def _sequence_values(sequence):
+    return sequence.ivals.tolist()
+
+
+def _sequence_alphabet(sequence):
+    return list(sequence.alphabet.svals)
+
+
+def _codix_container(source_metadata, dico_seqs):
+    """
+    Build a Codix record for analyser-generated sequence outputs.
+    """
+    container = copy.deepcopy(source_metadata) if source_metadata else {}
+    container.setdefault('history', [])
+    container.setdefault('media', '')
+    container.setdefault('times', [])
+    container.setdefault('comments', [])
+    container.setdefault('version', '0.9')
+
+    code = copy.deepcopy(container.get('code', {}))
+    code['codes'] = {}
+    code['sites'] = {}
+
+    data = {}
+    for site, code_sequences in _as_codix_writer_sequences(dico_seqs).items():
+        data[site] = {}
+        code['sites'][site] = []
+        for codename, sequence in code_sequences:
+            code['sites'][site].append(codename)
+            code['codes'][codename] = _sequence_alphabet(sequence)
+            data[site][codename] = _sequence_values(sequence)
+
+    container['code'] = code
+    container['data'] = data
+    container['history'].append(
+        (datetime.now().strftime('%c'), 'cdx-analyzer', '')
+    )
+    return container
+
+
+def write_codix_export(fname, dico_seqs, source_metadata=None):
+    """
+    Write analyser-generated Codix data while preserving source metadata.
+    """
+    container = _codix_container(source_metadata, dico_seqs)
+    with open(fname, 'w', encoding='utf-8') as datafile:
+        json.dump(container, datafile)
+
 
 class Method():
     """
@@ -31,6 +91,7 @@ class Method():
         """
         # Inputs
         self.gdata = {}
+        self.metadata = {}
         self.selected_files = []
         self.parameters = []
 
@@ -94,10 +155,11 @@ class Method():
                 datafile.writelines(table)
         else:
         # FIXME: Suppose this is a list of sequences...
-            for elem in output:
+            for index, elem in enumerate(output):
                 fname, dico_seqs = elem
                 datafile = os.path.join(outdir, fname)
-                IO.write_codix(datafile, dico_seqs)
+                source_metadata = self._source_metadata(index)
+                write_codix_export(datafile, dico_seqs, source_metadata)
 
         # Not useful since either created or must exist...
 #        if outdir is not None:
@@ -131,5 +193,16 @@ class Method():
         # need to change parameters
         self.selected_files = state['files']
         self.gdata = state['data']
+        self.metadata = state.get('metadata', {})
         for param in self.parameters:
             param.update(state)
+
+    def _source_metadata(self, index):
+        """
+        Return metadata for the source file that produced an output row.
+        """
+        try:
+            fname = self.selected_files[index]
+        except (AttributeError, IndexError):
+            return None
+        return self.metadata.get(fname)

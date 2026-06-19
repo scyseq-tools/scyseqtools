@@ -13,8 +13,8 @@ import tkinter.simpledialog
 import tkinter.messagebox
 from tkinter.colorchooser import askcolor
 
-from codix.encoder.config import load_encoder_config
-import codix.encoder.utils as U
+from scyseqtools.encoder.config import load_encoder_config
+import scyseqtools.encoder.utils as U
 
 
 class FrameworkFrame(tkinter.Frame):

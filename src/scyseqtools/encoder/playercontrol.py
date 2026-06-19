@@ -1,5 +1,5 @@
 """
-Module that controls media playback for codix encoder
+Module that controls media playback for ScySeqTools encoder
 """
 
 import time
@@ -8,8 +8,8 @@ import tkinter
 import tkinter.messagebox
 from tkinter.colorchooser import askcolor
 
-from codix.encoder.config import load_encoder_config
-from codix.encoder.playerbackends import (
+from scyseqtools.encoder.config import load_encoder_config
+from scyseqtools.encoder.playerbackends import (
     PlayerBackendError,
     configured_backend_name,
     create_player_backend,

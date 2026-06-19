@@ -1,0 +1,34 @@
+flowchart TD
+    start["Launch scyseq-analyser"] --> directory["Choose data directory"]
+    directory --> files["Select one or more compatible Codix data files"]
+    files --> load["Click Select file(s)"]
+    load --> validate{"Files load successfully?"}
+    validate -->|No| fix["Fix folder, file, site, or code compatibility"]
+    fix --> directory
+    validate -->|Yes| workspace["Analyser creates or uses sibling analyzer_files/"]
+    workspace --> tabs["Analysis tabs update with available sites and codes"]
+    tabs --> method{"Choose analysis workflow"}
+
+    method --> kappa["Kappa: select site/code pairs and compute coder agreement"]
+    method --> statistics["Statistics: select one sequence and summarize length/frequencies"]
+    method --> mi["Mutual information: select two sequences"]
+    method --> complexity["Complexity: select one sequence"]
+    method --> transition["Transition probability: select sequence and step"]
+    method --> influence["Influence probability: select source, target, and step"]
+    method --> join["Join: select two sequences to recode together"]
+    method --> change["Change code: select sequence, new name, correspondence, and alphabet"]
+
+    kappa --> launch["Launch or compute analysis"]
+    statistics --> launch
+    mi --> launch
+    complexity --> launch
+    transition --> launch
+    influence --> launch
+    join --> launch
+    change --> launch
+
+    launch --> output_type{"Output type"}
+    output_type -->|Table methods| save_csv["Choose output folder and save .csv results"]
+    output_type -->|Recoding methods| save_cdx["Choose output folder and save recoded .cdx files"]
+    save_csv --> review["Review results outside ScySeqTools"]
+    save_cdx --> reuse["Use recoded files in later analyser workflows"]

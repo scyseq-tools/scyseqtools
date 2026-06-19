@@ -2,7 +2,7 @@ import configparser
 
 import pytest
 
-from codix.encoder.playerbackends import (
+from scyseqtools.encoder.playerbackends import (
     PlayerBackendError,
     configured_backend_name,
     normalize_backend_name,

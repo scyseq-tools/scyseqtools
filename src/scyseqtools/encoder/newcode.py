@@ -14,8 +14,8 @@ import tkinter.filedialog
 from functools import partial
 from datetime import datetime
 
-import codix.encoder.utils as U
-import codix.encoder.htmlreport as H
+import scyseqtools.encoder.utils as U
+import scyseqtools.encoder.htmlreport as H
 
 VERSION = '0.9'
 

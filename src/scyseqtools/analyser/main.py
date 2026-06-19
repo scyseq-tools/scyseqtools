@@ -1,4 +1,4 @@
-from codix.analyser.analyser import Application
+from scyseqtools.analyser.analyser import Application
 
 def main():
     application = Application()

@@ -1,10 +1,10 @@
-# codix-suite
+# ScySeqTools
 
-Codix is a Python toolkit for coding and analysing behaviours. It currently
+ScySeqTools is a Python toolkit for coding and analysing behaviours. It currently
 provides two command line launchers:
 
-- `codix-encoder`
-- `codix-analyser`
+- `scyseq-encoder`
+- `scyseq-analyser`
 
 ## Requirements
 
@@ -32,10 +32,10 @@ Clone or download the project, then open a terminal in the project folder.
 On Windows, use PowerShell; on macOS or Linux, use your usual terminal.
 
 ```sh
-cd path/to/codix-suite
+cd path/to/scyseqtools
 ```
 
-Replace `path/to/codix-suite` with the folder where you cloned or downloaded
+Replace `path/to/scyseqtools` with the folder where you cloned or downloaded
 the project.
 
 ### 1. Check Python
@@ -75,12 +75,12 @@ hatch shell
 Your prompt should now start with something like:
 
 ```text
-(codix) ...
+(scyseqtools) ...
 ```
 
-That means you are inside the Codix virtual environment.
+That means you are inside the ScySeqTools virtual environment.
 
-### 4. Install Codix in Editable Mode
+### 4. Install ScySeqTools in Editable Mode
 
 Inside the Hatch shell, install the current project:
 
@@ -88,46 +88,130 @@ Inside the Hatch shell, install the current project:
 python -m pip install -e .
 ```
 
-The `-e` option means "editable": Python imports Codix directly from this source
+The `-e` option means "editable": Python imports ScySeqTools directly from this source
 folder, so local code changes are picked up without reinstalling every time.
 
 ### 5. Verify the Install
 
 ```sh
-python -m pip show codix
-python -c "import codix; print(codix.__file__)"
-python -c "import codix.encoder.main; print('ok')"
+python -m pip show scyseqtools
+python -c "import scyseqtools; print(scyseqtools.__file__)"
+python -c "import scyseqtools.encoder.main; print('ok')"
 ```
 
 If the last command prints `ok`, the package import works.
 
-## Run Codix
+## Run ScySeqTools
 
 Inside the Hatch shell:
 
 ```sh
-codix-encoder
+scyseq-encoder
 ```
 
 or:
 
 ```sh
-codix-analyser
+scyseq-analyser
 ```
 
 The encoder opens a graphical interface and asks you to choose a working
-directory. Codix expects or creates `media` and `data` folders inside that
+directory. ScySeqTools expects or creates `media` and `data` folders inside that
 working directory.
+
+## User Configuration
+
+On first run, ScySeqTools Encoder creates an editable config file in the
+standard per-user config folder for your operating system:
+
+```text
+Windows: %APPDATA%\ScySeqTools\Encoder\config.ini
+Ubuntu/Linux: ~/.config/ScySeqTools/Encoder/config.ini
+macOS: ~/Library/Application Support/ScySeqTools/Encoder/config.ini
+```
+
+The app loads configuration in this order:
+
+1. Bundled defaults inside the package or `.exe`.
+2. The user-editable OS config file shown above.
+3. A `config.ini` in the selected working directory, if present.
+
+That means users can change global defaults in their user config folder, and a specific project
+can override them by placing its own `config.ini` in the project working folder.
+The last selected working directory is remembered in:
+
+```text
+Windows: %APPDATA%\ScySeqTools\Encoder\cwdfile.ini
+Ubuntu/Linux: ~/.local/state/ScySeqTools/Encoder/cwdfile.ini
+macOS: ~/Library/Application Support/ScySeqTools/Encoder/cwdfile.ini
+```
 
 ### Encoder Window Layout
 
 By default, the encoder opens with the classic single-window layout. To split
 the encoder into separate Information, Control, and Coding framework windows,
-add this to the `config.ini` file in your Codix working directory:
+add this to the AppData or project `config.ini` file:
 
 ```ini
 [application]
 encoder_layout = detached
+```
+
+## Download Applications
+
+GitHub Actions builds downloadable encoder and analyser applications for
+Windows, Ubuntu, macOS Intel, and macOS Apple Silicon. Each workflow run uploads
+temporary build artifacts:
+
+```text
+ScySeqTools-Encoder-windows-x64-<tag>.zip
+ScySeqTools-Encoder-ubuntu-22.04-x64-<tag>.tar.gz
+ScySeqTools-Encoder-macos-x64-<tag>.zip
+ScySeqTools-Encoder-macos-arm64-<tag>.zip
+ScySeqTools-Analyser-windows-x64-<tag>.zip
+ScySeqTools-Analyser-ubuntu-22.04-x64-<tag>.tar.gz
+ScySeqTools-Analyser-macos-x64-<tag>.zip
+ScySeqTools-Analyser-macos-arm64-<tag>.zip
+SHA256SUMS.txt
+```
+
+The packaged encoder apps do not bundle VLC. Install VLC on the target machine
+before running the encoder. On Windows, confirm this file exists:
+
+```powershell
+Test-Path "C:\Program Files\VideoLAN\VLC\libvlc.dll"
+```
+
+macOS builds are not Developer ID signed or notarized yet, so users may need to
+right-click the app and choose **Open**, or allow it from macOS Privacy &
+Security settings.
+
+## Build Applications Locally
+
+From the project root, install build dependencies:
+
+```powershell
+python -m pip install -e ".[dev,build]"
+```
+
+Then run the spec for your OS:
+
+```powershell
+# Windows
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-encoder-windows.spec
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-analyser-windows.spec
+```
+
+```sh
+# Ubuntu/Linux
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-encoder-linux.spec
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-analyser-linux.spec
+```
+
+```sh
+# macOS
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-encoder-macos.spec
+pyinstaller --clean --noconfirm packaging/pyinstaller/scyseq-analyser-macos.spec
 ```
 
 
@@ -164,6 +248,17 @@ make html
 ```
 
 The generated HTML documentation will be available in `docs/build/html/`. Open `docs/build/html/index.html` in your browser to view the documentation.
+
+## Contributing
+
+Contributions to ScySeqTools are welcome!
+
+To contribute:
+
+1. Fork the official repository: [github.com/scyseq-tools/scyseqtools](https://github.com/scyseq-tools/scyseqtools).
+2. Create a branch for your feature or bug fix.
+3. Submit a pull request with a clear description of changes.
+4. Ensure tests pass.
 
 
 # Tools used in this package:

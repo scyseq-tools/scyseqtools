@@ -1,17 +1,15 @@
-.. codix documentation master file, created by
-   sphinx-quickstart on Thu May  8 18:27:44 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+=========================
+ScySeqTools Documentation
+=========================
 
-===================
-codix documentation
-===================
+ScySeqTools is a Python toolkit for coding and analysing behaviours. The
+package currently provides two desktop-oriented command launchers:
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+* ``scyseq-encoder`` for coding media sessions.
+* ``scyseq-analyser`` for running analysis workflows on coded data.
 
-Check make
+These pages document installation, day-to-day use, development workflows, and
+the current Python modules exposed by the package.
 
 .. toctree::
    :maxdepth: 4
@@ -19,6 +17,5 @@ Check make
 
    userguide
    flowcharts
-   devguide
+   devel
    codedoc
-   todo
