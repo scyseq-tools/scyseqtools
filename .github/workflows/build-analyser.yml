@@ -13,7 +13,6 @@ jobs:
   build:
     name: Build ${{ matrix.artifact_name }}
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
@@ -25,7 +24,6 @@ jobs:
             spec: packaging/pyinstaller/scyseq-analyser-windows.spec
             platform: windows
             archive_source: ScySeq Analyser.exe
-
           - os: ubuntu-22.04
             artifact_name: ScySeqTools-Analyser-ubuntu-22.04-x64
             archive_base: ScySeqTools-Analyser-ubuntu-22.04-x64
@@ -33,7 +31,6 @@ jobs:
             spec: packaging/pyinstaller/scyseq-analyser-linux.spec
             platform: linux
             archive_source: scyseq-analyser
-
           - os: macos-15-intel
             artifact_name: ScySeqTools-Analyser-macos-x64
             archive_base: ScySeqTools-Analyser-macos-x64
@@ -41,7 +38,6 @@ jobs:
             spec: packaging/pyinstaller/scyseq-analyser-macos.spec
             platform: macos
             archive_source: ScySeq Analyser.app
-
           - os: macos-15
             artifact_name: ScySeqTools-Analyser-macos-arm64
             archive_base: ScySeqTools-Analyser-macos-arm64
@@ -88,28 +84,23 @@ jobs:
 
       - name: Name Unix app with tag version
         if: matrix.platform != 'windows'
-        shell: bash
         run: |
           version="${GITHUB_REF_NAME}"
           source="${{ matrix.archive_source }}"
-
           if [ "${{ matrix.platform }}" = "macos" ]; then
             base="${source%.app}"
             target="${base} ${version}.app"
           else
             target="${source}-${version}"
           fi
-
           mv "dist/${source}" "dist/${target}"
 
-      - name: Sign macOS app ad-hoc
+      - name: Sign macOS app (ad-hoc)
         if: matrix.platform == 'macos'
-        shell: bash
         run: |
           source="${{ matrix.archive_source }}"
           base="${source%.app}"
           versioned_app="${base} ${GITHUB_REF_NAME}.app"
-
           codesign --force --deep --sign - "dist/${versioned_app}"
           codesign --verify --deep --strict --verbose=2 "dist/${versioned_app}"
           codesign --display --verbose=4 "dist/${versioned_app}"
@@ -123,34 +114,29 @@ jobs:
           $sourceExtension = [System.IO.Path]::GetExtension("${{ matrix.archive_source }}")
           $targetName = "$sourceName $version$sourceExtension"
           $archiveName = "${{ matrix.archive_base }}-$version${{ matrix.archive_extension }}"
-
           New-Item -ItemType Directory -Force -Path release | Out-Null
           Compress-Archive -Path "dist\$targetName" -DestinationPath "release\$archiveName" -Force
 
       - name: Archive Linux app
         if: matrix.platform == 'linux'
-        shell: bash
         run: |
           version="${GITHUB_REF_NAME}"
           target="${{ matrix.archive_source }}-${version}"
-
           mkdir -p release
           tar -czf "release/${{ matrix.archive_base }}-${version}${{ matrix.archive_extension }}" -C dist "${target}"
 
       - name: Archive macOS app
         if: matrix.platform == 'macos'
-        shell: bash
         run: |
           source="${{ matrix.archive_source }}"
           base="${source%.app}"
           versioned_app="${base} ${GITHUB_REF_NAME}.app"
-
           mkdir -p release
           cd dist
           ditto -c -k --sequesterRsrc --keepParent "${versioned_app}" "../release/${{ matrix.archive_base }}-${GITHUB_REF_NAME}${{ matrix.archive_extension }}"
 
       - name: Upload app artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}-${{ github.ref_name }}
           path: release/${{ matrix.archive_base }}-${{ github.ref_name }}${{ matrix.archive_extension }}
@@ -164,62 +150,23 @@ jobs:
 
     steps:
       - name: Download app artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v5
         with:
-          path: release-files
-          pattern: ScySeqTools-Analyser-*-${{ github.ref_name }}
-          merge-multiple: true
+          path: release-assets
 
       - name: Generate SHA256SUMS.txt
         shell: bash
         run: |
-          cd release-files
-          sha256sum * > SHA256SUMS.txt
-          cat SHA256SUMS.txt
+          find release-assets -type f -print0 \
+            | sort -z \
+            | while IFS= read -r -d '' file; do
+                sha256sum "$file"
+              done > SHA256SUMS.txt
 
       - name: Upload checksum artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: ScySeqTools-Analyser-SHA256SUMS-${{ github.ref_name }}
-          path: release-files/SHA256SUMS.txt
+          path: SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 14
-
-  release:
-    name: Create GitHub Release
-    needs: checksums
-    runs-on: ubuntu-22.04
-
-    permissions:
-      contents: write
-
-    steps:
-      - name: Download release assets
-        uses: actions/download-artifact@v8
-        with:
-          path: release-files
-          pattern: ScySeqTools-Analyser-*-${{ github.ref_name }}
-          merge-multiple: true
-
-      - name: Show release files
-        shell: bash
-        run: |
-          ls -lah release-files
-
-      - name: Create or update GitHub Release
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          tag="${GITHUB_REF_NAME}"
-
-          if gh release view "$tag" >/dev/null 2>&1; then
-            echo "Release $tag already exists. Updating assets..."
-            gh release upload "$tag" release-files/* --clobber
-          else
-            echo "Creating release $tag..."
-            gh release create "$tag" release-files/* \
-              --verify-tag \
-              --title "ScySeqTools Analyser ${tag}" \
-              --notes "Automated executable builds for Windows, Linux, and macOS."
-          fi
