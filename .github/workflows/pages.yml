@@ -3,7 +3,7 @@ name: Pages
 on:
   push:
     branches:
-      - analyser_debug
+      - main
   workflow_dispatch:
 
 permissions:
