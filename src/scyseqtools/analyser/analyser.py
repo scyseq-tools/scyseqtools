@@ -4,6 +4,7 @@ A Tk client for symbolic analysis
 
 from scyseqtools.analyser.kappa import KappaTool
 from scyseqtools.analyser.methods import Method
+from scyseqtools.analyser.synchronization import SynchronizationTool
 from scyseqtools.analyser.symbolix import Symbolix
 
 import os
@@ -246,8 +247,9 @@ class Application(tkinter.Tk):
         quit_but.grid(column=0, row=4)
 
         self.kappa_tool = KappaTool(self)
+        self.synchronization_tool = SynchronizationTool(self)
         available_meth = inspect.getmembers(Symbolix, predicate=inspect.isfunction)
-        self.methods = [self.kappa_tool]
+        self.methods = [self.kappa_tool, self.synchronization_tool]
         self.methods.extend([Method(*m, self) for m in available_meth])
         self._set_startup_window_size()
 
