@@ -1,0 +1,142 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "[0-9]*.[0-9]*.[0-9]*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pypi-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.tag-version.outputs.version }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install hatch build twine packaging
+
+      - name: Extract version from tag
+        id: tag-version
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import os
+          from packaging.version import InvalidVersion, Version
+
+          tag_name = os.environ["TAG_NAME"].strip()
+          tag_version = tag_name[1:] if tag_name.startswith("v") else tag_name
+
+          if not tag_version:
+              raise SystemExit("Tag did not contain a package version")
+
+          try:
+              Version(tag_version)
+          except InvalidVersion as error:
+              raise SystemExit(
+                  f"Invalid PEP 440 version {tag_version!r} from tag {tag_name!r}: {error}"
+              )
+
+          print(f"version={tag_version}")
+          PY
+
+      - name: Use tag version for hatch-vcs
+        run: |
+          echo "PACKAGE_VERSION=${{ steps.tag-version.outputs.version }}" >> "$GITHUB_ENV"
+          echo "SETUPTOOLS_SCM_PRETEND_VERSION=${{ steps.tag-version.outputs.version }}" >> "$GITHUB_ENV"
+
+      - name: Install package
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run pytest
+        run: python -m pytest
+
+      - name: Build wheel and source distribution
+        run: python -m build
+
+      - name: Verify distribution versions
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          from packaging.utils import parse_sdist_filename, parse_wheel_filename
+          from packaging.version import Version
+
+          expected = Version(os.environ["PACKAGE_VERSION"])
+          distributions = sorted(Path("dist").iterdir())
+
+          if not distributions:
+              raise SystemExit("No distributions were built")
+
+          mismatches = []
+          for distribution in distributions:
+              if distribution.suffix == ".whl":
+                  _, version, _, _ = parse_wheel_filename(distribution.name)
+              elif distribution.name.endswith((".tar.gz", ".zip")):
+                  _, version = parse_sdist_filename(distribution.name)
+              else:
+                  raise SystemExit(f"Unexpected distribution file: {distribution.name}")
+
+              if version != expected:
+                  mismatches.append(f"{distribution.name} has version {version}, expected {expected}")
+
+          if mismatches:
+              raise SystemExit("\n".join(mismatches))
+          PY
+
+      - name: Check distributions
+        run: twine check dist/*
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/*
+          if-no-files-found: error
+
+  publish-pypi:
+    name: Publish distribution to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/scyseqtools
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
