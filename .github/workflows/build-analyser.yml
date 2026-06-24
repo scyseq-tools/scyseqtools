@@ -85,6 +85,7 @@ jobs:
           $sourceName = [System.IO.Path]::GetFileNameWithoutExtension("${{ matrix.archive_source }}")
           $sourceExtension = [System.IO.Path]::GetExtension("${{ matrix.archive_source }}")
           $targetName = "$sourceName $version$sourceExtension"
+
           Rename-Item -LiteralPath $source -NewName $targetName
 
       - name: Name Unix app with tag version
@@ -148,6 +149,7 @@ jobs:
 
           mkdir -p release
           cd dist
+
           ditto -c -k --sequesterRsrc --keepParent "${versioned_app}" "../release/${{ matrix.archive_base }}-${GITHUB_REF_NAME}${{ matrix.archive_extension }}"
 
       - name: Upload app artifact
@@ -171,18 +173,21 @@ jobs:
           pattern: ScySeqTools-Analyser-*-${{ github.ref_name }}
           merge-multiple: true
 
-      - name: Generate SHA256SUMS.txt
+      - name: Generate analyser checksum file
         shell: bash
         run: |
           cd release-files
-          sha256sum * > SHA256SUMS.txt
-          cat SHA256SUMS.txt
+
+          checksum_file="ScySeqTools-Analyser-SHA256SUMS-${GITHUB_REF_NAME}.txt"
+
+          sha256sum * > "$checksum_file"
+          cat "$checksum_file"
 
       - name: Upload checksum artifact
         uses: actions/upload-artifact@v7
         with:
           name: ScySeqTools-Analyser-SHA256SUMS-${{ github.ref_name }}
-          path: release-files/SHA256SUMS.txt
+          path: release-files/ScySeqTools-Analyser-SHA256SUMS-${{ github.ref_name }}.txt
           if-no-files-found: error
           retention-days: 14
 
@@ -190,6 +195,10 @@ jobs:
     name: Create GitHub Release
     needs: checksums
     runs-on: ubuntu-22.04
+
+    concurrency:
+      group: scyseqtools-release-${{ github.ref }}
+      cancel-in-progress: false
 
     permissions:
       contents: write
@@ -212,15 +221,26 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="${GITHUB_REF_NAME}"
+          set -euo pipefail
 
-          if gh release view "$tag" >/dev/null 2>&1; then
+          tag="${GITHUB_REF_NAME}"
+          repo="${GITHUB_REPOSITORY}"
+
+          echo "Repository: $repo"
+          echo "Tag: $tag"
+          echo "Release files:"
+          ls -lah release-files
+
+          if gh release view "$tag" --repo "$repo" >/dev/null 2>&1; then
             echo "Release $tag already exists. Updating assets..."
-            gh release upload "$tag" release-files/* --clobber
+            gh release upload "$tag" release-files/* \
+              --repo "$repo" \
+              --clobber
           else
             echo "Creating release $tag..."
             gh release create "$tag" release-files/* \
+              --repo "$repo" \
               --verify-tag \
-              --title "ScySeqTools Analyser ${tag}" \
-              --notes "Automated executable builds for Windows, Linux, and macOS."
+              --title "ScySeqTools ${tag}" \
+              --notes "Automated executable builds for ScySeqTools Encoder and Analyser."
           fi
